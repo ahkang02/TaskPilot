@@ -1,0 +1,76 @@
+﻿@model TaskManagementApp.ViewModels.RegisterViewModel
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/LoginRegister_Layout.cshtml";
+}
+
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+     data-sidebar-position="fixed" data-header-position="fixed">
+    <div class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
+        <div class="d-flex align-items-center justify-content-center w-100">
+            <div class="row justify-content-center w-100">
+                <div class="col-md-8 col-lg-6 col-xxl-3">
+                    <div class="card mb-0">
+                        <div class="card-body">
+                            <a href="#" class="text-nowrap logo-img text-center d-block py-3 w-100">
+                                <img src="@Url.Content("~/Content/Images/Logo.png")" width="180" alt="">
+                            </a>
+                            <p class="text-center">Your All-In-One Task Management App</p>
+                            @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { role = "form" }))
+                            {
+                                <div class="card-body px-4 py-3">
+                                    <div class="row mb-3 text-center">
+                                        <h5>Registration</h5>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6 p-1">
+                                            @Html.LabelFor(m => m.FirstName)
+                                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(m => m.FirstName)
+                                        </div>
+                                        <div class="col-md-6 p-1">
+                                            @Html.LabelFor(m => m.LastName)
+                                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(m => m.LastName)
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3 ">
+                                        @Html.LabelFor(m => m.Username)
+                                        @Html.TextBoxFor(m => m.Username, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.Username)
+                                    </div>
+                                    <div class="row mb-3">
+                                        @Html.LabelFor(m => m.Email)
+                                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.Email)
+                                    </div>
+                                    <div class="row mb-3">
+                                        @Html.LabelFor(m => m.Password)
+                                        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.Password)
+                                    </div>
+                                    <div class="row mb-3">
+                                        @Html.LabelFor(m => m.ConfirmPassword)
+                                        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.ConfirmPassword)
+                                    </div>
+                                    @Html.AntiForgeryToken()
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary mb-3">Create Account</button>
+                                    </div>
+                                    <hr />
+                                    <div class="text-center">
+                                        <p>Already have an account? <a href="@Url.Action("Login", "Account")" class="nav-link fw-semibold d-inline">Login Now</a></p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
