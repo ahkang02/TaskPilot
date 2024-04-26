@@ -66,7 +66,7 @@
             </li>
 
             <li class="sidebar-item">
-                <a class="sidebar-link" href="@Url.Action("UserManagement", "System")" aria-expanded="false">
+                <a class="sidebar-link" href="@Url.Action("Index", "User")" aria-expanded="false">
                     <span>
                         <i class="bi bi-person-add"></i>
                     </span>
@@ -77,7 +77,7 @@
         @if (Model.UserPermissions.Any(r => r.Name == "RoleManagement" && r.features.Name == "System"))
         {
             <li class="sidebar-item">
-                <a class="sidebar-link" href="@Url.Action("RoleManagement", "System")" aria-expanded="false">
+                <a class="sidebar-link" href="@Url.Action("Index", "Role")" aria-expanded="false">
                     <span>
                         <i class="bi bi-person-gear"></i>
                     </span>
@@ -88,7 +88,7 @@
         @if (Model.UserPermissions.Any(r => r.Name == "PriorityManagement" && r.features.Name == "System"))
         {
             <li class="sidebar-item">
-                <a class="sidebar-link" href="@Url.Action("PriorityManagement", "System")" aria-expanded="false">
+                <a class="sidebar-link" href="@Url.Action("Index", "Priority")" aria-expanded="false">
                     <span>
                         <i class="bi bi-sort-up"></i>
                     </span>
@@ -99,7 +99,7 @@
         @if (Model.UserPermissions.Any(r => r.Name == "StatusManagement" && r.features.Name == "System"))
         {
             <li class="sidebar-item">
-                <a class="sidebar-link" href="@Url.Action("StatusManagement", "System")" aria-expanded="false">
+                <a class="sidebar-link" href="@Url.Action("Index", "Status")" aria-expanded="false">
                     <span>
                         <i class="bi bi-check2-circle"></i>
                     </span>

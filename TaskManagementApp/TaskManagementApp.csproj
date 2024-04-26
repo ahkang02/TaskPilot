@@ -797,7 +797,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Data\" />
-    <Folder Include="Views\NewFolder1\" />
     <Folder Include="Views\Permission\" />
   </ItemGroup>
   <ItemGroup>
