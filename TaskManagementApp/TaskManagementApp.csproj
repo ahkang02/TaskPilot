@@ -333,11 +333,15 @@
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
+    <Compile Include="Controllers\PriorityController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Controllers\RoleController.cs" />
+    <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Controllers\SystemController.cs" />
     <Compile Include="Controllers\TaskController.cs" />
     <Compile Include="Controllers\TemplateController.cs" />
     <Compile Include="Controllers\UIController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="CustomValidator\DateLessThanToday.cs" />
     <Compile Include="DAL\FeaturesRepository.cs" />
     <Compile Include="DAL\IRepository.cs" />
@@ -764,20 +768,20 @@
     <Content Include="Views\Template\AccountConfirmation.cshtml" />
     <Content Include="Views\Shared\_Footer.cshtml" />
     <Content Include="Views\Task\Index.cshtml" />
-    <Content Include="Views\System\PriorityManagement.cshtml" />
-    <Content Include="Views\System\StatusManagement.cshtml" />
-    <Content Include="Views\System\RoleManagement.cshtml" />
-    <Content Include="Views\System\UserManagement.cshtml" />
+    <Content Include="Views\Priority\Index.cshtml" />
+    <Content Include="Views\Status\Index.cshtml" />
+    <Content Include="Views\Role\Index.cshtml" />
+    <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\Notification\Index.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\System\PermissionManagement.cshtml" />
     <Content Include="Views\System\NewPermission.cshtml" />
-    <Content Include="Views\System\NewPriority.cshtml" />
-    <Content Include="Views\System\NewStatus.cshtml" />
-    <Content Include="Views\System\NewRole.cshtml" />
-    <Content Include="Views\System\NewUser.cshtml" />
+    <Content Include="Views\Priority\NewPriority.cshtml" />
+    <Content Include="Views\Status\NewStatus.cshtml" />
+    <Content Include="Views\Role\NewRole.cshtml" />
+    <Content Include="Views\User\NewUser.cshtml" />
     <Content Include="Views\Template\AccountCreation.cshtml" />
-    <Content Include="Views\System\AssignRole.cshtml" />
+    <Content Include="Views\User\AssignRole.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Task\NewTask.cshtml" />
     <Content Include="Views\Task\Detail.cshtml" />
@@ -792,6 +796,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Data\" />
+    <Folder Include="Views\NewFolder1\" />
     <Folder Include="Views\Permission\" />
   </ItemGroup>
   <ItemGroup>
