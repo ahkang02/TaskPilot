@@ -37,10 +37,6 @@ namespace TaskManagementApp.Controllers
         private UserStore<ApplicationUser> _userStore;
         private UserManager<ApplicationUser> _userManager;
 
-        private ApplicationUserManager _appUserManager;
-
-
-
         public SystemController()
         {
             _context = TaskContext.Create();

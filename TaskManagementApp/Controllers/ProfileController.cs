@@ -87,6 +87,13 @@ namespace TaskManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditDetail(EditProfileViewModel viewModel)
         {
+            var currentUser = User.Identity.GetUserId();
+            var user = _userStore.Users.SingleOrDefault(u => u.Id == currentUser);
+            var roleName = _userManager.GetRoles(currentUser)[0];
+
+            var roles = _roleStore.Roles.Include("Permissions").SingleOrDefault(r => r.Name == roleName);
+            var permissions = _permissionRepository.GetAllInclude(includeProperties: "Features, Roles").ToList();
+
             if (ModelState.IsValid)
             {
                 var userInDb = _userStore.Users.SingleOrDefault(u => u.Id == viewModel.Id);
@@ -106,6 +113,15 @@ namespace TaskManagementApp.Controllers
             else
             {
                 TempData["ErrorMsg"] = "Oops, something went wrong, please go thru error message";
+            }
+
+            viewModel.UserPermissions = new List<Permission>();
+            foreach (var permission in permissions)
+            {
+                if (permission.Roles.Any(r => r.Id == roles.Id))
+                {
+                    viewModel.UserPermissions.Add(permission);
+                }
             }
 
             return View("Index", viewModel);
@@ -143,6 +159,7 @@ namespace TaskManagementApp.Controllers
             var user = _userStore.Users.SingleOrDefault(u => u.Id == viewModel.Id);
             var role = _userManager.GetRoles(viewModel.Id)[0];
 
+
             if (ModelState.IsValid)
             {
                 var userInDb = _userStore.Users.SingleOrDefault(u => u.Id == viewModel.Id);
@@ -161,6 +178,18 @@ namespace TaskManagementApp.Controllers
             }else
             {
                 TempData["ErrorMsg"] = "Oops, something went wrong, please go thru the error message."; 
+            }
+
+            var roles = _roleStore.Roles.Include("Permissions").SingleOrDefault(r => r.Name == role);
+            var permissions = _permissionRepository.GetAllInclude(includeProperties: "Features, Roles").ToList();
+            viewModel.UserPermissions = new List<Permission>();
+
+            foreach (var permission in permissions)
+            {
+                if (permission.Roles.Any(r => r.Id == roles.Id))
+                {
+                    viewModel.UserPermissions.Add(permission);
+                }
             }
 
             return View("EditPassword", viewModel);
@@ -195,7 +224,13 @@ namespace TaskManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EditContact(EditContactViewModel viewModel)
         {
-            if(ModelState.IsValid)
+            var userId = User.Identity.GetUserId();
+            var user = _userStore.Users.SingleOrDefault(u => u.Id == userId);
+            var roleName = _userManager.GetRoles(userId)[0];
+            var roles = _roleStore.Roles.Include("Permissions").SingleOrDefault(r => r.Name == roleName);
+            var permissions = _permissionRepository.GetAllInclude(includeProperties: "Features, Roles").ToList();
+
+            if (ModelState.IsValid)
             {
                 var code = await ApplicationUserManager.GenerateChangePhoneNumberTokenAsync(User.Identity.GetUserId(), viewModel.PhoneNumber);
 
@@ -212,7 +247,17 @@ namespace TaskManagementApp.Controllers
                 }
 
             }
+
             TempData["ErrorMsg"] = "Oops, something went wrong, please go thru the error message.";
+            viewModel.UserPermissions = new List<Permission>();
+            foreach (var permission in permissions)
+            {
+                if (permission.Roles.Any(r => r.Id == roles.Id))
+                {
+                    viewModel.UserPermissions.Add(permission);
+                }
+            }
+
             return View(viewModel);
         }
 

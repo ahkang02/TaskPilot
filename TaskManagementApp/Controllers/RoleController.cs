@@ -27,6 +27,7 @@ namespace TaskManagementApp.Controllers
         {
             _context = TaskContext.Create();
             _permissionRepository = new PermissionRepository(_context);
+            _featuresRepository = new FeaturesRepository(_context);
 
             _userStore = new UserStore<ApplicationUser>(_context);
             _userManager = new UserManager<ApplicationUser>(_userStore);
