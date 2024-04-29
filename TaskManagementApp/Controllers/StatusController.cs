@@ -58,7 +58,7 @@ namespace TaskManagementApp.Controllers
             return View(viewModel);
         }
 
-        public ActionResult NewStatus()
+        public ActionResult New()
         {
             EditStatusViewModel viewModel = new EditStatusViewModel();
             return View(viewModel);
@@ -66,7 +66,7 @@ namespace TaskManagementApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult NewStatus(EditStatusViewModel viewModel)
+        public ActionResult New(EditStatusViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
@@ -93,13 +93,13 @@ namespace TaskManagementApp.Controllers
                 }
                 _statusesRepository.Save();
                 _statusesRepository.Dispose();
-                return RedirectToAction("StatusManagement", "System");
+                return RedirectToAction("Index", "Status");
             }
             TempData["ErrorMsg"] = "Oops! Something went wrong, please go through the error message";
             return View(viewModel);
         }
 
-        public ActionResult EditStatus(string name)
+        public ActionResult Update(string name)
         {
             var statusInDb = _statusesRepository.GetByName(name);
             EditStatusViewModel viewModel = new EditStatusViewModel
@@ -108,7 +108,7 @@ namespace TaskManagementApp.Controllers
                 Name = statusInDb.Description,
             };
 
-            return View("NewStatus", viewModel);
+            return View("New", viewModel);
         }
 
     }

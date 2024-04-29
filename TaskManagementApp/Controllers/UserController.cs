@@ -89,7 +89,7 @@ namespace TaskManagementApp.Controllers
             return View(viewModel);
         }
 
-        public ActionResult NewUser()
+        public ActionResult New()
         {
             EditUserViewModel viewModel = new EditUserViewModel();
             return View(viewModel);
@@ -97,7 +97,7 @@ namespace TaskManagementApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> NewUser(EditUserViewModel viewModel)
+        public async Task<ActionResult> New(EditUserViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
@@ -148,7 +148,7 @@ namespace TaskManagementApp.Controllers
                             body = body.Replace("{Password}", genereatedPassword);
                             await AppManager.SendEmailAsync(applicationUser.Id, subject: "Account Creation", body: body);
                             TempData["SuccessMsg"] = "A new user has been created successfully.";
-                            return RedirectToAction("UserManagement", "System");
+                            return RedirectToAction("Index", "User");
                         }
 
                     }
@@ -169,14 +169,14 @@ namespace TaskManagementApp.Controllers
                     }
 
                     TempData["SuccessMsg"] = userToEdit.UserName + "'s has been updated";
-                    return RedirectToAction("UserManagement", "System");
+                    return RedirectToAction("Index", "User");
                 }
             }
             TempData["ErrorMsg"] = "Oops! Something went wrong, please go through the error message";
             return View(viewModel);
         }
 
-        public ActionResult EditUser(string username)
+        public ActionResult Update(string username)
         {
             var user = _userStore.Users.SingleOrDefault(u => u.UserName == username);
             EditUserViewModel viewModel = new EditUserViewModel
@@ -188,7 +188,7 @@ namespace TaskManagementApp.Controllers
                 LastName = user.LastName,
             };
 
-            return View("NewUser", viewModel);
+            return View("New", viewModel);
         }
 
         public ActionResult AssignRole(string username)
@@ -222,7 +222,7 @@ namespace TaskManagementApp.Controllers
             _userManager.Update(user);
 
             TempData["SuccessMsg"] = user.UserName + "'s Role Updated From " + model.CurrentUserRole + " To " + role.Name;
-            return RedirectToAction("UserManagement", "System");
+            return RedirectToAction("Index", "User");
         }
 
     }

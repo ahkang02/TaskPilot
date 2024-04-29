@@ -85,7 +85,7 @@ namespace TaskManagementApp.Controllers
             return View(viewModel);
         }
 
-        public ActionResult NewTask()
+        public ActionResult New()
         {
             EditTaskViewModel viewModel = new EditTaskViewModel
             {
@@ -97,7 +97,7 @@ namespace TaskManagementApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult NewTask(EditTaskViewModel viewModel)
+        public ActionResult New(EditTaskViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
@@ -516,7 +516,7 @@ namespace TaskManagementApp.Controllers
             return View(viewModel);
         }
 
-        public ActionResult EditTask(Guid Id)
+        public ActionResult Update(Guid Id)
         {
             var task = _taskRepository.GetById(Id);
             EditTaskViewModel viewModel = new EditTaskViewModel
@@ -536,7 +536,7 @@ namespace TaskManagementApp.Controllers
                 DependencyId = task.DependencyId,
             };
 
-            return View("NewTask", viewModel);
+            return View("New", viewModel);
         }
 
         public ActionResult DeleteTask(Guid Id)

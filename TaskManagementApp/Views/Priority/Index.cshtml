@@ -22,19 +22,19 @@
                             <h5 class="card-title fw-semibold">Priorities Overview</h5>
                         </div>
                         <div class="btn-group">
-                            @if (Model.UserPermissions.Any(r => r.Name == "NewPriority" && r.features.Name == "System"))
+                            @if (Model.UserPermissions.Any(r => r.Name == "New" && r.features.Name == "Priority"))
                             {
-                                <a href="@Url.Action("NewPriority", "System")" class="btn btn-primary">New</a>
+                                <a href="@Url.Action("New", "Priority")" class="btn btn-primary">New</a>
                             }
                             <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                 More Action
                             </button>
                             <ul class="dropdown-menu">
-                                @if (Model.UserPermissions.Any(r => r.Name == "EditPriority" && r.features.Name == "System"))
+                                @if (Model.UserPermissions.Any(r => r.Name == "Update" && r.features.Name == "Priority"))
                                 {
                                     <li><a class="dropdown-item" href="#" id="edit">Edit</a></li>
                                 }
-                                @if (Model.UserPermissions.Any(r => r.Name == "DeletePriority" && r.features.Name == "System"))
+                                @if (Model.UserPermissions.Any(r => r.Name == "Delete" && r.features.Name == "Priority"))
                                 {
                                     <li><a class="dropdown-item" href="#" id="delete">Delete</a></li>
                                 }
@@ -115,7 +115,7 @@
             if (data.length > 1 || data.length < 0) {
                 alert("Bulk Edit Not Supported");
             } else {
-                var url = '@Url.Action("EditPriority", "System", new { name = "Name" })';
+                var url = '@Url.Action("Update", "Priority", new { name = "Name" })';
                 window.location.href = url.replace('Name', data[0]['Description']);
             }
 

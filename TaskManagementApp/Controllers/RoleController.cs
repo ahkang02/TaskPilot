@@ -61,7 +61,7 @@ namespace TaskManagementApp.Controllers
             return View(viewModel);
         }
 
-        public ActionResult NewRole()
+        public ActionResult New()
         {
             var permissions = _permissionRepository.GetAllInclude(includeProperties: "Features").ToList();
             var features = _featuresRepository.GetAll().Select(r => r.Name);
@@ -102,7 +102,7 @@ namespace TaskManagementApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult NewRole(EditRoleViewModel viewModel)
+        public ActionResult New(EditRoleViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
@@ -173,7 +173,7 @@ namespace TaskManagementApp.Controllers
             return View(viewModel);
         }
 
-        public ActionResult EditRole(string name)
+        public ActionResult Update(string name)
         {
             var role = _roleStore.Roles.Include(p => p.Permissions).Include(u => u.Users).SingleOrDefault(r => r.Name == name);
             var permissions = _permissionRepository.GetAllInclude(includeProperties: "Features").OrderBy(r => r.features.Name).ToList();
@@ -227,7 +227,7 @@ namespace TaskManagementApp.Controllers
                 }
             }
 
-            return View("NewRole", viewModel);
+            return View("New", viewModel);
         }
 
     }

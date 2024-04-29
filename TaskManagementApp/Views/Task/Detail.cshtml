@@ -49,7 +49,7 @@
 <div class="container vh-100 d-flex justify-content-center align-items-center">
     <div class="card shadow-lg p-2" style="background: rgba(255, 255, 255, 0.2); border-radius: 16px; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.3); width:100vh;">
         <div class="card-header" style="border-radius: 16px">
-            <a href="@Url.Action("UpdateTaskComplete", "Task", new {Id = Model.Id})" class="btn btn-success btn-sm float-end">Done</a>
+            <a href="@Url.Action("MarkAsDone", "Task", new {Id = Model.Id})" class="btn btn-success btn-sm float-end">Done</a>
             <h5>@Model.Name</h5>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb m-0">
@@ -67,7 +67,7 @@
                 <p class="fw-semibold m-0">Labels</p>
                 <div class="col-md">
                     <i class="bi bi-tag"></i>
-                    <span class="icon-link hover"><a href="@Url.Action("EditTask", "Task", new { Id = Model.Id })">Add Label</a></span>
+                    <span class="icon-link hover"><a href="@Url.Action("Update", "Task", new { Id = Model.Id })">Add Label</a></span>
                     <span class="@priorityString">@Model.Priority</span>
                     <span class="@statusString">@Model.Status</span>
                 </div>

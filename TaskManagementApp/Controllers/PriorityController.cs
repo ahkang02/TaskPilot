@@ -59,7 +59,7 @@ namespace TaskManagementApp.Controllers
             return View(viewModel);
         }
 
-        public ActionResult NewPriority()
+        public ActionResult New()
         {
             EditPriorityViewModel viewModel = new EditPriorityViewModel();
             return View(viewModel);
@@ -67,7 +67,7 @@ namespace TaskManagementApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult NewPriority(EditPriorityViewModel viewModel)
+        public ActionResult New(EditPriorityViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
@@ -94,13 +94,13 @@ namespace TaskManagementApp.Controllers
                 }
                 _prioritiesRepository.Save();
                 _prioritiesRepository.Dispose();
-                return RedirectToAction("PriorityManagement", "System");
+                return RedirectToAction("Index", "Priority");
             }
             TempData["ErrorMsg"] = "Oops! Something went wrong, please go through the error message";
             return View(viewModel);
         }
 
-        public ActionResult EditPriority(string name)
+        public ActionResult Update(string name)
         {
             var priorityInDb = _prioritiesRepository.GetByName(name);
             EditPriorityViewModel viewModel = new EditPriorityViewModel

@@ -373,6 +373,10 @@
     <Compile Include="Migrations\202404290515506_SeedPriority.Designer.cs">
       <DependentUpon>202404290515506_SeedPriority.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202404290757363_SeedFeatures.cs" />
+    <Compile Include="Migrations\202404290757363_SeedFeatures.Designer.cs">
+      <DependentUpon>202404290757363_SeedFeatures.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Features.cs" />
     <Compile Include="Models\Notifications.cs" />
@@ -737,14 +741,14 @@
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\System\PermissionManagement.cshtml" />
     <Content Include="Views\System\NewPermission.cshtml" />
-    <Content Include="Views\Priority\NewPriority.cshtml" />
-    <Content Include="Views\Status\NewStatus.cshtml" />
-    <Content Include="Views\Role\NewRole.cshtml" />
-    <Content Include="Views\User\NewUser.cshtml" />
+    <Content Include="Views\Priority\New.cshtml" />
+    <Content Include="Views\Status\New.cshtml" />
+    <Content Include="Views\Role\New.cshtml" />
+    <Content Include="Views\User\New.cshtml" />
     <Content Include="Views\Template\AccountCreation.cshtml" />
     <Content Include="Views\User\AssignRole.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
-    <Content Include="Views\Task\NewTask.cshtml" />
+    <Content Include="Views\Task\New.cshtml" />
     <Content Include="Views\Task\Detail.cshtml" />
     <Content Include="Views\Task\ImportTask.cshtml" />
     <Content Include="Views\Error\AccessDenied.cshtml" />
@@ -802,6 +806,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202404290515506_SeedPriority.resx">
       <DependentUpon>202404290515506_SeedPriority.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404290757363_SeedFeatures.resx">
+      <DependentUpon>202404290757363_SeedFeatures.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -22,19 +22,19 @@
                             <h5 class="card-title fw-semibold">Statuses Overview</h5>
                         </div>
                         <div class="btn-group">
-                            @if (Model.UserPermissions.Any(r => r.Name == "NewStatus" && r.features.Name == "System"))
+                            @if (Model.UserPermissions.Any(r => r.Name == "New" && r.features.Name == "Status"))
                             {
-                                <a href="@Url.Action("NewStatus", "System")" class="btn btn-primary">New</a>
+                                <a href="@Url.Action("New", "Status")" class="btn btn-primary">New</a>
                             }
                             <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                 More Action
                             </button>
                             <ul class="dropdown-menu">
-                                @if (Model.UserPermissions.Any(r => r.Name == "EditStatus" && r.features.Name == "System"))
+                                @if (Model.UserPermissions.Any(r => r.Name == "Update" && r.features.Name == "Status"))
                                 {
                                     <li><a class="dropdown-item" href="#" id="edit">Edit</a></li>
                                 }
-                                @if (Model.UserPermissions.Any(r => r.Name == "DeleteStatus" && r.features.Name == "System"))
+                                @if (Model.UserPermissions.Any(r => r.Name == "Delete" && r.features.Name == "Status"))
                                 {
                                     <li><a class="dropdown-item" href="#" id="delete">Delete</a></li>
                                 }
@@ -115,7 +115,7 @@
             if (data.length > 1 || data.length < 0) {
                 alert("Bulk Edit Not Supported");
             } else {
-                var url = '@Url.Action("EditStatus", "System", new {name = "__id__"})';
+                var url = '@Url.Action("Update", "Status", new {name = "__id__"})';
                 window.location.href = url.replace('__id__', data[0]['Description']);
             }
 

@@ -52,6 +52,11 @@ namespace TaskManagementApp.Controllers
             _roleManager = new RoleManager<Roles>(_roleStore);
         }
 
+        public ActionResult Delete(string[] permissionId)
+        {
+            return View();
+        }
+
         #region Permission
         public ActionResult PermissionManagement()
         {

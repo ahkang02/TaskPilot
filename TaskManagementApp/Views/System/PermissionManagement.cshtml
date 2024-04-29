@@ -135,10 +135,12 @@
             console.log(Id);
 
             if (confirm("Are you sure you want to delete " + Id.length + " permissions?")) {
-                for (let idx = 0; idx < Id.length; idx++) {
+
                     $.ajax({
-                        url: "/api/permission/" + Id[idx],
-                        method: "DELETE",
+                        url: '@Url.Action("Delete", "System")',
+                        type: "POST",
+                        dataType: 'json',
+                        data: {permissionId: Id},
                         success: function () {
                             $('.alert-success').html(Id.length + " permissions has been deleted successfully").show();
                         },
@@ -147,7 +149,7 @@
                         }
                     });
                     dataTables.rows(rows[idx]).remove().draw();
-                }
+                
             }
             //window.location.reload();
         });

@@ -22,23 +22,25 @@
                             <h5 class="card-title fw-semibold">Roles Overview</h5>
                         </div>
                         <div class="btn-group">
-                            @if (Model.UserPermissions.Any(r => r.Name == "NewRole" && r.features.Name == "System"))
+                            @if (Model.UserPermissions.Any(r => r.Name == "New" && r.features.Name == "Role"))
                             {
-                                <a href="@Url.Action("NewRole", "System")" class="btn btn-primary">New</a>
+                                <a href="@Url.Action("New", "Role")" class="btn btn-primary">New</a>
                             }
-                            <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                More Action
-                            </button>
-                            <ul class="dropdown-menu">
-                                @if (Model.UserPermissions.Any(r => r.Name == "EditRole" && r.features.Name == "System"))
-                                {
+                            @if (Model.UserPermissions.Any(r => r.Name == "Update" && r.features.Name == "Role"))
+                            {
+                                <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    More Action
+                                </button>
+                                <ul class="dropdown-menu">
+
                                     <li><a class="dropdown-item" href="#" id="edit">Edit</a></li>
-                                }
-                                @if (Model.UserPermissions.Any(r => r.Name == "DeleteRole" && r.features.Name == "System"))
-                                {
-                                    <li><a class="dropdown-item" href="#" id="delete">Delete</a></li>
-                                }
-                            </ul>
+
+                                    @if (Model.UserPermissions.Any(r => r.Name == "Delete" && r.features.Name == "Role"))
+                                    {
+                                        <li><a class="dropdown-item" href="#" id="delete">Delete</a></li>
+                                    }
+                                </ul>
+                            }
                         </div>
                     </div>
                     <table class="display nowrap" id="example" style="width:100%">
@@ -49,8 +51,6 @@
                                 <th>Status</th>
                                 <th>Created Since</th>
                                 <th>Last Updated On</th>
-                                <th>Permission</th>
-                                <th>User Count</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -97,14 +97,6 @@
                     render: function (data, type, user) {
                         return user.Updated != null ? moment(data).format('lll', 'YYYY/MM/DD') : "";
                     }
-                },
-                {
-                    data: "Permissions",
-                    defaultContent: '0'
-                },
-                {
-                    data: "UserInRole",
-                    defaultContent: '0'
                 }
 
             ],
@@ -132,7 +124,7 @@
             if (data.length > 1 || data.length < 0) {
                 alert("Bulk Edit Not Supported");
             } else {
-                var url = '@Url.Action("EditRole", "System", new {name = "RoleName"})';
+                var url = '@Url.Action("Update", "Role", new {name = "RoleName"})';
                 window.location.href = url.replace('RoleName', data[0]['RoleName']);
             }
 
