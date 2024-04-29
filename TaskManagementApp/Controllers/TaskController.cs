@@ -18,7 +18,6 @@ using System.Data.Entity;
 
 namespace TaskManagementApp.Controllers
 {
-    [CustomAuthorize]
     public class TaskController : Controller
     {
         private TaskRepository _taskRepository;

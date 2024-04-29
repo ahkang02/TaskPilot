@@ -12,7 +12,6 @@ using TaskManagementApp.App_Start;
 
 namespace TaskManagementApp.Controllers
 {
-    [CustomAuthorize]
     public class DashboardController : Controller
     {
         private TaskRepository _taskRepository;

@@ -24,7 +24,6 @@ using System.Text;
 
 namespace TaskManagementApp.Controllers
 {
-    [CustomAuthorize]
     public class SystemController : Controller
     {
         private TaskContext _context;
