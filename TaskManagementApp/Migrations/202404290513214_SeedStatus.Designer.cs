@@ -7,13 +7,13 @@ namespace TaskManagementApp.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
-    public sealed partial class featureTableModify : IMigrationMetadata
+    public sealed partial class SeedStatus : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(featureTableModify));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(SeedStatus));
         
         string IMigrationMetadata.Id
         {
-            get { return "202404190225371_featureTableModify"; }
+            get { return "202404290513214_SeedStatus"; }
         }
         
         string IMigrationMetadata.Source

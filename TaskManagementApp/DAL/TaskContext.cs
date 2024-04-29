@@ -11,7 +11,7 @@ namespace TaskManagementApp.DAL
 {
     public class TaskContext : IdentityDbContext<ApplicationUser>
     {
-        public TaskContext() : base("TPilotConnection", throwIfV1Schema: false) { }
+        public TaskContext() : base("TaskContext", throwIfV1Schema: false) { }
 
         public DbSet<Tasks> Tasks { get; set; }
 

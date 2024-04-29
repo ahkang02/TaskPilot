@@ -7,13 +7,13 @@ namespace TaskManagementApp.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
-    public sealed partial class changesToDbDate : IMigrationMetadata
+    public sealed partial class SeedRoles : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(changesToDbDate));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(SeedRoles));
         
         string IMigrationMetadata.Id
         {
-            get { return "202404120857077_changesToDb-Date"; }
+            get { return "202404290510559_SeedRoles"; }
         }
         
         string IMigrationMetadata.Source

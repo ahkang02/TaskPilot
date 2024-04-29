@@ -23,7 +23,6 @@ namespace TaskManagementApp.Controllers
         private UserManager<ApplicationUser> _userManager;
         private ApplicationUserManager _appManager;
         private RoleStore<Roles> _roleStore;
-        private RoleManager<Roles> _roleManager;
         private PermissionRepository _permissionRepository;
 
         public ProfileController()

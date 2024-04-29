@@ -3,16 +3,14 @@
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class changesToDBTask : DbMigration
+    public partial class SeedPriority : DbMigration
     {
         public override void Up()
         {
-            AlterColumn("dbo.Notifications", "TaskId", c => c.Guid());
         }
         
         public override void Down()
         {
-            AlterColumn("dbo.Notifications", "TaskId", c => c.Guid(nullable: false));
         }
     }
 }

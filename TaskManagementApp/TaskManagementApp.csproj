@@ -357,65 +357,21 @@
     <Compile Include="DTO\StatusDTO.cs" />
     <Compile Include="DTO\TaskDTO.cs" />
     <Compile Include="DTO\UserDTO.cs" />
-    <Compile Include="Migrations\202404050840089_InitDB.cs" />
-    <Compile Include="Migrations\202404050840089_InitDB.Designer.cs">
-      <DependentUpon>202404050840089_InitDB.cs</DependentUpon>
+    <Compile Include="Migrations\202404290326588_InitialCreate.cs" />
+    <Compile Include="Migrations\202404290326588_InitialCreate.Designer.cs">
+      <DependentUpon>202404290326588_InitialCreate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202404090345249_dbChangesTask.cs" />
-    <Compile Include="Migrations\202404090345249_dbChangesTask.Designer.cs">
-      <DependentUpon>202404090345249_dbChangesTask.cs</DependentUpon>
+    <Compile Include="Migrations\202404290510559_SeedRoles.cs" />
+    <Compile Include="Migrations\202404290510559_SeedRoles.Designer.cs">
+      <DependentUpon>202404290510559_SeedRoles.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202404120749410_ChangesToNotifDB.cs" />
-    <Compile Include="Migrations\202404120749410_ChangesToNotifDB.Designer.cs">
-      <DependentUpon>202404120749410_ChangesToNotifDB.cs</DependentUpon>
+    <Compile Include="Migrations\202404290513214_SeedStatus.cs" />
+    <Compile Include="Migrations\202404290513214_SeedStatus.Designer.cs">
+      <DependentUpon>202404290513214_SeedStatus.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202404120809533_changesToDB-Task.cs" />
-    <Compile Include="Migrations\202404120809533_changesToDB-Task.Designer.cs">
-      <DependentUpon>202404120809533_changesToDB-Task.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404120820007_changesToDb-IDK.cs" />
-    <Compile Include="Migrations\202404120820007_changesToDb-IDK.Designer.cs">
-      <DependentUpon>202404120820007_changesToDb-IDK.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404120828582_dbChanges-notif-1.cs" />
-    <Compile Include="Migrations\202404120828582_dbChanges-notif-1.Designer.cs">
-      <DependentUpon>202404120828582_dbChanges-notif-1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404120857077_changesToDb-Date.cs" />
-    <Compile Include="Migrations\202404120857077_changesToDb-Date.Designer.cs">
-      <DependentUpon>202404120857077_changesToDb-Date.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404150031595_AddedDependencyId.cs" />
-    <Compile Include="Migrations\202404150031595_AddedDependencyId.Designer.cs">
-      <DependentUpon>202404150031595_AddedDependencyId.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404190155285_featureTableAdded.cs" />
-    <Compile Include="Migrations\202404190155285_featureTableAdded.Designer.cs">
-      <DependentUpon>202404190155285_featureTableAdded.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404190225371_featureTableModify.cs" />
-    <Compile Include="Migrations\202404190225371_featureTableModify.Designer.cs">
-      <DependentUpon>202404190225371_featureTableModify.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404191006242_removeFeaturesTable.cs" />
-    <Compile Include="Migrations\202404191006242_removeFeaturesTable.Designer.cs">
-      <DependentUpon>202404191006242_removeFeaturesTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404191035447_addbackFeaturesTable.cs" />
-    <Compile Include="Migrations\202404191035447_addbackFeaturesTable.Designer.cs">
-      <DependentUpon>202404191035447_addbackFeaturesTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404191046394_SeedFeatures.cs" />
-    <Compile Include="Migrations\202404191046394_SeedFeatures.Designer.cs">
-      <DependentUpon>202404191046394_SeedFeatures.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404220108572_changesToDb-RemovedIsActiveField.cs" />
-    <Compile Include="Migrations\202404220108572_changesToDb-RemovedIsActiveField.Designer.cs">
-      <DependentUpon>202404220108572_changesToDb-RemovedIsActiveField.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202404220403217_SeedFeatures-Task.cs" />
-    <Compile Include="Migrations\202404220403217_SeedFeatures-Task.Designer.cs">
-      <DependentUpon>202404220403217_SeedFeatures-Task.cs</DependentUpon>
+    <Compile Include="Migrations\202404290515506_SeedPriority.cs" />
+    <Compile Include="Migrations\202404290515506_SeedPriority.Designer.cs">
+      <DependentUpon>202404290515506_SeedPriority.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Features.cs" />
@@ -646,6 +602,9 @@
     <Content Include="Content\DataTables\css\semanticui.scss" />
     <Content Include="Content\DataTables\css\mixins.scss" />
     <Content Include="Content\DataTables\css\common.scss" />
+    <None Include=".editorconfig" />
+    <Content Include="AppSettingsSecrets.config" />
+    <None Include="Properties\PublishProfiles\TaskManagementApp20240426162455 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap.min.js" />
@@ -827,54 +786,21 @@
     <Content Include="Scripts\jquery-3.7.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202404050840089_InitDB.resx">
-      <DependentUpon>202404050840089_InitDB.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404090345249_dbChangesTask.resx">
-      <DependentUpon>202404090345249_dbChangesTask.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404120749410_ChangesToNotifDB.resx">
-      <DependentUpon>202404120749410_ChangesToNotifDB.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404120809533_changesToDB-Task.resx">
-      <DependentUpon>202404120809533_changesToDB-Task.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404120820007_changesToDb-IDK.resx">
-      <DependentUpon>202404120820007_changesToDb-IDK.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404120828582_dbChanges-notif-1.resx">
-      <DependentUpon>202404120828582_dbChanges-notif-1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404120857077_changesToDb-Date.resx">
-      <DependentUpon>202404120857077_changesToDb-Date.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404150031595_AddedDependencyId.resx">
-      <DependentUpon>202404150031595_AddedDependencyId.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404190155285_featureTableAdded.resx">
-      <DependentUpon>202404190155285_featureTableAdded.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404190225371_featureTableModify.resx">
-      <DependentUpon>202404190225371_featureTableModify.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404191006242_removeFeaturesTable.resx">
-      <DependentUpon>202404191006242_removeFeaturesTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404191035447_addbackFeaturesTable.resx">
-      <DependentUpon>202404191035447_addbackFeaturesTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404191046394_SeedFeatures.resx">
-      <DependentUpon>202404191046394_SeedFeatures.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404220108572_changesToDb-RemovedIsActiveField.resx">
-      <DependentUpon>202404220108572_changesToDb-RemovedIsActiveField.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202404220403217_SeedFeatures-Task.resx">
-      <DependentUpon>202404220403217_SeedFeatures-Task.cs</DependentUpon>
-    </EmbeddedResource>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
+    <EmbeddedResource Include="Migrations\202404290326588_InitialCreate.resx">
+      <DependentUpon>202404290326588_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404290510559_SeedRoles.resx">
+      <DependentUpon>202404290510559_SeedRoles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404290513214_SeedStatus.resx">
+      <DependentUpon>202404290513214_SeedStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202404290515506_SeedPriority.resx">
+      <DependentUpon>202404290515506_SeedPriority.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -7,13 +7,13 @@ namespace TaskManagementApp.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
-    public sealed partial class dbChangesTask : IMigrationMetadata
+    public sealed partial class SeedPriority : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(dbChangesTask));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(SeedPriority));
         
         string IMigrationMetadata.Id
         {
-            get { return "202404090345249_dbChangesTask"; }
+            get { return "202404290515506_SeedPriority"; }
         }
         
         string IMigrationMetadata.Source

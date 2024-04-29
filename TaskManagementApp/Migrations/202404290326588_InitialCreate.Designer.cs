@@ -7,13 +7,13 @@ namespace TaskManagementApp.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
-    public sealed partial class ChangesToNotifDB : IMigrationMetadata
+    public sealed partial class InitialCreate : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(ChangesToNotifDB));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(InitialCreate));
         
         string IMigrationMetadata.Id
         {
-            get { return "202404120749410_ChangesToNotifDB"; }
+            get { return "202404290326588_InitialCreate"; }
         }
         
         string IMigrationMetadata.Source
