@@ -25,24 +25,24 @@
                             {
                                 <a href="@Url.Action("New", "User")" class="btn btn-primary">New</a>
                             }
-                                <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                    More Action
-                                </button>
-                                <ul class="dropdown-menu">
-                                    @if (Model.UserPermissions.Any(r => r.Name == "Update" && r.features.Name == "User"))
-                                    {
-                                        <li><a class="dropdown-item" href="#" id="edit">Edit</a></li>
-                                    }
-                                    @if (Model.UserPermissions.Any(r => r.Name == "Delete" && r.features.Name == "User"))
-                                    {
-                                        <li><a class="dropdown-item" href="#" id="delete">Delete</a></li>
-                                    }
-                                    @if (Model.UserPermissions.Any(r => r.Name == "AssignRole" && r.features.Name == "System"))
-                                    {
-                                        <li><a class="dropdown-item" href="#" id="assignRole">Assign Role</a></li>
-                                    }
-                                    </ul>
-                            </div>
+                            <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                More Action
+                            </button>
+                            <ul class="dropdown-menu">
+                                @if (Model.UserPermissions.Any(r => r.Name == "Update" && r.features.Name == "User"))
+                                {
+                                    <li><a class="dropdown-item" href="#" id="edit">Edit</a></li>
+                                }
+                                @*@if (Model.UserPermissions.Any(r => r.Name == "Delete" && r.features.Name == "User"))
+                                {*@
+                                    <li><a class="dropdown-item" href="#" id="delete">Delete</a></li>
+                                @*}*@
+                                @if (Model.UserPermissions.Any(r => r.Name == "AssignRole" && r.features.Name == "System"))
+                                {
+                                    <li><a class="dropdown-item" href="#" id="assignRole">Assign Role</a></li>
+                                }
+                            </ul>
+                        </div>
                     </div>
                     <table class="display nowrap" id="example" style="width:100%">
                         <thead>
@@ -133,7 +133,7 @@
             if (data.length > 1 || data.length < 0) {
                 alert("Bulk Edit Not Supported");
             } else {
-                var url = '@Url.Action("Update", "System", new {username = "__id__"})';
+                var url = '@Url.Action("Update", "User", new {username = "__id__"})';
                 window.location.href = url.replace('__id__', data[0]['Username']);
             }
 
@@ -148,7 +148,7 @@
             if (data.length > 1 || data.length < 0) {
                 alert("Bulk Assign Not Supported");
             } else {
-                var url = '@Url.Action("AssignRole", "System", new {username = "__id__"})';
+                var url = '@Url.Action("AssignRole", "User", new {username = "__id__"})';
                 window.location.href = url.replace('__id__', data[0]['Username']);
             }
 
@@ -170,22 +170,14 @@
             });
 
             if (confirm("Are you sure you want to delete this user?")) {
-                for (let idx = 0; idx < Id.length; idx++) {
                     $.ajax({
-                        url: "/api/user/" + Id[idx],
-                        method: "DELETE",
-                        success: function () {
-                            //$('.alert-success').html(Id.length + " users has been deleted successfully").show();
-                            alert(Id.length + " users has been deleted successfully")
-                        },
-                        error: function (jqXHR, exception) {
-                            alert(" Oops, something went wrong, the user you trying to delete has task tie to them, delete unsuccessful.")
-                        }
+                        url: '@Url.Action("Delete", "User")',
+                        type: "POST",
+                        dataType: 'json',
+                        data: {userName : Id}
                     });
-                    dataTables.rows(rows[idx]).remove().draw();
-                }
+                window.location.reload();
             }
-            //window.location.reload();
         });
 
         $('input[name="select-all"]').on('click', function (e) {

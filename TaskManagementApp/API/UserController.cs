@@ -18,9 +18,6 @@ namespace TaskManagementApp.API
         private UserStore<ApplicationUser> _userStore;
         private UserManager<ApplicationUser> _userManager;
         private RoleStore<Roles> _roleStore;
-        private RoleManager<Roles> _rolesManager;
-        private TaskRepository _taskRepository;
-        private NotificationRepository _notifRepository;
 
         public UserController()
         {
@@ -28,9 +25,6 @@ namespace TaskManagementApp.API
             _userStore = new UserStore<ApplicationUser>(_context);
             _userManager = new UserManager<ApplicationUser>(_userStore);
             _roleStore = new RoleStore<Roles>(_context);
-            _rolesManager = new RoleManager<Roles>(_roleStore);
-            _taskRepository = new TaskRepository(_context);
-            _notifRepository = new NotificationRepository(_context);
         }
 
         public IEnumerable<UserDTO> GetUser()
@@ -57,34 +51,6 @@ namespace TaskManagementApp.API
             }
 
             return userDTOs;
-        }
-
-        [HttpDelete]
-        public IHttpActionResult Delete(string id)
-        {
-            var user = _userStore.Users.SingleOrDefault(u => u.UserName == id);
-            if (user != null)
-            {
-                if(_taskRepository.GetAll().Any(u => u.AssignToId == user.Id))
-                {
-                    return BadRequest();
-                }
-                var notifInUser = _notifRepository.GetAll().Where(u => u.UserId == user.Id);
-
-                foreach(var notif in notifInUser)
-                {
-                    _notifRepository.Delete(notif);
-                }
-
-                _userManager.Delete(user);
-            }
-            else
-            {
-                return NotFound();
-            }
-            _notifRepository.Save();
-            _notifRepository.Dispose();
-            return Ok();
         }
 
     }

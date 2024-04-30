@@ -167,7 +167,7 @@ namespace TaskManagementApp.Controllers
                     TempData["SuccessMsg"] = "Role '" + roleToEdit.Name + "' has been updated";
 
                 }
-                return RedirectToAction("RoleManagement", "System");
+                return RedirectToAction("Index", "Role");
             }
             TempData["ErrorMsg"] = "Oops! Something went wrong, please go through the error message";
             return View(viewModel);

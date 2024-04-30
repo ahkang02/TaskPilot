@@ -108,7 +108,7 @@ namespace TaskManagementApp.Controllers
                 Id = priorityInDb.Id,
                 Name = priorityInDb.Description,
             };
-            return View("NewPriority", viewModel);
+            return View("New", viewModel);
         }
     }
 }

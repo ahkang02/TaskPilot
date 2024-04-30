@@ -27,7 +27,8 @@ namespace TaskManagementApp.Controllers
     {
         private TaskContext _context;
         private PermissionRepository _permissionRepository;
-
+        private TaskRepository _taskRepository;
+        private NotificationRepository _notifRepository;
 
         private RoleStore<Roles> _roleStore;
         private RoleManager<Roles> _roleManager;
@@ -57,6 +58,8 @@ namespace TaskManagementApp.Controllers
         {
             _context = TaskContext.Create();
             _permissionRepository = new PermissionRepository(_context);
+            _taskRepository = new TaskRepository(_context);
+            _notifRepository = new NotificationRepository(_context);
 
             _userStore = new UserStore<ApplicationUser>(_context);
             _userManager = new UserManager<ApplicationUser>(_userStore);
@@ -222,6 +225,44 @@ namespace TaskManagementApp.Controllers
             _userManager.Update(user);
 
             TempData["SuccessMsg"] = user.UserName + "'s Role Updated From " + model.CurrentUserRole + " To " + role.Name;
+            return RedirectToAction("Index", "User");
+        }
+
+        [HttpPost]
+        public ActionResult Delete(string[] userName)
+        {
+            if (userName.Count() > 0)
+            {
+                for (int i = 0; i < userName.Length; i++)
+                {
+                    var userToDelete = userName[i];
+                    var user = _userStore.Users.SingleOrDefault(u => u.UserName == userToDelete);
+
+                    if (user != null)
+                    {
+                        if (_taskRepository.GetAll().Any(u => u.AssignToId == user.Id))
+                        {
+                            TempData["ErrorMsg"] = "Oops, something went wrong, the user you trying to delete has task tie to them, delete unsuccessful.";
+                            return RedirectToAction("Index", "User");
+                        }
+                        else
+                        {
+                            var notifInUser = _notifRepository.GetAll().Where(u => u.UserId == user.Id).ToList();
+                            if (notifInUser.Count() > 0)
+                            {
+                                foreach (var notif in notifInUser)
+                                {
+                                    _notifRepository.Delete(notif);
+                                }
+                            }
+                            _userManager.Delete(user);
+                        }
+
+                    }
+
+                }
+            }
+            TempData["SuccessMsg"] = userName.Length + " users has been deleted successfully";
             return RedirectToAction("Index", "User");
         }
 
