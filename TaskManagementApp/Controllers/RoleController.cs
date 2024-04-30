@@ -230,5 +230,33 @@ namespace TaskManagementApp.Controllers
             return View("New", viewModel);
         }
 
+        public ActionResult Delete(string[] roleName)
+        {
+            if (roleName.Length > 0)
+            {
+                for (int i = 0; i < roleName.Length; i++)
+                {
+                    var role = roleName[i];
+                    var roleToDelete = _roleStore.Roles.SingleOrDefault(r => r.Name == role);
+
+                    if (roleToDelete != null)
+                    {
+                        if (roleToDelete.Users.Count > 0)
+                        {
+                            TempData["ErrorMsg"] = "There are user exist in the role, you can't delete a role when there's user exist.";
+                            return RedirectToAction("Index", "Role");
+                        }
+                        else
+                        {
+                            _roleManager.Delete(roleToDelete);
+                        }
+                    }
+
+                }
+            }
+            TempData["SuccessMsg"] = roleName.Length + " roles deleted successfully";
+            return RedirectToAction("Index", "Role");
+        }
+
     }
 }

@@ -146,24 +146,16 @@
             });
 
             if (confirm("Are you sure you want to delete " + Id.length + " roles?")) {
-                for (let idx = 0; idx < Id.length; idx++) {
-                    $.ajax({
-                        url: "/api/role/" + Id[idx],
-                        method: "DELETE",
-                        success: function () {
-                            $('.alert-success').html(Id.length + " roles has been deleted successfully").show();
 
-                        },
-                        error: function (request, message, error) {
-                            alert("Oops, something went wrong. Error: Unable to delete role, there's user exist in the role.")
-                            $('.alert-danger').html("Oops, something went wrong. Delete unsuccessful").show();
-                            window.location.reload();
-                        }
+                    $.ajax({
+                        url: '@Url.Action("Delete", "Role")',
+                        type: "POST",
+                        dataType: "json",
+                        data: {roleName: Id}
                     });
-                    dataTables.rows(rows[idx]).remove().draw();
-                }
+
             }
-            //window.location.reload();
+            window.location.reload();
         });
 
         $('input[name="select-all"]').on('click', function (e) {

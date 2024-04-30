@@ -55,24 +55,5 @@ namespace TaskManagementApp.API
             return roleDTOs;
         }
 
-        [HttpDelete]
-        public IHttpActionResult Delete(string Id)
-        {
-            var role = _roleStore.Roles.FirstOrDefault(u => u.Name == Id);
-            if(role != null)
-            {
-                if(role.Users.Count > 0)
-                {
-                    return BadRequest();
-                }else
-                {
-                    _roleManager.Delete(role);
-                }
-            }else
-            {
-                return NotFound();
-            }
-            return Ok();
-        }
     }
 }
