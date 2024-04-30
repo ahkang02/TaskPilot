@@ -37,29 +37,5 @@ namespace TaskManagementApp.API
 
             return priorityDTOs;
         }
-
-        [HttpDelete]
-        public IHttpActionResult Delete(string id)
-        {
-            var priorityInDb = _prioritiesRepository.GetByName(id);
-            if (priorityInDb != null)
-            {
-                if(_taskRepository.GetAll().Any(p => p.PriorityId ==  priorityInDb.Id))
-                {
-                    return BadRequest();
-                }else
-                {
-                    _prioritiesRepository.Delete(priorityInDb);
-                }
-            }else
-            {
-                return NotFound();
-            }
-            _prioritiesRepository.Save();
-            _prioritiesRepository.Dispose();
-            return Ok();
-        }
-
-
     }
 }
