@@ -111,5 +111,28 @@ namespace TaskManagementApp.Controllers
             return View("New", viewModel);
         }
 
+
+        [HttpPost]
+        public ActionResult Delete(string[] status ) { 
+        
+            if(status.Length > 0)
+            {
+                for(int i = 0; i < status.Length; i++)
+                {
+                    var statusName = status[i];
+                    var statusToDelete = _statusesRepository.GetByName(statusName);
+
+                    if(statusToDelete != null)
+                    {
+                        _statusesRepository.Delete(statusToDelete);
+                    }else
+                    {
+                        TempData["ErrorMsg"] = "Status not found";
+                    }
+                }
+                TempData["SuccessMsg"] = status.Length + " status deleted";
+            }
+            return RedirectToAction("Index", "Status");
+        }
     }
 }

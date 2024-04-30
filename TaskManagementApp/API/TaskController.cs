@@ -46,36 +46,5 @@ namespace TaskManagementApp.API
             return tasks;
         }
 
-        [HttpPut]
-        public IHttpActionResult UpdateTaskComplete(Guid Id)
-        {
-            var task = _taskRepository.GetById(Id);
-            var status = _statusesRepository.GetByName("Closed");
-            if (task != null)
-            {
-                _notificationRepository.Insert(new Notifications
-                {
-                    CreatedAt = DateTime.Now,
-                    Description = task.Name + " task's has been closed",
-                    TasksId = task.Id,
-                    Status = "New",
-                    UserId = task.AssignToId
-                });
-                task.StatusId = status.Id;
-            }
-            else
-            {
-                return NotFound();
-            }
-
-            _notificationRepository.Save();
-            _notificationRepository.Dispose();  
-
-            _taskRepository.Update(task);
-            _taskRepository.Save();
-            _taskRepository.Dispose();
-            return Ok();
-        }
-
     }
 }

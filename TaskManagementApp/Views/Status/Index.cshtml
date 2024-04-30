@@ -139,19 +139,15 @@
             if (confirm("Are you sure you want to delete " + Id.length + " statuses")) {
                 for (let idx = 0; idx < Id.length; idx++) {
                     $.ajax({
-                        url: "/api/status/" + Id[idx],
-                        method: "DELETE",
-                        success: function () {
-                            $('.alert-success').html(Id.length + " statuses has been deleted successfully").show();
-                        },
-                        error: function (request, message, error) {
-                            $('.alert-danger').html("Oops, something went wrong. Delete unsuccessful").show();
-                        }
+                        url: '@Url.Action("Delete", "Status")',
+                        type: "POST",
+                        dataType: "json",
+                        data: {status : Id}
+
                     });
-                    dataTables.rows(rows[idx]).remove().draw();
                 }
             }
-           // window.location.reload();
+           window.location.reload();
         });
 
         $('input[name="select-all"]').on('click', function (e) {

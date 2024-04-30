@@ -24,7 +24,7 @@
                         <div class="btn-group">
                             @if (Model.UserPermissions.Any(r => r.Name == "New" && r.features.Name == "Task"))
                             {
-                            <a href="@Url.Action("New", "Task")" class="btn btn-primary">New</a>
+                                <a href="@Url.Action("New", "Task")" class="btn btn-primary">New</a>
                             }
                             <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                 More Action
@@ -46,7 +46,7 @@
                                 {
                                     <li><a class="dropdown-item" href="#" id="dependency">Manage Dependency</a></li>
                                 }
-                                </ul>
+                            </ul>
                         </div>
                     </div>
                     <table class="display nowrap text-center" id="example" style="width:100%">
@@ -240,13 +240,13 @@
                 Id.push(row.Id);
             });
 
+            $.ajax({
+               url: "/api/task/" + Id[idx],
+               type: "POST",
+               dataType: "json",
+               data: {taskId : Id}
+            });
 
-            for (let idx = 0; idx < Id.length; idx++) {
-                $.ajax({
-                    url: "/api/task/" + Id[idx],
-                    method: "PUT",
-                });
-            }
             window.location.reload();
         });
 

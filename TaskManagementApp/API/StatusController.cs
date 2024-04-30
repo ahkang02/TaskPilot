@@ -36,28 +36,5 @@ namespace TaskManagementApp.API
             return statusDTOs;
         }
 
-        public IHttpActionResult Delete(string Id)
-        {
-            var status = _statusesRepository.GetByName(Id);
-            if (status != null)
-            {
-                if (_taskRepository.GetAll().Any(c => c.StatusId == status.Id))
-                {
-                    return BadRequest();
-                }
-                else
-                {
-                    _statusesRepository.Delete(status);
-                }
-            }
-            else
-            {
-                return NotFound();
-            }
-            _statusesRepository.Save();
-            _statusesRepository.Dispose();
-            return Ok();    
-        }
-
     }
 }
