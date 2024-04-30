@@ -216,18 +216,11 @@
             if (confirm("Are you sure you want to delete " + Id.length + " tasks?")) {
                 for (let idx = 0; idx < Id.length; idx++) {
                     $.ajax({
-                        url: "/api/task/" + Id[idx],
-                        method: "DELETE",
-                        success: function () {
-                            $('.alert-success').html(Id.length + " tasks has been deleted successfully").show();
-                            console.log($('.alert-success'));
-                        },
-                        error: function (request, message, error) {
-                            console.log("fail");
-                            $('.alert-danger').html("Oops, something went wrong. Delete unsuccessful").show();
-                        }
+                        url: '@Url.Action("Delete", "Task")',
+                        type: "POST",
+                        dataType: "json",
+                        data: {taskId : Id}
                     });
-                    dataTables.rows(rows[idx]).remove().draw();
                 }
             }
             window.location.reload();

@@ -46,44 +46,6 @@ namespace TaskManagementApp.API
             return tasks;
         }
 
-        [HttpDelete]
-        public IHttpActionResult Delete(Guid Id)
-        {
-            var taskInDb = _taskRepository.GetById(Id);
-            if (taskInDb != null)
-            {
-                var notif = _notificationRepository.GetByTaskId(taskInDb.Id.Value);
-
-                if(notif != null)
-                {
-                    _notificationRepository.Delete(notif);
-                    _notificationRepository.Save();
-                }
-
-                _notificationRepository.Insert(new Notifications
-                {
-                    CreatedAt = DateTime.Now,
-                    Description = taskInDb.Name + " task's has been deleted by " + User.Identity.GetUserName(),
-                    Status = "New",
-                    TasksId = null,
-                    UserId = taskInDb.AssignToId
-                });
-
-                _taskRepository.Delete(taskInDb);
-            }
-            else
-            {
-                return NotFound();
-            }
-
-            _taskRepository.Save();
-            _notificationRepository.Save();
-
-            _notificationRepository.Dispose();
-            _taskRepository.Dispose();
-            return Ok();
-        }
-
         [HttpPut]
         public IHttpActionResult UpdateTaskComplete(Guid Id)
         {

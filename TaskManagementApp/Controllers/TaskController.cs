@@ -694,5 +694,112 @@ namespace TaskManagementApp.Controllers
             TempData["ErrorMsg"] = "Oops! Something went wrong. Please go thru the error message.";
             return View(viewModel);
         }
+
+        [HttpPost]
+        public ActionResult Delete(Guid[] taskId)
+        {
+            if(taskId.Length > 0)
+            {
+                for(int i = 0; i <  taskId.Length; i++)
+                {
+                    Guid Id = taskId[i];
+                    var taskToDelete = _taskRepository.GetById(Id);
+
+                    if(taskToDelete != null)
+                    {
+                        var notifInTask = _notificationRepository.GetByTaskId(taskToDelete.Id.Value);
+
+                        if(notifInTask!= null)
+                        {
+                            _notificationRepository.Delete(notifInTask);
+                            _notificationRepository.Save();
+                        }
+
+                        _notificationRepository.Insert(new Notifications
+                        {
+                            CreatedAt = DateTime.Now,
+                            Description = taskToDelete.Name + " task's has been deleted by " + User.Identity.GetUserName(),
+                            Status = "New",
+                            TasksId = null,
+                            UserId = taskToDelete.AssignToId
+                        });
+
+                        _taskRepository.Delete(taskToDelete);
+                    }else
+                    {
+                        TempData["ErrorMsg"] = "Task not found";
+                        return RedirectToAction("Index", "Task");
+
+                    }
+                    _taskRepository.Save();
+                    _notificationRepository.Save();
+                }
+                _notificationRepository.Dispose();
+                TempData["SuccessMsg"] = taskId.Length + " tasks has been deleted successfully.";
+            }
+            return RedirectToAction("Index", "Task");
+        }
+
+        public ActionResult MarkAsDone(Guid taskId)
+        {
+            var taskToUpdate = _taskRepository.GetById(taskId);
+            var status = _statusesRepository.GetByName("Closed");
+
+            if(taskToUpdate != null)
+            {
+                _notificationRepository.Insert(new Notifications
+                {
+                    CreatedAt = DateTime.Now,
+                    Description = taskToUpdate.Name + " task's has been closed",
+                    TasksId = taskToUpdate.Id,
+                    Status = "New",
+                    UserId = taskToUpdate.AssignToId
+                });
+                taskToUpdate.StatusId = status.Id;
+            }
+
+            _notificationRepository.Save();
+            _taskRepository.Update(taskToUpdate);
+            _taskRepository.Save();
+            _taskRepository.Dispose();
+            TempData["SuccessMsg"] = "Tasks has been closed";
+
+            return RedirectToAction("Detail", "Task", new {Id = taskId});
+        }
+
+        [HttpPost]
+        public ActionResult MarkAsDone(Guid[] taskId)
+        {
+            if(taskId.Length > 0)
+            {
+                for(int i = 0; i< taskId.Length; i++)
+                {
+                    Guid Id = taskId[i];
+                    var taskToUpdate = _taskRepository.GetById(Id);
+                    var status = _statusesRepository.GetByName("Closed");
+
+                    if(taskToUpdate != null)
+                    {
+                        _notificationRepository.Insert(new Notifications
+                        {
+                            CreatedAt = DateTime.Now,
+                            Description = taskToUpdate.Name + " task's has been closed",
+                            TasksId = taskToUpdate.Id,
+                            Status = "New",
+                            UserId = taskToUpdate.AssignToId
+                        });
+                        taskToUpdate.StatusId = status.Id;
+                    }
+
+                    _notificationRepository.Save();
+                    _taskRepository.Update(taskToUpdate);
+                    _taskRepository.Save();
+                }
+                _taskRepository.Dispose();
+                TempData["SuccessMsg"] = taskId.Length + " tasks has been closed";
+            }
+            return RedirectToAction("Index", "Task");
+        }
+
     }
 }
