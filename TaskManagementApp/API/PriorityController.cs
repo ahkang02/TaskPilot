@@ -12,13 +12,10 @@ namespace TaskManagementApp.API
     public class PriorityController : ApiController
     {
         private PrioritiesRepository _prioritiesRepository;
-        private TaskRepository _taskRepository;
-
 
         public PriorityController()
         {
             _prioritiesRepository = new PrioritiesRepository(new TaskContext());
-            _taskRepository = new TaskRepository(new TaskContext());
         }
 
         public IEnumerable<PriorityDTO> GetPriorities()

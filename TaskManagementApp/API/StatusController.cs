@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -13,10 +13,8 @@ namespace TaskManagementApp.API
     public class StatusController : ApiController
     {
         private StatusesRepository _statusesRepository;
-        private TaskRepository _taskRepository;
         public StatusController() {
             _statusesRepository = new StatusesRepository(new TaskContext());
-            _taskRepository = new TaskRepository(new TaskContext());    
         }
 
         public IEnumerable<StatusDTO> GetStatuses()

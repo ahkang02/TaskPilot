@@ -17,20 +17,14 @@ namespace TaskManagementApp.API
     public class RoleController : ApiController
     {
         private readonly TaskContext _context;
-        private PermissionRepository _permissionRepository;
         private RoleStore<Roles> _roleStore;
-        private RoleManager<Roles> _roleManager;
         private UserStore<ApplicationUser> _userStore;
-        private UserManager<ApplicationUser> _userManager;
 
         public RoleController()
         {
             this._context = TaskContext.Create();
-            this._permissionRepository = new PermissionRepository(_context);
             _roleStore = new RoleStore<Roles>(_context);
-            _roleManager = new RoleManager<Roles>(_roleStore);
             _userStore = new UserStore<ApplicationUser>(_context);
-            _userManager = new UserManager<ApplicationUser>(_userStore);
         }
 
         public IEnumerable<RoleDTO> GetRoles()

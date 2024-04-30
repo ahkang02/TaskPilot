@@ -16,15 +16,11 @@ namespace TaskManagementApp.API
     {
         private TaskContext _taskContext;
         private TaskRepository _taskRepository;
-        private StatusesRepository _statusesRepository;
-        private NotificationRepository _notificationRepository;
 
         public TaskController()
         {
             _taskContext = TaskContext.Create();
             _taskRepository = new TaskRepository(_taskContext);
-            _statusesRepository = new StatusesRepository(_taskContext);
-            _notificationRepository = new NotificationRepository(_taskContext);
         }
 
         public IEnumerable<TaskDTO> GetAllTasks()
