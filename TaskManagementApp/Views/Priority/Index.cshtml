@@ -139,16 +139,10 @@
             if (confirm("Are you sure you want to delete " + Id.length + " priorities?")) {
                 for (let idx = 0; idx < Id.length; idx++) {
                     $.ajax({
-                        url: "/api/priority/" + Id[idx],
-                        method: "DELETE",
-                        success: function () {
-                            $('.alert-success').html(Id.length + " priorities has been deleted successfully").show();
-                        },
-                        error: function (request, message, error) {
-                            $('.alert-danger').html("Oops, something went wrong. Delete unsuccessful").show();
-                        }
-                    });
-                    dataTables.rows(rows[idx]).remove().draw();
+                        url: '@Url.Action("Delete", "Priority")',
+                        type: "POST",
+                        dataType: "json",
+                        data: {name: Id}
                 }
             }
             //window.location.reload();

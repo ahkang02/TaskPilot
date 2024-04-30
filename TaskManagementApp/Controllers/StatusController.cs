@@ -17,6 +17,7 @@ namespace TaskManagementApp.Controllers
         private TaskContext _context;
         private StatusesRepository _statusesRepository;
         private PermissionRepository _permissionRepository;
+        private TaskRepository _taskRepository;
 
         private RoleStore<Roles> _roleStore;
         private UserStore<ApplicationUser> _userStore;
@@ -28,6 +29,8 @@ namespace TaskManagementApp.Controllers
             _context = TaskContext.Create();
             _statusesRepository = new StatusesRepository(_context);
             _permissionRepository = new PermissionRepository(_context);
+            _taskRepository = new TaskRepository(_context);
+
 
             _userStore = new UserStore<ApplicationUser>(_context);
             _userManager = new UserManager<ApplicationUser>(_userStore);
@@ -124,13 +127,22 @@ namespace TaskManagementApp.Controllers
 
                     if(statusToDelete != null)
                     {
-                        _statusesRepository.Delete(statusToDelete);
-                    }else
+                        if (_taskRepository.GetAll().Any(p => p.StatusId == statusToDelete.Id))
+                        {
+                            TempData["ErrorMsg"] = "Oops something went wrong, you can't delete a status that being by some task currently.";
+                            return RedirectToAction("Index", "Priority");
+                        }
+                        else
+                        {
+                            _statusesRepository.Delete(statusToDelete);
+                        }
+                    }
+                    else
                     {
                         TempData["ErrorMsg"] = "Status not found";
                     }
                 }
-                TempData["SuccessMsg"] = status.Length + " status deleted";
+                TempData["SuccessMsg"] = status.Length + " status has been deleted successfully";
             }
             return RedirectToAction("Index", "Status");
         }

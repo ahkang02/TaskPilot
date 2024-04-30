@@ -17,6 +17,7 @@ namespace TaskManagementApp.Controllers
         private TaskContext _context;
         private PrioritiesRepository _prioritiesRepository;
         private PermissionRepository _permissionRepository;
+        private TaskRepository _taskRepository;
 
         private RoleStore<Roles> _roleStore;
         private UserStore<ApplicationUser> _userStore;
@@ -27,6 +28,7 @@ namespace TaskManagementApp.Controllers
             _context = TaskContext.Create();
             _permissionRepository = new PermissionRepository(_context);
             _prioritiesRepository = new PrioritiesRepository(_context);
+            _taskRepository = new TaskRepository(_context);
 
             _userStore = new UserStore<ApplicationUser>(_context);
             _userManager = new UserManager<ApplicationUser>(_userStore);
@@ -109,6 +111,35 @@ namespace TaskManagementApp.Controllers
                 Name = priorityInDb.Description,
             };
             return View("New", viewModel);
+        }
+
+        public ActionResult Delete(string[] name)
+        {
+            if (name.Length > 0)
+            {
+                for (int i = 0; i < name.Length; i++)
+                {
+                    var desc = name[i];
+                    var priorityToDelete = _prioritiesRepository.GetByName(desc);
+
+                    if (priorityToDelete != null)
+                    {
+                        if(_taskRepository.GetAll().Any(p => p.PriorityId == priorityToDelete.Id))
+                        {
+                            TempData["ErrorMsg"] = "Oops something went wrong, you can't delete a priority that being by some task currently.";
+                            return RedirectToAction("Index", "Priority");
+                        }else
+                        {
+                            _prioritiesRepository.Delete(priorityToDelete);
+                        }
+                    }
+
+                }
+                _prioritiesRepository.Save();
+            }
+            _prioritiesRepository.Dispose();
+            TempData["SuccessMsg"] = name.Length + " priorites has been deleted successfully";
+            return RedirectToAction("Index", "Priority");
         }
     }
 }
