@@ -15,6 +15,7 @@ using System.Data.Entity;
 
 namespace TaskManagementApp.Controllers
 {
+    [CustomAuthorize]
     public class ProfileController : Controller
     {
         private UserStore<ApplicationUser> _userStore;

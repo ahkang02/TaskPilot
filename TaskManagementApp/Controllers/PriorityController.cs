@@ -6,12 +6,15 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using TaskManagementApp.App_Start;
 using TaskManagementApp.DAL;
 using TaskManagementApp.Models;
 using TaskManagementApp.ViewModels;
 
 namespace TaskManagementApp.Controllers
 {
+    [CustomAuthorize]
+
     public class PriorityController : Controller
     {
         private TaskContext _context;

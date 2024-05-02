@@ -23,6 +23,7 @@ using System.Text;
 
 namespace TaskManagementApp.Controllers
 {
+    [CustomAuthorize]
     public class UserController : Controller
     {
         private TaskContext _context;
