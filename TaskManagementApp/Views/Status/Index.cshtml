@@ -26,20 +26,22 @@
                             {
                                 <a href="@Url.Action("New", "Status")" class="btn btn-primary">New</a>
                             }
-                            <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                More Action
-                            </button>
-                            <ul class="dropdown-menu">
-                                @if (Model.UserPermissions.Any(r => r.Name == "Update" && r.features.Name == "Status"))
-                                {
+                            @if (Model.UserPermissions.Any(r => r.Name == "Update" && r.features.Name == "Status"))
+                            {
+                                <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    More Action
+                                </button>
+                                <ul class="dropdown-menu">
+
                                     <li><a class="dropdown-item" href="#" id="edit">Edit</a></li>
-                                }
-                                @if (Model.UserPermissions.Any(r => r.Name == "Delete" && r.features.Name == "Status"))
-                                {
-                                    <li><a class="dropdown-item" href="#" id="delete">Delete</a></li>
-                                }
-                            </ul>
-                        </div>
+                                    
+                                    @if (Model.UserPermissions.Any(r => r.Name == "Delete" && r.features.Name == "Status"))
+                                    {
+                                        <li><a class="dropdown-item" href="#" id="delete">Delete</a></li>
+                                    }
+                                </ul>
+                            }
+                            </div>
                     </div>
                     <table class="display nowrap" id="example" style="width:100%">
                         <thead>
@@ -86,7 +88,7 @@
                 {
                     data: "UpdatedAt",
                     render: function (data, type, user) {
-                        return user.UpdatedAt != null ? moment(data).format('lll', 'YYYY/MM/DD'): "";
+                        return user.UpdatedAt != null ? moment(data).format('DD/MM/YYYY', 'YYYY/MM/DD'): "";
                     }
                 },
 

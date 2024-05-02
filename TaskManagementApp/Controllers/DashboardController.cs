@@ -49,7 +49,7 @@ namespace TaskManagementApp.Controllers
                 }
                 else
                 {
-                    dueDayRemaining = (overDueTask.DueDate - DateTime.Now).Value.Days;
+                    dueDayRemaining = (overDueTask.DueDate.Value.Date - DateTime.Now.Date).Days;
                 }
 
             }

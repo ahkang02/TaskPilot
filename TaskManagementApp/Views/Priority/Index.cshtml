@@ -88,7 +88,7 @@
                 {
                     data: "UpdatedAt",
                     render: function (data, type, user) {
-                        return user.UpdatedAt != null ? moment(data).format('lll', 'YYYY/MM/DD'): "";
+                        return user.UpdatedAt != null ? moment(data).format('DD/MM/YYYY', 'YYYY/MM/DD'): "";
                     }
                 },
 

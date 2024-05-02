@@ -25,23 +25,23 @@
                             {
                                 <a href="@Url.Action("New", "User")" class="btn btn-primary">New</a>
                             }
-                            <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                More Action
-                            </button>
-                            <ul class="dropdown-menu">
-                                @if (Model.UserPermissions.Any(r => r.Name == "Update" && r.features.Name == "User"))
-                                {
+                            @if (Model.UserPermissions.Any(r => r.Name == "Update" && r.features.Name == "User"))
+                            {
+                                <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    More Action
+                                </button>
+                                <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="#" id="edit">Edit</a></li>
-                                }
-                                @*@if (Model.UserPermissions.Any(r => r.Name == "Delete" && r.features.Name == "User"))
-                                {*@
-                                    <li><a class="dropdown-item" href="#" id="delete">Delete</a></li>
-                                @*}*@
-                                @if (Model.UserPermissions.Any(r => r.Name == "AssignRole" && r.features.Name == "User"))
-                                {
-                                    <li><a class="dropdown-item" href="#" id="assignRole">Assign Role</a></li>
-                                }
-                            </ul>
+                                    @if (Model.UserPermissions.Any(r => r.Name == "Delete" && r.features.Name == "User"))
+                                    {
+                                        <li><a class="dropdown-item" href="#" id="delete">Delete</a></li>
+                                    }
+                                    @if (Model.UserPermissions.Any(r => r.Name == "AssignRole" && r.features.Name == "User"))
+                                    {
+                                        <li><a class="dropdown-item" href="#" id="assignRole">Assign Role</a></li>
+                                    }
+                                </ul>
+                            }
                         </div>
                     </div>
                     <table class="display nowrap" id="example" style="width:100%">
@@ -98,13 +98,13 @@
                 {
                     data: "LastUpdated",
                     render: function (data, type, user) {
-                        return user.LastUpdated != null ? moment(data).format('lll', 'YYYY/MM/DD'): "";
+                        return user.LastUpdated != null ? moment(data).format('DD/MM/YYYY', 'YYYY/MM/DD'): "";
                     }
                 },
                 {
                     data: "LastLogin",
                     render: function (data, type, user) {
-                        return user.LastLogin != null ? moment(data).format('llll', 'YYYY/MM/DD') : "";
+                        return user.LastLogin != null ? moment(data).format('DD/MM/YYYY', 'YYYY/MM/DD') : "";
                     }
                 }
 

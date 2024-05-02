@@ -26,28 +26,28 @@
                             {
                                 <a href="@Url.Action("New", "Task")" class="btn btn-primary">New</a>
                             }
-                            <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                More Action
-                            </button>
-                            <ul class="dropdown-menu">
-                                @if (Model.UserPermissions.Any(r => r.Name == "Update" && r.features.Name == "Task"))
-                                {
+                            @if (Model.UserPermissions.Any(r => r.Name == "Update" && r.features.Name == "Task"))
+                            {
+                                <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    More Action
+                                </button>
+                                <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="#" id="edit">Edit</a></li>
-                                }
-                                @if (Model.UserPermissions.Any(r => r.Name == "Delete" && r.features.Name == "Task"))
-                                {
-                                    <li><a class="dropdown-item" href="#" id="delete">Delete</a></li>
-                                }
-                                @if (Model.UserPermissions.Any(r => r.Name == "MarkAsDone" && r.features.Name == "Task"))
-                                {
-                                    <li><a class="dropdown-item" href="#" id="done">Mark As Done</a></li>
-                                }
-                                @if (Model.UserPermissions.Any(r => r.Name == "ManageDependency" && r.features.Name == "Task"))
-                                {
-                                    <li><a class="dropdown-item" href="#" id="dependency">Manage Dependency</a></li>
-                                }
-                            </ul>
-                        </div>
+                                    @if (Model.UserPermissions.Any(r => r.Name == "Delete" && r.features.Name == "Task"))
+                                    {
+                                        <li><a class="dropdown-item" href="#" id="delete">Delete</a></li>
+                                    }
+                                    @if (Model.UserPermissions.Any(r => r.Name == "MarkAsDone" && r.features.Name == "Task"))
+                                    {
+                                        <li><a class="dropdown-item" href="#" id="done">Mark As Done</a></li>
+                                    }
+                                    @if (Model.UserPermissions.Any(r => r.Name == "ManageDependency" && r.features.Name == "Task"))
+                                    {
+                                        <li><a class="dropdown-item" href="#" id="dependency">Manage Dependency</a></li>
+                                    }
+                                </ul>
+                            }
+                            </div>
                     </div>
                     <table class="display nowrap text-center" id="example" style="width:100%">
                         <thead>
@@ -101,7 +101,7 @@
                 {
                     data: "dueDate",
                     render: function (data, type, task) {
-                        return moment(data).format('ll', 'YYYY/MM/DD')
+                        return moment(data).format('DD/MM/YYYY', 'YYYY/MM/DD')
                     }
                 },
                 {

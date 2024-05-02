@@ -39,7 +39,7 @@
         @if (Model.UserPermissions.Any(r => r.Name == "NewTask" && r.features.Name == "Task"))
         {*@
             <li class="sidebar-item">
-                <a class="sidebar-link" href="@Url.Action("NewTask", "Task")" aria-expanded="false">
+                <a class="sidebar-link" href="@Url.Action("New", "Task")" aria-expanded="false">
                     <span>
                         <i class="bi bi-clipboard-plus"></i>
                     </span>

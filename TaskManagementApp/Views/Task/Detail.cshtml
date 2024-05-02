@@ -77,7 +77,7 @@
                     <div class="col-md">
                         <p class="fw-semibold m-0">Due Date</p>
                         <i class="bi bi-calendar-check"></i>
-                        <span class="">@Model.DueDate.Value.ToString("dd MMM")</span>
+                        <span class="">@Model.DueDate.Value.ToString("dd/MM/yyyy")</span>
                     </div>
                     <div class="col-md">
                         <p class="fw-semibold m-0">Priority</p>
@@ -106,7 +106,7 @@
                     <div class="col-md">
                         <p class="fw-semibold m-0">Date Created</p>
                         <i class="bi bi-calendar-x"></i>
-                        <span>@Model.CreatedDate</span>
+                        <span>@Model.CreatedDate.ToString("dd/MM/yyyy")</span>
                     </div>
                 </div>
             </div>
