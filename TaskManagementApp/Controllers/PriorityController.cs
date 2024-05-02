@@ -87,7 +87,7 @@ namespace TaskManagementApp.Controllers
                 }
                 else
                 {
-                    Priorities priorityToEdit = _prioritiesRepository.GetByName(viewModel.Name);
+                    Priorities priorityToEdit = _prioritiesRepository.GetById(viewModel.Id);
                     priorityToEdit.Description = viewModel.Name;
                     priorityToEdit.UpdatedAt = DateTime.Now;
 

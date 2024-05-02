@@ -7,13 +7,13 @@ namespace TaskManagementApp.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
-    public sealed partial class SeedPriority : IMigrationMetadata
+    public sealed partial class InitialCreateEastAsiaRegion : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(SeedPriority));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(InitialCreateEastAsiaRegion));
         
         string IMigrationMetadata.Id
         {
-            get { return "202404290515506_SeedPriority"; }
+            get { return "202405020206124_InitialCreate-EastAsiaRegion"; }
         }
         
         string IMigrationMetadata.Source

@@ -25,14 +25,14 @@
             <div class="card-body">
                 <nav aria-label="breadcrumb mb-4">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="@Url.Action("PriorityManagement", "System")">System Management</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Priority")">System Management</a></li>
                         <li class="breadcrumb-item active" aria-current="page">@currTask</li>
                     </ol>
                 </nav>
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title fw-semibold mb-4">@action</h5>
-                        @using (Html.BeginForm("NewPriority", "System", FormMethod.Post))
+                        @using (Html.BeginForm("New", "Priority", FormMethod.Post))
                         {
                             <div class="card-body px-4 py-3">
                                 <div class="row mb-3 ">
@@ -42,7 +42,7 @@
                                 </div>
                                 @Html.HiddenFor(m => m.Id)
                                 @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-primary float-end mb-3">Create Priority</button>
+                                <button type="submit" class="btn btn-primary float-end mb-3">@action</button>
                             </div>
                         }
                     </div>

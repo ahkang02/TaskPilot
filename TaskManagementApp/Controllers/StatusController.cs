@@ -87,7 +87,7 @@ namespace TaskManagementApp.Controllers
                 }
                 else
                 {
-                    Statuses statusToEdit = _statusesRepository.GetByName(viewModel.Name);
+                    Statuses statusToEdit = _statusesRepository.GetById(viewModel.Id);
                     statusToEdit.Description = viewModel.Name;
                     statusToEdit.UpdatedAt = DateTime.Now;
 
@@ -129,21 +129,19 @@ namespace TaskManagementApp.Controllers
                     {
                         if (_taskRepository.GetAll().Any(p => p.StatusId == statusToDelete.Id))
                         {
-                            TempData["ErrorMsg"] = "Oops something went wrong, you can't delete a status that being by some task currently.";
-                            return RedirectToAction("Index", "Priority");
+                            TempData["ErrorMsg"] = "Oops something went wrong, you can't delete a status that being use by some task currently.";
+                            return RedirectToAction("Index", "Status");
                         }
                         else
                         {
                             _statusesRepository.Delete(statusToDelete);
                         }
                     }
-                    else
-                    {
-                        TempData["ErrorMsg"] = "Status not found";
-                    }
                 }
+                _statusesRepository.Save();
                 TempData["SuccessMsg"] = status.Length + " status has been deleted successfully";
             }
+            _statusesRepository.Dispose();
             return RedirectToAction("Index", "Status");
         }
     }

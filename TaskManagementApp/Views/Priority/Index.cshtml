@@ -26,20 +26,22 @@
                             {
                                 <a href="@Url.Action("New", "Priority")" class="btn btn-primary">New</a>
                             }
-                            <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                More Action
-                            </button>
-                            <ul class="dropdown-menu">
-                                @if (Model.UserPermissions.Any(r => r.Name == "Update" && r.features.Name == "Priority"))
-                                {
+                            @if (Model.UserPermissions.Any(r => r.Name == "Update" && r.features.Name == "Priority"))
+                            {
+                                <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    More Action
+                                </button>
+                                <ul class="dropdown-menu">
+
                                     <li><a class="dropdown-item" href="#" id="edit">Edit</a></li>
-                                }
-                                @if (Model.UserPermissions.Any(r => r.Name == "Delete" && r.features.Name == "Priority"))
-                                {
-                                    <li><a class="dropdown-item" href="#" id="delete">Delete</a></li>
-                                }
-                            </ul>
-                        </div>
+                                    
+                                    @if (Model.UserPermissions.Any(r => r.Name == "Delete" && r.features.Name == "Priority"))
+                                    {
+                                        <li><a class="dropdown-item" href="#" id="delete">Delete</a></li>
+                                    }
+                                </ul>
+                            }
+                            </div>
                     </div>
                     <table class="display nowrap" id="example" style="width:100%">
                         <thead>
@@ -137,15 +139,14 @@
             });
 
             if (confirm("Are you sure you want to delete " + Id.length + " priorities?")) {
-                for (let idx = 0; idx < Id.length; idx++) {
                     $.ajax({
                         url: '@Url.Action("Delete", "Priority")',
                         type: "POST",
                         dataType: "json",
-                        data: {name: Id}
-                }
+                        data: { name: Id }
+                    });
             }
-            //window.location.reload();
+            window.location.reload();
         });
 
         $('input[name="select-all"]').on('click', function (e) {

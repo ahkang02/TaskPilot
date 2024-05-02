@@ -135,7 +135,7 @@ namespace TaskManagementApp.Controllers
                 {
                     List<Permission> permissionsToRemoved = new List<Permission>();
 
-                    Roles roleToEdit = _roleManager.Roles.SingleOrDefault(r => r.Name == viewModel.RoleName);
+                    Roles roleToEdit = _roleManager.Roles.SingleOrDefault(r => r.Id == viewModel.RoleId);
                     roleToEdit.Name = viewModel.RoleName;
                     roleToEdit.UpdatedAt = DateTime.Now;
                     roleToEdit.IsActive = true;

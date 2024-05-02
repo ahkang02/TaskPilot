@@ -42,7 +42,7 @@
                                 </div>
                                 <div class="row mb-3">
                                     <div class="table-wrapper">
-                                        <table class="table table-responsive">
+                                        <table class="table table-responsive text-center">
                                             <thead>
                                                 <tr>
                                                     <th>Permission</th>
@@ -89,6 +89,39 @@
                                                             }
                                                         }
                                                     </tr>
+                                                }
+                                            </tbody>
+                                            <tbody>
+                                                @for (int i = 0; i < Model.FeaturePermissions.Count; i++)
+                                                {
+                                                    if (Model.FeaturePermissions[i].FeatureName == "Profile" || Model.FeaturePermissions[i].FeatureName == "Task"  || Model.FeaturePermissions[i].FeatureName == "User")
+                                                    {
+
+                                                        <tr>
+                                                            <th></th>
+                                                            @for (int j = 0; j < Model.FeaturePermissions[i].Permissions.Count; j++)
+                                                            {
+                                                                if (!Model.FeaturePermissions[i].Permissions[j].Name.Contains("Index") && !Model.FeaturePermissions[i].Permissions[j].Name.Contains("New") && !Model.FeaturePermissions[i].Permissions[j].Name.Contains("Update") && !Model.FeaturePermissions[i].Permissions[j].Name.Contains("Delete"))
+                                                                {
+                                                                    <th>@Model.FeaturePermissions[i].Permissions[j].Name</th>
+                                                                }
+                                                            }
+
+                                                        </tr>
+                                                        <tr>
+                                                            <th>@Model.FeaturePermissions[i].FeatureName</th>
+                                                            @for (int j = 0; j < Model.FeaturePermissions[i].Permissions.Count; j++)
+                                                            {
+                                                                if (!Model.FeaturePermissions[i].Permissions[j].Name.Contains("Index") && !Model.FeaturePermissions[i].Permissions[j].Name.Contains("New") && !Model.FeaturePermissions[i].Permissions[j].Name.Contains("Update") && !Model.FeaturePermissions[i].Permissions[j].Name.Contains("Delete"))
+                                                                {
+                                                                    <td>
+                                                                        @Html.CheckBoxFor(m => Model.FeaturePermissions[i].Permissions[j].IsSelected, new { @css = "form-check-input" })
+                                                                        @Html.HiddenFor(m => Model.FeaturePermissions[i].Permissions[j].PermissionId)
+                                                                    </td>
+                                                                }
+                                                            }
+                                                        </tr>
+                                                    }
                                                 }
                                             </tbody>
                                         </table>
