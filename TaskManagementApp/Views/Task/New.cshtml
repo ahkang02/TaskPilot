@@ -98,7 +98,7 @@
                                 </div>
                                 <div class="row mb-3 ">
                                     @Html.LabelFor(m => m.AssignToId)
-                                    @Html.DropDownListFor(m => m.AssignToId, new SelectList(Model.AssigneeList, "Id", "Username"), "Assign Task To", new { @class = "form-control" })
+                                    @Html.DropDownListFor(m => m.AssignToId, new SelectList(Model.AssigneeList, "Id", "Username"), "Select Assignee", new { @class = "form-control" })
                                     @Html.ValidationMessageFor(m => m.AssignToId)
                                 </div>
                                 @Html.HiddenFor(m => m.Id)

@@ -707,11 +707,14 @@ namespace TaskManagementApp.Controllers
 
                     if(taskToDelete != null)
                     {
-                        var notifInTask = _notificationRepository.GetByTaskId(taskToDelete.Id.Value);
+                        var notifInTask = _notificationRepository.GetAll().Where(t => t.TasksId == Id).ToList();
 
                         if(notifInTask!= null)
                         {
-                            _notificationRepository.Delete(notifInTask);
+                            foreach (var notif in notifInTask)
+                            {
+                                _notificationRepository.Delete(notif);
+                            }
                             _notificationRepository.Save();
                         }
 
