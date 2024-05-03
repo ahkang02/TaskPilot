@@ -17,14 +17,14 @@ namespace TaskManagementApp.Controllers
 
     public class PriorityController : Controller
     {
-        private TaskContext _context;
-        private PrioritiesRepository _prioritiesRepository;
-        private PermissionRepository _permissionRepository;
-        private TaskRepository _taskRepository;
+        private readonly TaskContext _context;
+        private readonly PrioritiesRepository _prioritiesRepository;
+        private readonly PermissionRepository _permissionRepository;
+        private readonly TaskRepository _taskRepository;
 
-        private RoleStore<Roles> _roleStore;
-        private UserStore<ApplicationUser> _userStore;
-        private UserManager<ApplicationUser> _userManager;
+        private readonly RoleStore<Roles> _roleStore;
+        private readonly UserStore<ApplicationUser> _userStore;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public PriorityController()
         {

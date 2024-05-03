@@ -72,7 +72,7 @@ namespace TaskManagementApp.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(LoginViewModel viewModel, string returnUrl)
+        public async Task<ActionResult> Login(LoginViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
@@ -122,7 +122,7 @@ namespace TaskManagementApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                bool userExistInDb = UserManager.Users.SingleOrDefault(u => u.UserName == viewModel.Username) != null ? true : false;
+                bool userExistInDb = UserManager.Users.SingleOrDefault(u => u.UserName == viewModel.Username) != null;
 
                 if (!userExistInDb)
                 {

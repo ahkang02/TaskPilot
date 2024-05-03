@@ -10,7 +10,7 @@ namespace TaskManagementApp.DAL
 {
     public class NotificationRepository : IRepository<Notifications>, IDisposable
     {
-        private TaskContext _context;
+        private readonly TaskContext _context;
 
         public NotificationRepository(TaskContext context)
         {

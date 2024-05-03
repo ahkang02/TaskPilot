@@ -26,15 +26,14 @@ namespace TaskManagementApp.Controllers
     [CustomAuthorize]
     public class UserController : Controller
     {
-        private TaskContext _context;
-        private PermissionRepository _permissionRepository;
-        private TaskRepository _taskRepository;
-        private NotificationRepository _notifRepository;
+        private readonly TaskContext _context;
+        private readonly PermissionRepository _permissionRepository;
+        private readonly TaskRepository _taskRepository;
+        private readonly NotificationRepository _notifRepository;
 
-        private RoleStore<Roles> _roleStore;
-        private RoleManager<Roles> _roleManager;
-        private UserStore<ApplicationUser> _userStore;
-        private UserManager<ApplicationUser> _userManager;
+        private readonly RoleStore<Roles> _roleStore;
+        private readonly UserStore<ApplicationUser> _userStore;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         private ApplicationUserManager _appUserManager;
 
@@ -66,7 +65,6 @@ namespace TaskManagementApp.Controllers
             _userManager = new UserManager<ApplicationUser>(_userStore);
 
             _roleStore = new RoleStore<Roles>(_context);
-            _roleManager = new RoleManager<Roles>(_roleStore);
         }
 
         public ActionResult Index()
@@ -105,7 +103,7 @@ namespace TaskManagementApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                bool userExistInDb = _userManager.Users.SingleOrDefault(u => u.Email == viewModel.Email) != null ? true : false;
+                bool userExistInDb = _userManager.Users.SingleOrDefault(u => u.Email == viewModel.Email) != null;
                 if (!userExistInDb)
                 {
                     if (viewModel.UserId == null)

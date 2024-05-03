@@ -20,6 +20,7 @@
                     <label for="formFile" class="form-label">Upload CSV File Here</label>
                     @Html.TextBoxFor(m => m.File, new { type = "file", @class = "form-control", @value = Model.File != null ? Model.File : null })
                     @Html.ValidationMessageFor(m => m.File)
+                    <br/>
                     <button type="submit" class="btn btn-success btn-sm float-end">Upload</button>
                 </div>
             }
@@ -32,56 +33,59 @@
             {
                 using (Html.BeginForm("SyncToDB", "Task", FormMethod.Post))
                 {
-                    <table class="table caption-top" id="example" style="width:100%">
-                        <caption>Data Retrieved From CSV</caption>
-                        <thead>
-                            <tr>
-                                <th>Task</th>
-                                <th>Due Date</th>
-                                <th>Description</th>
-                                <th>Priority Level</th>
-                                <th>Status</th>
-                                <th>Assignee</th>
-                            </tr>
-                        </thead>
-                        <tbody>
 
-                            @for (int i = 0; i < Model.ImportInfo.Count; i++)
-                            {
+                    <div class="table-wrapper table-responsive overflow-auto" style="max-height: 350px;">
+                        <table class="table caption-top text-center" id="example" style="width:1500px">
+                            <caption class="fw-bold">Data Retrieved From CSV</caption>
+                            <thead>
                                 <tr>
-                                    <td>
-                                        @Html.TextBoxFor(m => Model.ImportInfo[i].Name, new { @class = "form-control" })
-                                        @Html.ValidationMessageFor(m => Model.ImportInfo[i].Name)
-                                    </td>
-                                    <td>
-                                        @Html.TextBoxFor(m => Model.ImportInfo[i].Description, new { @class = "form-control" })
-                                        @Html.ValidationMessageFor(m => Model.ImportInfo[i].Description)
-
-                                    </td>
-                                    <td>
-                                        @Html.TextBoxFor(m => Model.ImportInfo[i].DueDate, new { @class = "form-control", type = "date", @Value = Model.ImportInfo[i].DueDate != null ? Model.ImportInfo[i].DueDate.ToString("yyyy-MM-dd") : DateTime.Today.Date.ToShortDateString(), @min = DateTime.Today.AddDays(1).ToString("yyyy-MM-dd") })
-                                        @Html.ValidationMessageFor(m => Model.ImportInfo[i].DueDate)
-                                    </td>
-                                    <td>
-                                        @Html.TextBoxFor(m => Model.ImportInfo[i].PriorityLevel, new { @class = "form-control" })
-                                        @Html.ValidationMessageFor(m => Model.ImportInfo[i].PriorityLevel)
-
-                                    </td>
-
-                                    <td>
-                                        @Html.TextBoxFor(m => Model.ImportInfo[i].Status, new { @class = "form-control" })
-                                        @Html.ValidationMessageFor(m => Model.ImportInfo[i].Status)
-
-                                    </td>
-                                    <td>
-                                        @Html.TextBoxFor(m => Model.ImportInfo[i].AssignToUser, new { @class = "form-control" })
-                                        @Html.ValidationMessageFor(m => Model.ImportInfo[i].AssignToUser)
-
-                                    </td>
+                                    <th>Task</th>
+                                    <th>Description</th>
+                                    <th>Due Date</th>
+                                    <th>Priority Level</th>
+                                    <th>Status</th>
+                                    <th>Assignee</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+
+                                @for (int i = 0; i < Model.ImportInfo.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                                @Html.TextBoxFor(m => Model.ImportInfo[i].Name, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(m => Model.ImportInfo[i].Name)
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(m => Model.ImportInfo[i].Description, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(m => Model.ImportInfo[i].Description)
+
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(m => Model.ImportInfo[i].DueDate, new { @class = "form-control", type = "date", @Value = Model.ImportInfo[i].DueDate != null ? Model.ImportInfo[i].DueDate.ToString("yyyy-MM-dd") : DateTime.Today.Date.ToShortDateString(), @min = DateTime.Today.AddDays(1).ToString("yyyy-MM-dd") })
+                                            @Html.ValidationMessageFor(m => Model.ImportInfo[i].DueDate)
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(m => Model.ImportInfo[i].PriorityLevel, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(m => Model.ImportInfo[i].PriorityLevel)
+
+                                        </td>
+
+                                        <td>
+                                            @Html.TextBoxFor(m => Model.ImportInfo[i].Status, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(m => Model.ImportInfo[i].Status)
+
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(m => Model.ImportInfo[i].AssignToUser, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(m => Model.ImportInfo[i].AssignToUser)
+
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
 
                     for (int i = 0; i < Model.ImportInfo.Count; i++)
                     {
@@ -92,6 +96,7 @@
                         @Html.HiddenFor(m => Model.ImportInfo[i].Status);
                         @Html.HiddenFor(m => Model.ImportInfo[i].AssignToUser);
                     }
+                    <br/>
                     <button type="submit" class="btn btn-primary btn-sm float-end">Import</button>
 
                 }

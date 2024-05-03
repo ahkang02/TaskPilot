@@ -16,10 +16,10 @@ namespace TaskManagementApp.Controllers
 
     public class UIController : Controller
     {
-        private UserStore<ApplicationUser> _userStore;
-        private PermissionRepository _permissionRepository;
-        private UserManager<ApplicationUser> _userManager;
-        private RoleStore<Roles> _roleStore;
+        private readonly UserStore<ApplicationUser> _userStore;
+        private readonly PermissionRepository _permissionRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleStore<Roles> _roleStore;
 
         public UIController()
         {

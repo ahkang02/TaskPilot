@@ -26,35 +26,18 @@ namespace TaskManagementApp.Controllers
 {
     public class SystemController : Controller
     {
-        private TaskContext _context;
-        private PermissionRepository _permissionRepository;
-        private PrioritiesRepository _prioritiesRepository;
-        private StatusesRepository _statusesRepository;
-        private FeaturesRepository _featuresRepository;
+        private readonly TaskContext _context;
+        private readonly PermissionRepository _permissionRepository;
 
-        private RoleStore<Roles> _roleStore;
-        private RoleManager<Roles> _roleManager;
-        private UserStore<ApplicationUser> _userStore;
-        private UserManager<ApplicationUser> _userManager;
+        private readonly FeaturesRepository _featuresRepository;
+
+
 
         public SystemController()
         {
             _context = TaskContext.Create();
             _permissionRepository = new PermissionRepository(_context);
-            _prioritiesRepository = new PrioritiesRepository(_context);
-            _statusesRepository = new StatusesRepository(_context);
             _featuresRepository = new FeaturesRepository(_context);
-
-            _userStore = new UserStore<ApplicationUser>(_context);
-            _userManager = new UserManager<ApplicationUser>(_userStore);
-
-            _roleStore = new RoleStore<Roles>(_context);
-            _roleManager = new RoleManager<Roles>(_roleStore);
-        }
-
-        public ActionResult Delete(string[] permissionId)
-        {
-            return View();
         }
 
         #region Permission

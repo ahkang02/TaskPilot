@@ -10,7 +10,7 @@ namespace TaskManagementApp.DAL
 {
     public class TaskRepository : IRepository<Tasks>, IDisposable
     {
-        private TaskContext _context;
+        private readonly TaskContext _context;
 
         public TaskRepository(TaskContext context)
         {

@@ -15,22 +15,19 @@ namespace TaskManagementApp.API
     public class UserController : ApiController
     {
         private readonly TaskContext _context;
-        private UserStore<ApplicationUser> _userStore;
-        private UserManager<ApplicationUser> _userManager;
-        private RoleStore<Roles> _roleStore;
+        private readonly UserStore<ApplicationUser> _userStore;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public UserController()
         {
             this._context = TaskContext.Create();
             _userStore = new UserStore<ApplicationUser>(_context);
             _userManager = new UserManager<ApplicationUser>(_userStore);
-            _roleStore = new RoleStore<Roles>(_context);
         }
 
         public IEnumerable<UserDTO> GetUser()
         {
             var user = _userStore.Users.ToList();
-            var roles = _roleStore.Roles.ToList();
             List<UserDTO> userDTOs = new List<UserDTO>();
 
             foreach (var u in user)

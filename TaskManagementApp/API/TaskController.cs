@@ -14,8 +14,8 @@ namespace TaskManagementApp.API
 {
     public class TaskController : ApiController
     {
-        private TaskContext _taskContext;
-        private TaskRepository _taskRepository;
+        private readonly TaskContext _taskContext;
+        private readonly TaskRepository _taskRepository;
 
         public TaskController()
         {

@@ -21,10 +21,10 @@ namespace TaskManagementApp
     {
         public async Task SendAsync(IdentityMessage message)
         {
-            await configSendMessageAsync(message);
+            await ConfigSendMessageAsync(message);
         }
 
-        private async Task configSendMessageAsync(IdentityMessage message)
+        private async Task ConfigSendMessageAsync(IdentityMessage message)
         {
             string HostAddress = ConfigurationManager.AppSettings["Host"].ToString();
             string FromEmail = ConfigurationManager.AppSettings["From"].ToString();
@@ -32,13 +32,15 @@ namespace TaskManagementApp
             string Port = ConfigurationManager.AppSettings["Port"].ToString();
 
             try
-            { 
+            {
                 // Setting Up Email Content
-                MailMessage mailMessage = new MailMessage();
-                mailMessage.From = new MailAddress(FromEmail, "TaskPilot Support @MY");
-                mailMessage.Body = message.Body;
-                mailMessage.Subject = message.Subject;
-                mailMessage.IsBodyHtml = true;
+                MailMessage mailMessage = new MailMessage
+                {
+                    From = new MailAddress(FromEmail, "TaskPilot Support @MY"),
+                    Body = message.Body,
+                    Subject = message.Subject,
+                    IsBodyHtml = true
+                };
                 mailMessage.To.Add(new MailAddress(message.Destination));
 
                 // Setting Up SMTP Client
@@ -74,7 +76,7 @@ namespace TaskManagementApp
             var credentials = Credentials.FromApiKeyAndSecret(key, password);
             var client = new SmsClient(credentials);
             var request = new SendSmsRequest { From = sender, To = message.Destination, Body = message.Body, Text = message.Body};
-            var response = client.SendAnSmsAsync(request);
+            client.SendAnSmsAsync(request);
 
             return Task.FromResult(0);
         }
@@ -149,7 +151,7 @@ namespace TaskManagementApp
             return user.GenerateUserIdentityAsync((ApplicationUserManager)UserManager);
         }
 
-        public static ApplicationSignInManager Create(IdentityFactoryOptions<ApplicationSignInManager> options, IOwinContext context)
+        public static ApplicationSignInManager Create(IOwinContext context)
         {
             return new ApplicationSignInManager(context.GetUserManager<ApplicationUserManager>(), context.Authentication);
         }

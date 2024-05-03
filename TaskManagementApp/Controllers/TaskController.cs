@@ -21,14 +21,14 @@ namespace TaskManagementApp.Controllers
     [CustomAuthorize]
     public class TaskController : Controller
     {
-        private TaskRepository _taskRepository;
-        private StatusesRepository _statusesRepository;
-        private PrioritiesRepository _prioritiesRepository;
-        private NotificationRepository _notificationRepository;
-        private UserStore<ApplicationUser> _userStore;
-        private PermissionRepository _permissionRepository;
-        private UserManager<ApplicationUser> _userManager;
-        private RoleStore<Roles> _roleStore;
+        private readonly TaskRepository _taskRepository;
+        private readonly StatusesRepository _statusesRepository;
+        private readonly PrioritiesRepository _prioritiesRepository;
+        private readonly NotificationRepository _notificationRepository;
+        private readonly UserStore<ApplicationUser> _userStore;
+        private readonly PermissionRepository _permissionRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleStore<Roles> _roleStore;
 
         public TaskController()
         {

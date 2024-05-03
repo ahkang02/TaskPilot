@@ -15,18 +15,16 @@ namespace TaskManagementApp.Controllers
     [CustomAuthorize]
     public class DashboardController : Controller
     {
-        private TaskRepository _taskRepository;
-        private UserStore<ApplicationUser> _userStore;
-        private RoleStore<Roles> _roleStore;
-        private TaskContext _taskContext;
-        private UserManager<ApplicationUser> _userManager;
+        private readonly TaskRepository _taskRepository;
+        private readonly UserStore<ApplicationUser> _userStore;
+        private readonly TaskContext _taskContext;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public DashboardController()
         {
             _taskContext = TaskContext.Create();
             _taskRepository = new TaskRepository(_taskContext);
             _userStore = new UserStore<ApplicationUser>(_taskContext);
-            _roleStore = new RoleStore<Roles>(_taskContext);
             _userManager = new UserManager<ApplicationUser>(_userStore);
         }
 
