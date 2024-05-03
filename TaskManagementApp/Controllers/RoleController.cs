@@ -6,6 +6,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Xml.Linq;
 using TaskManagementApp.App_Start;
 using TaskManagementApp.DAL;
 using TaskManagementApp.Models;
@@ -16,14 +17,14 @@ namespace TaskManagementApp.Controllers
     [CustomAuthorize]
     public class RoleController : Controller
     {
-        private TaskContext _context;
-        private PermissionRepository _permissionRepository;
-        private FeaturesRepository _featuresRepository;
+        private readonly TaskContext _context;
+        private readonly PermissionRepository _permissionRepository;
+        private readonly FeaturesRepository _featuresRepository;
 
-        private RoleStore<Roles> _roleStore;
-        private RoleManager<Roles> _roleManager;
-        private UserStore<ApplicationUser> _userStore;
-        private UserManager<ApplicationUser> _userManager;
+        private readonly RoleStore<Roles> _roleStore;
+        private readonly RoleManager<Roles> _roleManager;
+        private readonly UserStore<ApplicationUser> _userStore;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public RoleController()
         {
@@ -65,40 +66,7 @@ namespace TaskManagementApp.Controllers
 
         public ActionResult New()
         {
-            var permissions = _permissionRepository.GetAllInclude(includeProperties: "Features").ToList();
-            var features = _featuresRepository.GetAll().Select(r => r.Name);
-
-            EditRoleViewModel viewModel = new EditRoleViewModel
-            {
-                FeaturePermissions = new List<FeaturePermission>()
-            };
-
-            foreach (var feature in features)
-            {
-                viewModel.FeaturePermissions.Add(new FeaturePermission
-                {
-                    FeatureName = feature
-                });
-            }
-
-            foreach (var featurePermission in viewModel.FeaturePermissions)
-            {
-                featurePermission.Permissions = new List<PermissionSelectViewModel>();
-
-                foreach (var permission in permissions)
-                {
-                    if (featurePermission.FeatureName == permission.features.Name)
-                    {
-                        featurePermission.Permissions.Add(new PermissionSelectViewModel
-                        {
-                            Name = permission.Name,
-                            PermissionId = permission.Id,
-                            FeaturesName = featurePermission.FeatureName
-                        });
-                    }
-                }
-            }
-
+            EditRoleViewModel viewModel = new EditRoleViewModel();
             return View(viewModel);
         }
 
@@ -108,66 +76,27 @@ namespace TaskManagementApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                List<Permission> permissions = new List<Permission>();
-                foreach (var features in viewModel.FeaturePermissions)
+                if (viewModel.Id == null)
                 {
-                    foreach (var permission in features.Permissions ?? new List<PermissionSelectViewModel>())
+                    Roles roles = new Roles
                     {
-                        if (permission != null && permission.IsSelected)
-                        {
-                            permissions.Add(_permissionRepository.GetById(permission.PermissionId));
-                        }
-                    }
-                }
-
-                if (viewModel.RoleId == null)
-                {
-                    Roles role = new Roles
-                    {
-                        IsActive = true,
-                        Name = viewModel.RoleName,
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
-                        Permissions = permissions,
+                        Name = viewModel.Name,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow,
+                        IsActive = true
                     };
-                    TempData["SuccessMsg"] = "A new role has been created successfully.";
-                    _roleManager.Create(role);
+
+                    _roleManager.Create(roles);
+                    TempData["SuccessMsg"] = "A new status has been created";
                 }
                 else
                 {
-                    List<Permission> permissionsToRemoved = new List<Permission>();
+                    Roles rolesToEdit = _roleStore.Roles.SingleOrDefault(r => r.Id ==  viewModel.Id);
+                    rolesToEdit.Name = viewModel.Name;
+                    rolesToEdit.UpdatedAt = DateTime.Now;
 
-                    Roles roleToEdit = _roleManager.Roles.SingleOrDefault(r => r.Id == viewModel.RoleId);
-                    roleToEdit.Name = viewModel.RoleName;
-                    roleToEdit.UpdatedAt = DateTime.Now;
-                    roleToEdit.IsActive = true;
-                    _roleManager.Update(roleToEdit);
-
-                    var permissionInRole = _permissionRepository.GetAllInclude(includeProperties: "Roles").ToList().Where(r => r.Roles == roleToEdit);
-
-                    foreach (var fp in viewModel.FeaturePermissions)
-                    {
-                        foreach (var permission in fp.Permissions ?? new List<PermissionSelectViewModel>())
-                        {
-                            if (permission != null && !permission.IsSelected)
-                            {
-                                permissionsToRemoved.Add(_permissionRepository.GetById(permission.PermissionId));
-                            }
-                        }
-                    }
-
-                    foreach (var p in permissionsToRemoved)
-                    {
-                        p.Roles.Remove(roleToEdit);
-                        _permissionRepository.Update(p);
-                    }
-
-
-                    roleToEdit.Permissions = permissions;
-                    _roleManager.Update(roleToEdit);
-                    _permissionRepository.Dispose();
-                    TempData["SuccessMsg"] = "Role '" + roleToEdit.Name + "' has been updated";
-
+                    _roleManager.Update(rolesToEdit);
+                    TempData["SuccessMsg"] = rolesToEdit.Name + "'s Roles has been updated.";
                 }
                 return RedirectToAction("Index", "Role");
             }
@@ -177,11 +106,51 @@ namespace TaskManagementApp.Controllers
 
         public ActionResult Update(string name)
         {
+            var statusInDb = _roleStore.Roles.SingleOrDefault(r => r.Name == name);
+            EditRoleViewModel viewModel = new EditRoleViewModel
+            {
+                Id = statusInDb.Id,
+                Name = statusInDb.Name,
+            };
+
+            return View("New", viewModel);
+        }
+
+        public ActionResult Delete(string[] roleName)
+        {
+            if (roleName.Length > 0)
+            {
+                for (int i = 0; i < roleName.Length; i++)
+                {
+                    var role = roleName[i];
+                    var roleToDelete = _roleStore.Roles.SingleOrDefault(r => r.Name == role);
+
+                    if (roleToDelete != null)
+                    {
+                        if (roleToDelete.Users.Count > 0)
+                        {
+                            TempData["ErrorMsg"] = "There are user exist in the role, you can't delete a role when there's user exist.";
+                            return RedirectToAction("Index", "Role");
+                        }
+                        else
+                        {
+                            _roleManager.Delete(roleToDelete);
+                        }
+                    }
+
+                }
+            }
+            TempData["SuccessMsg"] = roleName.Length + " roles deleted successfully";
+            return RedirectToAction("Index", "Role");
+        }
+
+        public ActionResult AssignPermission(string name)
+        {
             var role = _roleStore.Roles.Include(p => p.Permissions).Include(u => u.Users).SingleOrDefault(r => r.Name == name);
             var permissions = _permissionRepository.GetAllInclude(includeProperties: "Features").OrderBy(r => r.features.Name).ToList();
             var features = _featuresRepository.GetAll().Select(r => r.Name);
 
-            EditRoleViewModel viewModel = new EditRoleViewModel
+            AssignPermissionViewModel viewModel = new AssignPermissionViewModel
             {
                 RoleId = role.Id,
                 RoleName = role.Name,
@@ -229,36 +198,62 @@ namespace TaskManagementApp.Controllers
                 }
             }
 
-            return View("New", viewModel);
+            return View(viewModel);
         }
 
-        public ActionResult Delete(string[] roleName)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AssignPermission(AssignPermissionViewModel viewModel)
         {
-            if (roleName.Length > 0)
+            if (ModelState.IsValid)
             {
-                for (int i = 0; i < roleName.Length; i++)
+                List<Permission> permissions = new List<Permission>();
+                foreach (var features in viewModel.FeaturePermissions)
                 {
-                    var role = roleName[i];
-                    var roleToDelete = _roleStore.Roles.SingleOrDefault(r => r.Name == role);
-
-                    if (roleToDelete != null)
+                    foreach (var permission in features.Permissions ?? new List<PermissionSelectViewModel>())
                     {
-                        if (roleToDelete.Users.Count > 0)
+                        if (permission != null && permission.IsSelected)
                         {
-                            TempData["ErrorMsg"] = "There are user exist in the role, you can't delete a role when there's user exist.";
-                            return RedirectToAction("Index", "Role");
-                        }
-                        else
-                        {
-                            _roleManager.Delete(roleToDelete);
+                            permissions.Add(_permissionRepository.GetById(permission.PermissionId));
                         }
                     }
-
                 }
-            }
-            TempData["SuccessMsg"] = roleName.Length + " roles deleted successfully";
-            return RedirectToAction("Index", "Role");
-        }
 
+
+                List<Permission> permissionsToRemoved = new List<Permission>();
+
+                Roles roleToEdit = _roleManager.Roles.SingleOrDefault(r => r.Id == viewModel.RoleId);
+                roleToEdit.UpdatedAt = DateTime.Now;
+                _roleManager.Update(roleToEdit);
+
+                var permissionInRole = _permissionRepository.GetAllInclude(includeProperties: "Roles").ToList().Where(r => r.Roles == roleToEdit);
+
+                foreach (var fp in viewModel.FeaturePermissions)
+                {
+                    foreach (var permission in fp.Permissions ?? new List<PermissionSelectViewModel>())
+                    {
+                        if (permission != null && !permission.IsSelected)
+                        {
+                            permissionsToRemoved.Add(_permissionRepository.GetById(permission.PermissionId));
+                        }
+                    }
+                }
+
+                foreach (var p in permissionsToRemoved)
+                {
+                    p.Roles.Remove(roleToEdit);
+                    _permissionRepository.Update(p);
+                }
+
+                roleToEdit.Permissions = permissions;
+                _roleManager.Update(roleToEdit);
+                _permissionRepository.Dispose();
+                TempData["SuccessMsg"] = "Role '" + roleToEdit.Name + "' permission has been updated";
+                return RedirectToAction("Index", "Role");
+
+            }
+            TempData["ErrorMsg"] = "Oops! Something went wrong, please go through the error message";
+            return View(viewModel);
+        }
     }
 }

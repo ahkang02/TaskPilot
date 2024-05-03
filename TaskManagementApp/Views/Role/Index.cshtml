@@ -39,6 +39,10 @@
                                     {
                                         <li><a class="dropdown-item" href="#" id="delete">Delete</a></li>
                                     }
+                                    @if (Model.UserPermissions.Any(r => r.Name == "AssignPermission" && r.features.Name == "Role"))
+                                    {
+                                        <li><a class="dropdown-item" href="#" id="assignPermission">Assign Permission</a></li>
+                                    }
                                 </ul>
                             }
                         </div>
@@ -125,6 +129,21 @@
                 alert("Bulk Edit Not Supported");
             } else {
                 var url = '@Url.Action("Update", "Role", new {name = "RoleName"})';
+                window.location.href = url.replace('RoleName', data[0]['RoleName']);
+            }
+
+            console.log(data);
+        });
+
+        $('#assignPermission').on('click', function () {
+            let data = dataTables.rows(function (idx, data, node) {
+                return $(node).find('input[type="checkbox"][name="chkbx"]').prop('checked');
+            }).data().toArray();
+
+            if (data.length > 1 || data.length < 0) {
+                alert("Bulk Assigning Not Supported");
+            } else {
+                var url = '@Url.Action("AssignPermission", "Role", new {name = "RoleName"})';
                 window.location.href = url.replace('RoleName', data[0]['RoleName']);
             }
 

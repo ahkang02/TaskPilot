@@ -9,16 +9,9 @@ namespace TaskManagementApp.ViewModels
 {
     public class EditRoleViewModel
     {
-        public string RoleId { get; set; }
+        public string Id { get; set; }
 
         [Required]
-        [Display(Name = "Role Name")]
-        public string RoleName { get; set; }
-
-        [Display(Name = "Active")]
-        public bool IsActive { get; set; }
-
-        [Required]
-        public List<FeaturePermission> FeaturePermissions { get; set; }
+        public string Name { get; set; }
     }
 }

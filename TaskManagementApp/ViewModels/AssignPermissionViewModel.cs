@@ -9,11 +9,13 @@ namespace TaskManagementApp.ViewModels
 {
     public class AssignPermissionViewModel
     {
-        [Required]
-        [Display(Name = "Roles")]
-        public string RoleId;
+        public string RoleId { get; set; }
 
-        public List<Roles> RoleList;
+        [Display(Name = "Current Role")]
+        public string RoleName { get; set; }
+
+        [Display(Name = "Active")]
+        public bool IsActive { get; set; }
 
         [Required]
         public List<FeaturePermission> FeaturePermissions { get; set; }
