@@ -99,6 +99,7 @@ namespace TaskManagementApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PreventDuplicationRequest]
         public async Task<ActionResult> New(EditUserViewModel viewModel)
         {
             if (ModelState.IsValid)
@@ -213,6 +214,7 @@ namespace TaskManagementApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PreventDuplicationRequest]
         public ActionResult AssignRole(AssignRoleViewModel model)
         {
             var user = _userManager.Users.SingleOrDefault(u => u.UserName == model.Username);

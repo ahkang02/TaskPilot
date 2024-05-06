@@ -86,6 +86,7 @@ namespace TaskManagementApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PreventDuplicationRequest]
         public ActionResult EditDetail(EditProfileViewModel viewModel)
         {
             var currentUser = User.Identity.GetUserId();
@@ -155,6 +156,7 @@ namespace TaskManagementApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PreventDuplicationRequest]
         public async Task<ActionResult> EditPassword(EditProfilePasswordViewModel viewModel)
         {
             var user = _userStore.Users.SingleOrDefault(u => u.Id == viewModel.Id);
@@ -223,6 +225,7 @@ namespace TaskManagementApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PreventDuplicationRequest]
         public async Task<ActionResult> EditContact(EditContactViewModel viewModel)
         {
             var userId = User.Identity.GetUserId();
@@ -270,6 +273,7 @@ namespace TaskManagementApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PreventDuplicationRequest]
         public async Task<ActionResult> VerifyPhoneNumber(VerifyPhoneNumberViewModel viewModel)
         {
             if (ModelState.IsValid)

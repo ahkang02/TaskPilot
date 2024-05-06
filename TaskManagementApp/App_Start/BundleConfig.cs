@@ -23,7 +23,6 @@ namespace TaskManagementApp
                       "~/Scripts/bootstrap.bundle.js",
                       "~/Scripts/DataTables/jquery.dataTables.js",
                       "~/Scripts/DataTables/dataTables.select.js",
-                      "~/Scripts/moment.js",
                       "~/Scripts/app.min.js",
                       "~/Scripts/sidebarmenu.js",
                       "~/Scripts/DataTables/dataTables.buttons.js",
@@ -42,6 +41,8 @@ namespace TaskManagementApp
                       "~/Content/style.min.css",
                       "~/Content/DataTables/css/responsive.bootstrap4.css",
                       "~/Content/DataTables/css/buttons.dataTables.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/moment").Include("~/Scripts/moment.min.js"));
         }
     }
 }

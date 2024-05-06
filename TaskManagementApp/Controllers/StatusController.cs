@@ -71,6 +71,7 @@ namespace TaskManagementApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PreventDuplicationRequest]
         public ActionResult New(EditStatusViewModel viewModel)
         {
             if (ModelState.IsValid)

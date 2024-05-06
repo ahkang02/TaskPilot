@@ -72,6 +72,7 @@ namespace TaskManagementApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PreventDuplicationRequest]
         public ActionResult New(EditRoleViewModel viewModel)
         {
             if (ModelState.IsValid)
@@ -203,6 +204,7 @@ namespace TaskManagementApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PreventDuplicationRequest]
         public ActionResult AssignPermission(AssignPermissionViewModel viewModel)
         {
             if (ModelState.IsValid)
