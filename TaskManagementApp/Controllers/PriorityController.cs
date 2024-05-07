@@ -72,7 +72,6 @@ namespace TaskManagementApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [PreventDuplicationRequest]
         public ActionResult New(EditPriorityViewModel viewModel)
         {
             if (ModelState.IsValid)

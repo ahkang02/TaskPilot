@@ -98,8 +98,6 @@ namespace TaskManagementApp.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        [PreventDuplicationRequest]
         public ActionResult New(EditTaskViewModel viewModel)
         {
             if (ModelState.IsValid)
@@ -627,8 +625,6 @@ namespace TaskManagementApp.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        [PreventDuplicationRequest]
         public ActionResult SyncToDB(ImportTaskViewModel viewModel)
         {
 
@@ -682,8 +678,6 @@ namespace TaskManagementApp.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        [PreventDuplicationRequest]
         public ActionResult ManageDependency(ManageTaskDependencyViewModel viewModel)
         {
             if (ModelState.IsValid)
