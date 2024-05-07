@@ -1,0 +1,264 @@
+﻿@model TaskManagementApp.ViewModels.UserPermissionViewModel
+
+@{
+    ViewBag.Title = "Task List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Task Management</a></li>
+
+            <li class="breadcrumb-item active" aria-current="page">Task List</li>
+        </ol>
+    </nav>
+    <div class="row">
+        <div class="d-flex align-items-strech">
+            <div class="card w-100">
+                <div class="card-body">
+                    <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
+                        <div class="mb-3 mb-sm-0">
+                            <h5 class="card-title fw-semibold">Tasks Overview</h5>
+                        </div>
+                        <div class="btn-group">
+                            @if (Model.UserPermissions.Any(r => r.Name == "New" && r.features.Name == "Task"))
+                            {
+                                <a href="@Url.Action("New", "Task")" class="btn btn-primary">New</a>
+                            }
+                            @if (Model.UserPermissions.Any(r => r.Name == "Update" && r.features.Name == "Task"))
+                            {
+                                <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    More Action
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" id="edit">Edit</a></li>
+                                    @if (Model.UserPermissions.Any(r => r.Name == "Delete" && r.features.Name == "Task"))
+                                    {
+                                        <li><a class="dropdown-item" href="#" id="delete">Delete</a></li>
+                                    }
+                                    @if (Model.UserPermissions.Any(r => r.Name == "MarkAsDone" && r.features.Name == "Task"))
+                                    {
+                                        <li><a class="dropdown-item" href="#" id="done">Mark As Done</a></li>
+                                    }
+                                    @if (Model.UserPermissions.Any(r => r.Name == "ManageDependency" && r.features.Name == "Task"))
+                                    {
+                                        <li><a class="dropdown-item" href="#" id="dependency">Manage Dependency</a></li>
+                                    }
+                                </ul>
+                            }
+                            </div>
+                    </div>
+                    <table class="display nowrap text-center" id="example" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th class="text-center"><input type="checkbox" name="select-all" /></th>
+                                <th>Task</th>
+                                <th>Due Date</th>
+                                <th>Priority Level</th>
+                                <th>Status</th>
+                                <th>Assignee</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script src="https://cdn.datatables.net/buttons/2.0.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.0.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+    <script>
+        let dataTables = $('#example').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copyHtml5', 'excelHtml5', 'csvHtml5', 'pdfHtml5'
+            ],
+            responsive: true,
+            ajax: {
+                url: "/api/task",
+                dataSrc: ""
+            },
+            order: [[1, 'asc']],
+            columns: [
+                {
+                    searchable: false,
+                    orderable: false,
+                },
+                {
+                    data: "TaskName",
+                    render: function (data, type, task) {
+                        return "<a class='nav-link fw-semibold' href='/Task/Detail/" + task.Id + "'>" + task.TaskName + "</a>"
+                    }
+                },
+                {
+                    data: "dueDate",
+                    render: function (data, type, task) {
+                        return moment(data).format('DD/MM/YYYY', 'YYYY/MM/DD')
+                    }
+                },
+                {
+                    data: "Priority",
+                    render: function (data, type, task) {
+                        let priorityString;
+                        switch (data) {
+                            case "High":
+                                priorityString = "badge rounded-pill bg-danger";
+                                break;
+                            case "Medium":
+                                priorityString = "badge rounded-pill bg-warning text-dark";
+                                break;
+                            case "Low":
+                                priorityString = "badge rounded-pill bg-success";
+                                break;
+                            case "Lowest":
+                                priorityString = "badge bg-light text-dark";
+                                break;
+                        }
+                        return "<span class='" + priorityString + "'>" + data + "</span>"
+                    }
+                },
+                {
+                    data: "Status",
+                    render: function (data, type, task) {
+                        let statusString;
+                        switch (data) {
+                            case "New":
+                                statusString = "badge rounded-pill bg-primary";
+                                break;
+                            case "In-Progress":
+                                statusString = "badge rounded-pill bg-warning text-dark";
+                                break;
+                            case "Resolved":
+                                statusString = "badge rounded-pill bg-success";
+                                break;
+                            case "Closed":
+                                statusString = "badge rounded-pill bg-secondary";
+                                break;
+                            case "Removed":
+                                statusString = "badge rounded-pill bg-danger";
+                                break;
+                        }
+                        return "<span class='" + statusString + "'>" + data + "</span>"
+                    }
+                },
+                {
+                    data: "AssignTo",
+                    defaultContent: ''
+
+                }
+            ],
+            columnDefs: [
+                {
+                    targets: 0,
+                    className: 'dt-body-center',
+
+                    render: function (data, type, full, meta) {
+                        return '<input type="checkbox" name="chkbx" value="">'
+                    }
+                },
+            ],
+            select: {
+                style: 'multi',
+                selector: 'td:first-child',
+            },
+
+        })
+
+        $('#edit').on('click', function () {
+            let data = dataTables.rows(function (idx, data, node) {
+                return $(node).find('input[type="checkbox"][name="chkbx"]').prop('checked');
+            }).data().toArray();
+
+            if (data.length > 1 || data.length < 0) {
+                alert("Bulk Edit Not Supported");
+            } else {
+                var url = '@Url.Action("EditTask", "Task", new {Id = "__id__"})';
+                console.log(url);
+                window.location.href = url.replace('__id__', data[0]['Id']);
+            }
+        });
+
+        $('#dependency').on('click', function () {
+            let data = dataTables.rows(function (idx, data, node) {
+                return $(node).find('input[type="checkbox"][name="chkbx"]').prop('checked');
+            }).data().toArray();
+
+            if (data.length > 1 || data.length < 0) {
+                alert("Bulk Edit Not Supported");
+            } else {
+                var url = '@Url.Action("ManageDependency", "Task", new {Id = "__id__"})';
+                window.location.href = url.replace('__id__', data[0]['Id']);
+            }
+        });
+
+        $('#delete').on('click', function () {
+            let data = dataTables.rows(function (idx, data, node) {
+                return $(node).find('input[type="checkbox"][name="chkbx"]').prop('checked');
+            }).data().toArray();
+
+            let rows = dataTables.rows(function (idx, data, node) {
+                return $(node).find('input[type="checkbox"][name="chkbx"]').prop('checked');
+            });
+
+            const Id = [];
+            data.forEach((row) => {
+                Id.push(row.Id);
+            });
+
+            if (confirm("Are you sure you want to delete " + Id.length + " tasks?")) {
+                for (let idx = 0; idx < Id.length; idx++) {
+                    $.ajax({
+                        url: '@Url.Action("Delete", "Task")',
+                        type: "POST",
+                        dataType: "json",
+                        data: {taskId : Id}
+                    });
+                }
+            }
+            window.location.reload();
+        });
+
+        $('#done').on('click', function () {
+            let data = dataTables.rows(function (idx, data, node) {
+                return $(node).find('input[type="checkbox"][name="chkbx"]').prop('checked');
+            }).data().toArray();
+
+            let rows = dataTables.rows(function (idx, data, node) {
+                return $(node).find('input[type="checkbox"][name="chkbx"]').prop('checked');
+            });
+
+            const Id = [];
+            data.forEach((row) => {
+                Id.push(row.Id);
+            });
+
+            $.ajax({
+               url: "/api/task/" + Id[idx],
+               type: "POST",
+               dataType: "json",
+               data: {taskId : Id}
+            });
+
+            window.location.reload();
+        });
+
+        $('input[name="select-all"]').on('click', function (e) {
+            var checked = $(this).prop('checked');
+
+            dataTables.cells(null, 0).every(function () {
+                var cell = this.node();
+                $(cell).find('input[type="checkbox"][name="chkbx"]').prop('checked', checked);
+            });
+        })
+
+    </script>
+
+}

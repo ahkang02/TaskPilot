@@ -1,0 +1,169 @@
+﻿
+@{
+    ViewBag.Title = "Permission Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">System Management</a></li>
+
+            <li class="breadcrumb-item active" aria-current="page">Manage Permission</li>
+        </ol>
+    </nav>
+    <div class="row">
+        <div class="d-flex align-items-strech">
+            <div class="card w-100">
+                <div class="card-body">
+                    <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
+                        <div class="mb-3 mb-sm-0">
+                            <h5 class="card-title fw-semibold">Permissions Overview</h5>
+                        </div>
+                        <div class="btn-group">
+                            <a href="@Url.Action("NewPermission", "System")" class="btn btn-primary">New</a>
+                            <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                More Action
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" id="edit">Edit</a></li>
+                                <li><a class="dropdown-item" href="#" id="delete">Delete</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <table class="display nowrap" id="example" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th class="text-center"><input type="checkbox" name="select-all" /></th>
+                                <th>Permission</th>
+                                <th>Status</th>
+                                <th>Created On</th>
+                                <th>Last Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+
+    <script>
+        let dataTables = $('#example').DataTable({
+            responsive: true,
+            ajax: {
+                url: "/api/permission",
+                dataSrc: ""
+            },
+            order: [[1, 'asc']],
+            columns: [
+                {
+                    searchable: false,
+                    orderable: false,
+                },
+                {
+                    data: "Name"
+                },
+                {
+                    data: "IsActive",
+                    render: function (data, type, user) {
+                        return data == true ? "Active" : "Disabled";
+                    }
+                },
+                {
+                    data: "Created",
+                    render: function (data, type, user) {
+                        return user.Created != null ? moment(data).format('YYYY', 'YYYY/MM/DD'): "";
+                    }
+                },
+                {
+                    data: "Updated",
+                    render: function (data, type, user) {
+                        return user.Updated != null ? moment(data).format('lll', 'YYYY/MM/DD'): "";
+                    }
+                },
+
+            ],
+            columnDefs: [
+                {
+                    targets: 0,
+                    className: 'dt-body-center',
+
+                    render: function (data, type, full, meta) {
+                        return '<input type="checkbox" name="chkbx" value="">'
+                    }
+                },
+            ],
+            select: {
+                style: 'multi',
+                selector: 'td:first-child',
+            },
+        })
+
+        $('#edit').on('click', function () {
+            let data = dataTables.rows(function (idx, data, node) {
+                return $(node).find('input[type="checkbox"][name="chkbx"]').prop('checked');
+            }).data().toArray();
+
+            if (data.length > 1 || data.length < 0) {
+                alert("Bulk Edit Not Supported");
+            } else {
+                var url = '@Url.Action("EditPermission", "System", new {name = "Name" })';
+                window.location.href = url.replace('Name', data[0]['Name']);
+            }
+
+            console.log(data);
+        });
+
+        $('#delete').on('click', function () {
+            let data = dataTables.rows(function (idx, data, node) {
+                return $(node).find('input[type="checkbox"][name="chkbx"]').prop('checked');
+            }).data().toArray();
+
+            let rows = dataTables.rows(function (idx, data, node) {
+                return $(node).find('input[type="checkbox"][name="chkbx"]').prop('checked');
+            });
+
+            const Id = [];
+            data.forEach((row) => {
+                Id.push(row.Name);
+            });
+            console.log(Id);
+
+            if (confirm("Are you sure you want to delete " + Id.length + " permissions?")) {
+
+                    $.ajax({
+                        url: '@Url.Action("Delete", "System")',
+                        type: "POST",
+                        dataType: 'json',
+                        data: {permissionId: Id},
+                        success: function () {
+                            $('.alert-success').html(Id.length + " permissions has been deleted successfully").show();
+                        },
+                        error: function (request, message, error) {
+                            $('.alert-danger').html("Oops, something went wrong. Delete unsuccessful").show();
+                        }
+                    });
+                    dataTables.rows(rows[idx]).remove().draw();
+                
+            }
+            //window.location.reload();
+        });
+
+        $('input[name="select-all"]').on('click', function (e) {
+            var checked = $(this).prop('checked');
+
+            dataTables.cells(null, 0).every(function () {
+                var cell = this.node();
+                $(cell).find('input[type="checkbox"][name="chkbx"]').prop('checked', checked);
+            });
+        })
+
+    </script>
+
+
+}
