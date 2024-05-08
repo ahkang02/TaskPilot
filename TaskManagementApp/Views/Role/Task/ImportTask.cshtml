@@ -1,0 +1,110 @@
+﻿@model TaskManagementApp.ViewModels.ImportTaskViewModel
+
+@{
+    ViewBag.Title = "Import Task";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container d-flex justify-content-center align-items-center">
+    <div class="card shadow-lg p-2" style="background: rgba(255, 255, 255, 0.2); border-radius: 16px; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.3); width:100vh;">
+        <nav aria-label="breadcrumb" class="ps-2">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Task")">Task Management</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Import Task</li>
+            </ol>
+        </nav>
+        <div class="card-header" style="border-radius: 16px">
+            @using (Html.BeginForm("ImportTask", "Task", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <div class="mb-3">
+                    <label for="formFile" class="form-label">Upload CSV File Here</label>
+                    @Html.TextBoxFor(m => m.File, new { type = "file", @class = "form-control", @value = Model.File != null ? Model.File : null })
+                    @Html.ValidationMessageFor(m => m.File)
+                    <br/>
+                    <button type="submit" class="btn btn-success btn-sm float-end">Upload</button>
+                </div>
+            }
+        </div>
+        <div class="card-body px-4 py-3">
+            <div class="row">
+                <hr />
+            </div>
+            @if (Model.ImportInfo.Count > 0)
+            {
+                using (Html.BeginForm("SyncToDB", "Task", FormMethod.Post))
+                {
+
+                    <div class="table-wrapper table-responsive overflow-auto" style="max-height: 350px;">
+                        <table class="table caption-top text-center" id="example" style="width:1500px">
+                            <caption class="fw-bold">Data Retrieved From CSV</caption>
+                            <thead>
+                                <tr>
+                                    <th>Task</th>
+                                    <th>Description</th>
+                                    <th>Due Date</th>
+                                    <th>Priority Level</th>
+                                    <th>Status</th>
+                                    <th>Assignee</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @for (int i = 0; i < Model.ImportInfo.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                                @Html.TextBoxFor(m => Model.ImportInfo[i].Name, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(m => Model.ImportInfo[i].Name)
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(m => Model.ImportInfo[i].Description, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(m => Model.ImportInfo[i].Description)
+
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(m => Model.ImportInfo[i].DueDate, new { @class = "form-control", type = "date", @Value = Model.ImportInfo[i].DueDate != null ? Model.ImportInfo[i].DueDate.ToString("yyyy-MM-dd") : DateTime.Today.Date.ToShortDateString(), @min = DateTime.Today.AddDays(1).ToString("yyyy-MM-dd") })
+                                            @Html.ValidationMessageFor(m => Model.ImportInfo[i].DueDate)
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(m => Model.ImportInfo[i].PriorityLevel, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(m => Model.ImportInfo[i].PriorityLevel)
+
+                                        </td>
+
+                                        <td>
+                                            @Html.TextBoxFor(m => Model.ImportInfo[i].Status, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(m => Model.ImportInfo[i].Status)
+
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(m => Model.ImportInfo[i].AssignToUser, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(m => Model.ImportInfo[i].AssignToUser)
+
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    for (int i = 0; i < Model.ImportInfo.Count; i++)
+                    {
+                        @Html.HiddenFor(m => Model.ImportInfo[i].Name);
+                        @Html.HiddenFor(m => Model.ImportInfo[i].Description);
+                        @Html.HiddenFor(m => Model.ImportInfo[i].DueDate);
+                        @Html.HiddenFor(m => Model.ImportInfo[i].PriorityLevel);
+                        @Html.HiddenFor(m => Model.ImportInfo[i].Status);
+                        @Html.HiddenFor(m => Model.ImportInfo[i].AssignToUser);
+                    }
+                    <br/>
+                    <button type="submit" class="btn btn-primary btn-sm float-end">Import</button>
+
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

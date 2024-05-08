@@ -373,7 +373,6 @@
     <Compile Include="Models\ApplicationUser.cs" />
     <Compile Include="Models\Priorities.cs" />
     <Compile Include="Models\Tasks.cs" />
-    <Compile Include="PreventDuplicationRequestAttribute.cs" />
     <Compile Include="ViewModels\AccountViewModels.cs" />
     <Compile Include="ViewModels\AssignPermissionViewModel.cs" />
     <Compile Include="ViewModels\AssignRoleViewModel.cs" />
@@ -585,7 +584,6 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="Scripts\app.min.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -599,7 +597,6 @@
     <Content Include="AppSettingsSecrets.config" />
     <None Include="Properties\PublishProfiles\TaskPilotInstance - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
-    <Content Include="Scripts\Chart.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap.min.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap4.js" />
@@ -646,7 +643,6 @@
     <Content Include="Scripts\DataTables\dataTables.foundation.min.js" />
     <Content Include="Scripts\DataTables\dataTables.jqueryui.js" />
     <Content Include="Scripts\DataTables\dataTables.jqueryui.min.js" />
-    <Content Include="Scripts\DataTables\dataTables.js" />
     <Content Include="Scripts\DataTables\dataTables.keyTable.js" />
     <Content Include="Scripts\DataTables\dataTables.keyTable.min.js" />
     <Content Include="Scripts\DataTables\dataTables.material.js" />
@@ -687,11 +683,6 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
-    <Content Include="Scripts\moment-with-locales.js" />
-    <Content Include="Scripts\moment-with-locales.min.js" />
-    <Content Include="Scripts\moment.js" />
-    <Content Include="Scripts\moment.min.js" />
-    <Content Include="Scripts\sidebarmenu.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -753,8 +744,6 @@
     <Content Include="Views\Profile\EditContact.cshtml" />
     <Content Include="Views\Profile\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Role\AssignPermission.cshtml" />
-    <Content Include="Scripts\moment-with-locales.min.js.map" />
-    <Content Include="Scripts\moment.min.js.map" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
