@@ -373,6 +373,7 @@
     <Compile Include="Models\ApplicationUser.cs" />
     <Compile Include="Models\Priorities.cs" />
     <Compile Include="Models\Tasks.cs" />
+    <Compile Include="PreventDuplicateRequestAttribute.cs" />
     <Compile Include="ViewModels\AccountViewModels.cs" />
     <Compile Include="ViewModels\AssignPermissionViewModel.cs" />
     <Compile Include="ViewModels\AssignRoleViewModel.cs" />
