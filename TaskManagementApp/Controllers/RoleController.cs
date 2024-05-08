@@ -148,7 +148,7 @@ namespace TaskManagementApp.Controllers
         public ActionResult AssignPermission(string name)
         {
             var role = _roleStore.Roles.Include(p => p.Permissions).Include(u => u.Users).SingleOrDefault(r => r.Name == name);
-            var permissions = _permissionRepository.GetAllInclude(includeProperties: "Features").OrderBy(r => r.features.Name).ToList();
+            var permissions = _permissionRepository.GetAllInclude(includeProperties: "Features").OrderBy(r => r.Features.Name).ToList();
             var features = _featuresRepository.GetAll().Select(r => r.Name);
 
             AssignPermissionViewModel viewModel = new AssignPermissionViewModel
@@ -173,7 +173,7 @@ namespace TaskManagementApp.Controllers
 
                 foreach (var permission in permissions)
                 {
-                    if (featurePermission.FeatureName == permission.features.Name)
+                    if (featurePermission.FeatureName == permission.Features.Name)
                     {
                         featurePermission.Permissions.Add(new PermissionSelectViewModel
                         {

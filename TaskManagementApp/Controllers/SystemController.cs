@@ -68,7 +68,7 @@ namespace TaskManagementApp.Controllers
                         Name = viewModel.Name,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
-                        featuresId = viewModel.FeatureId,
+                        FeaturesId = viewModel.FeatureId,
                     };
                     TempData["SuccessMsg"] = "A new permission has been created";
                     _permissionRepository.Insert(permission);

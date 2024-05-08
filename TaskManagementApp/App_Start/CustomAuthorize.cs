@@ -45,7 +45,7 @@ namespace TaskManagementApp.App_Start
 
             foreach(var permission in userPermission)
             {
-                if(permission.features.Name == controller)
+                if(permission.Features.Name == controller)
                 {
                     if(permission.Name == action)
                     {

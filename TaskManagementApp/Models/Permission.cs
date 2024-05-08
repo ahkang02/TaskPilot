@@ -26,7 +26,7 @@ namespace TaskManagementApp.Models
         
         public virtual ICollection<Roles> Roles { get; set; }
 
-        public Guid featuresId { get; set; }
-        public Features features {  get; set; }
+        public Guid FeaturesId { get; set; }
+        public Features Features {  get; set; }
     }
 }
