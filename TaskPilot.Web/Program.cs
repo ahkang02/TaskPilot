@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TaskPilot.Application.Common.Interfaces;
+using TaskPilot.Application.Services.Implementation;
+using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
 using TaskPilot.Infrastructure.Data;
 using TaskPilot.Infrastructure.Repository;
@@ -18,6 +20,8 @@ namespace TaskPilot.Web
             builder.Services.AddDbContext<TaskContext>(option =>
             option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IEmailSender, EmailSender>();
+            //builder.Services.AddScoped<ISmsSender, SmsSender>();
 
             builder.Services.AddIdentity<ApplicationUser, Roles>()
                 .AddEntityFrameworkStores<TaskContext>()
@@ -42,7 +46,7 @@ namespace TaskPilot.Web
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Account}/{action=Login}/{id?}");
 
             app.Run();
         }
