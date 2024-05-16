@@ -13,6 +13,8 @@ namespace TaskPilot.Web.ViewModels
 
         [Display(Name = "Remember Me")]
         public bool RememberMe { get; set; }
+
+        public string? returnUrl { get; set; }
     }
 
 }

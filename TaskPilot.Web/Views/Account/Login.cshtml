@@ -1,0 +1,39 @@
+﻿@model TaskPilot.Web.ViewModels.LoginViewModel
+
+@{
+    ViewBag.Title = "Login";
+    Layout = "LoginRegister_Layout";
+}
+
+<form asp-controller="Account" asp-action="Login" method="post">
+    <div asp-asp-validation-summary="ModelOnly"></div>
+    <div class="card-body px-4 py-3">
+        <div class="row mb-3 text-center">
+            <h5>Login</h5>
+        </div>
+        <div class="row mb-3">
+            <label asp-for="Username"></label>
+            <input type="text" asp-for="Username" class="form-control" />
+            <span asp-validation-for="Username"></span>
+        </div>
+        <div class="row mb-3">
+            <label asp-for="Password"></label>
+            <input type="password" asp-for="Password" class="form-control" />
+            <span asp-validation-for="Password"></span>
+        </div>
+        <div class="justify-content-between d-flex align-items-center mb-4">
+            <div class="form-check">
+                <input type="checkbox" asp-for="RememberMe" class="form-check-input primary" />
+                <label asp-for="RememberMe" class="form-check-label text-dark"></label>
+            </div>
+            <a class="text-primary fw-bold" asp-action="ForgotPassword" asp-controller="Account">Forgot Password ?</a>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary mb-3">Login</button>
+        </div>
+        <hr />
+        <div class="row text-center">
+            <p>Don't have an account yet? <a asp-controller="Account" asp-action="Register" class="nav-link fw-semibold d-inline">Sign Up Now</a></p>
+        </div>
+    </div>
+</form>
