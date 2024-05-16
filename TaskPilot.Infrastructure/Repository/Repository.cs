@@ -67,5 +67,10 @@ namespace TaskPilot.Infrastructure.Repository
         {
             dbSet.RemoveRange(entities);
         }
+
+        public void Update(T entity)
+        {
+            dbSet.Update(entity);
+        }
     }
 }

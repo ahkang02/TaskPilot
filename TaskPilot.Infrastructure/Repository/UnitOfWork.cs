@@ -43,12 +43,12 @@ namespace TaskPilot.Infrastructure.Repository
 
         public void Dispose()
         {
-            _context.SaveChanges();
+            _context.Dispose();
         }
 
         public void Save()
         {
-            _context.Dispose();
+            _context.SaveChanges();
         }
     }
 }
