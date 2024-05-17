@@ -22,11 +22,11 @@
                             <h5 class="card-title fw-semibold">Statuses Overview</h5>
                         </div>
                         <div class="btn-group">
-                            @if (Model.UserPermissions.Any(r => r.Name == "New" && r.features.Name == "Status"))
+                            @if (Model.UserPermissions.Any(r => r.Name == "New" && r.Features.Name == "Status"))
                             {
                                 <a href="@Url.Action("New", "Status")" class="btn btn-primary">New</a>
                             }
-                            @if (Model.UserPermissions.Any(r => r.Name == "Update" && r.features.Name == "Status"))
+                            @if (Model.UserPermissions.Any(r => r.Name == "Update" && r.Features.Name == "Status"))
                             {
                                 <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                     More Action
@@ -35,7 +35,7 @@
 
                                     <li><a class="dropdown-item" href="#" id="edit">Edit</a></li>
                                     
-                                    @if (Model.UserPermissions.Any(r => r.Name == "Delete" && r.features.Name == "Status"))
+                                    @if (Model.UserPermissions.Any(r => r.Name == "Delete" && r.Features.Name == "Status"))
                                     {
                                         <li><a class="dropdown-item" href="#" id="delete">Delete</a></li>
                                     }

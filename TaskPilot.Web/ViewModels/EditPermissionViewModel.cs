@@ -12,6 +12,6 @@ namespace TaskPilot.Web.ViewModels
 
         public Guid FeatureId { get; set; }
 
-        public List<Features> Features { get; set; }
+        public List<Features>? Features { get; set; }
     }
 }

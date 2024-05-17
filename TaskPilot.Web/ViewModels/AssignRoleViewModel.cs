@@ -14,6 +14,6 @@ namespace TaskPilot.Web.ViewModels
         [Display(Name = "Current User Role")]
         public string CurrentUserRole { get; set; }
 
-        public List<Roles> RoleToSelect { get; set; }
+        public List<ApplicationRole> RoleToSelect { get; set; }
     }
 }

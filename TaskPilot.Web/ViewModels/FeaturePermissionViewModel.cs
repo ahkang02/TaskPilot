@@ -2,7 +2,7 @@
 {
     public class FeaturePermissionViewModel
     {
-        public string FeatureName { get; set; }
-        public List<PermissionSelectViewModel> Permissions { get; set; }
+        public string? FeatureName { get; set; }
+        public List<PermissionSelectViewModel>? Permissions { get; set; }
     }
 }
