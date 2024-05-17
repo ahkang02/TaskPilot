@@ -269,7 +269,7 @@ namespace TaskPilot.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PermissionRoles",
+                name: "ApplicationRolePermission",
                 columns: table => new
                 {
                     PermissionsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -277,15 +277,15 @@ namespace TaskPilot.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PermissionRoles", x => new { x.PermissionsId, x.RolesId });
+                    table.PrimaryKey("PK_ApplicationRolePermission", x => new { x.PermissionsId, x.RolesId });
                     table.ForeignKey(
-                        name: "FK_PermissionRoles_AspNetRoles_RolesId",
+                        name: "FK_ApplicationRolePermission_AspNetRoles_RolesId",
                         column: x => x.RolesId,
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PermissionRoles_Permissions_PermissionsId",
+                        name: "FK_ApplicationRolePermission_Permissions_PermissionsId",
                         column: x => x.PermissionsId,
                         principalTable: "Permissions",
                         principalColumn: "Id",
@@ -318,6 +318,11 @@ namespace TaskPilot.Infrastructure.Migrations
                         principalTable: "Tasks",
                         principalColumn: "Id");
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApplicationRolePermission_RolesId",
+                table: "ApplicationRolePermission",
+                column: "RolesId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -369,11 +374,6 @@ namespace TaskPilot.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PermissionRoles_RolesId",
-                table: "PermissionRoles",
-                column: "RolesId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Permissions_FeaturesId",
                 table: "Permissions",
                 column: "FeaturesId");
@@ -403,6 +403,9 @@ namespace TaskPilot.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "ApplicationRolePermission");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -421,16 +424,16 @@ namespace TaskPilot.Infrastructure.Migrations
                 name: "Notifications");
 
             migrationBuilder.DropTable(
-                name: "PermissionRoles");
-
-            migrationBuilder.DropTable(
-                name: "Tasks");
+                name: "Permissions");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Permissions");
+                name: "Tasks");
+
+            migrationBuilder.DropTable(
+                name: "Features");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
@@ -440,9 +443,6 @@ namespace TaskPilot.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Statuses");
-
-            migrationBuilder.DropTable(
-                name: "Features");
         }
     }
 }

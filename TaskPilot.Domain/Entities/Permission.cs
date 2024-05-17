@@ -12,7 +12,7 @@ namespace TaskPilot.Domain.Entities
     {
         public Permission()
         {
-            this.Roles = new HashSet<Roles>();
+            this.Roles = new HashSet<ApplicationRole>();
         }
 
         [Key]
@@ -25,7 +25,7 @@ namespace TaskPilot.Domain.Entities
 
         public DateTime UpdatedAt { get; set; }
 
-        public virtual ICollection<Roles> Roles { get; set; }
+        public virtual ICollection<ApplicationRole> Roles { get; set; }
 
         public Guid FeaturesId { get; set; }
         public Features Features { get; set; }

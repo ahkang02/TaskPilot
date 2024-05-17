@@ -22,7 +22,58 @@ namespace TaskPilot.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("ApplicationRolePermission", b =>
+                {
+                    b.Property<Guid>("PermissionsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RolesId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("PermissionsId", "RolesId");
+
+                    b.HasIndex("RolesId");
+
+                    b.ToTable("ApplicationRolePermission");
+                });
+
+            modelBuilder.Entity("TaskPilot.Domain.Entities.ApplicationRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("TaskPilot.Domain.Entities.ApplicationRoleClaim", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -45,102 +96,6 @@ namespace TaskPilot.Infrastructure.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("LoginProvider", "ProviderKey");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserLogins", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetUserRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserId", "LoginProvider", "Name");
-
-                    b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("PermissionRoles", b =>
-                {
-                    b.Property<Guid>("PermissionsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("RolesId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("PermissionsId", "RolesId");
-
-                    b.HasIndex("RolesId");
-
-                    b.ToTable("PermissionRoles");
                 });
 
             modelBuilder.Entity("TaskPilot.Domain.Entities.ApplicationUser", b =>
@@ -225,6 +180,87 @@ namespace TaskPilot.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("TaskPilot.Domain.Entities.ApplicationUserClaim", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("TaskPilot.Domain.Entities.ApplicationUserLogin", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("TaskPilot.Domain.Entities.ApplicationUserRole", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("TaskPilot.Domain.Entities.ApplicationUserToken", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
             modelBuilder.Entity("TaskPilot.Domain.Entities.Features", b =>
                 {
                     b.Property<Guid>("Id")
@@ -238,43 +274,6 @@ namespace TaskPilot.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Features");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("1832bb8d-0db6-43fe-8939-0bee5016c772"),
-                            Name = "Role"
-                        },
-                        new
-                        {
-                            Id = new Guid("41db43bc-df25-4570-82b0-0c757df35b4a"),
-                            Name = "Dashboard"
-                        },
-                        new
-                        {
-                            Id = new Guid("7eabf33a-6427-4f7f-95ab-3d36e81383be"),
-                            Name = "Task"
-                        },
-                        new
-                        {
-                            Id = new Guid("dd0cffb5-0fd7-4ac2-8289-7ff36efdb77e"),
-                            Name = "Status"
-                        },
-                        new
-                        {
-                            Id = new Guid("7325d9b4-e4e9-40c5-8644-be3941d2326f"),
-                            Name = "Profile"
-                        },
-                        new
-                        {
-                            Id = new Guid("2e259d26-29d7-418c-815e-ce8c4f04ab87"),
-                            Name = "Priority"
-                        },
-                        new
-                        {
-                            Id = new Guid("a92e344f-4df7-4633-9ec6-ee2c1f3d62a2"),
-                            Name = "User"
-                        });
                 });
 
             modelBuilder.Entity("TaskPilot.Domain.Entities.Notifications", b =>
@@ -355,114 +354,6 @@ namespace TaskPilot.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Priorities");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("225e896e-4117-4bba-8681-00dee0b264e4"),
-                            CreatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4672),
-                            Description = "High",
-                            UpdatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4674)
-                        },
-                        new
-                        {
-                            Id = new Guid("969885aa-ec78-4025-a72c-4a20073ec9e2"),
-                            CreatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4676),
-                            Description = "Low",
-                            UpdatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4677)
-                        },
-                        new
-                        {
-                            Id = new Guid("cc23b7c3-77c7-49cd-83a5-8160f5785494"),
-                            CreatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4678),
-                            Description = "Lowest",
-                            UpdatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4679)
-                        },
-                        new
-                        {
-                            Id = new Guid("c0f4cf3a-8999-42c4-9c97-c3d2bae1966f"),
-                            CreatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4680),
-                            Description = "Medium",
-                            UpdatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4681)
-                        });
-                });
-
-            modelBuilder.Entity("TaskPilot.Domain.Entities.Roles", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
-
-                    b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "054a41f6-e269-47dc-80f5-972dd09d1ccb",
-                            CreatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4409),
-                            IsActive = true,
-                            Name = "Default User",
-                            UpdatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4425)
-                        },
-                        new
-                        {
-                            Id = "39cce4c1-a7f1-4596-bdae-872c61999600",
-                            CreatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4430),
-                            IsActive = true,
-                            Name = "Administrator",
-                            UpdatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4430)
-                        },
-                        new
-                        {
-                            Id = "41159927-ddc3-4888-bed0-b38211bcf960",
-                            CreatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4433),
-                            IsActive = true,
-                            Name = "Developer",
-                            UpdatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4434)
-                        },
-                        new
-                        {
-                            Id = "8c34d7c7-218a-4799-9282-a5afa3f0e62e",
-                            CreatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4436),
-                            IsActive = true,
-                            Name = "Product Owner",
-                            UpdatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4437)
-                        },
-                        new
-                        {
-                            Id = "caaa6c4e-b3b3-4aaa-a966-baf6df4270c2",
-                            CreatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4439),
-                            IsActive = true,
-                            Name = "Scrum Master",
-                            UpdatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4440)
-                        });
                 });
 
             modelBuilder.Entity("TaskPilot.Domain.Entities.Statuses", b =>
@@ -484,43 +375,6 @@ namespace TaskPilot.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Statuses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("adfcb548-9784-4c13-9a6a-7211d1e29f91"),
-                            CreatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4597),
-                            Description = "Removed",
-                            UpdatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4598)
-                        },
-                        new
-                        {
-                            Id = new Guid("6f10b490-ed56-492f-92d8-882f9a1e14bc"),
-                            CreatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4600),
-                            Description = "New",
-                            UpdatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4601)
-                        },
-                        new
-                        {
-                            Id = new Guid("101fe5b2-cf5a-4c62-b258-8fbb56c8f5b6"),
-                            CreatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4602),
-                            Description = "In-Progress",
-                            UpdatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4603)
-                        },
-                        new
-                        {
-                            Id = new Guid("bd67686d-f547-4d0d-93a1-97b008d1e5eb"),
-                            CreatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4604),
-                            Description = "Resolved",
-                            UpdatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4605)
-                        },
-                        new
-                        {
-                            Id = new Guid("63ad4f22-6e3d-4315-bff1-e14015c847e9"),
-                            CreatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4606),
-                            Description = "Closed",
-                            UpdatedAt = new DateTime(2024, 5, 8, 11, 43, 50, 404, DateTimeKind.Local).AddTicks(4607)
-                        });
                 });
 
             modelBuilder.Entity("TaskPilot.Domain.Entities.Tasks", b =>
@@ -572,58 +426,7 @@ namespace TaskPilot.Infrastructure.Migrations
                     b.ToTable("Tasks");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
-                {
-                    b.HasOne("TaskPilot.Domain.Entities.Roles", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.HasOne("TaskPilot.Domain.Entities.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.HasOne("TaskPilot.Domain.Entities.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.HasOne("TaskPilot.Domain.Entities.Roles", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TaskPilot.Domain.Entities.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.HasOne("TaskPilot.Domain.Entities.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PermissionRoles", b =>
+            modelBuilder.Entity("ApplicationRolePermission", b =>
                 {
                     b.HasOne("TaskPilot.Domain.Entities.Permission", null)
                         .WithMany()
@@ -631,11 +434,74 @@ namespace TaskPilot.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TaskPilot.Domain.Entities.Roles", null)
+                    b.HasOne("TaskPilot.Domain.Entities.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RolesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("TaskPilot.Domain.Entities.ApplicationRoleClaim", b =>
+                {
+                    b.HasOne("TaskPilot.Domain.Entities.ApplicationRole", "Role")
+                        .WithMany("RoleClaims")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("TaskPilot.Domain.Entities.ApplicationUserClaim", b =>
+                {
+                    b.HasOne("TaskPilot.Domain.Entities.ApplicationUser", "User")
+                        .WithMany("Claims")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TaskPilot.Domain.Entities.ApplicationUserLogin", b =>
+                {
+                    b.HasOne("TaskPilot.Domain.Entities.ApplicationUser", "User")
+                        .WithMany("Logins")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TaskPilot.Domain.Entities.ApplicationUserRole", b =>
+                {
+                    b.HasOne("TaskPilot.Domain.Entities.ApplicationRole", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TaskPilot.Domain.Entities.ApplicationUser", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TaskPilot.Domain.Entities.ApplicationUserToken", b =>
+                {
+                    b.HasOne("TaskPilot.Domain.Entities.ApplicationUser", "User")
+                        .WithMany("Tokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TaskPilot.Domain.Entities.Notifications", b =>
@@ -699,9 +565,24 @@ namespace TaskPilot.Infrastructure.Migrations
                     b.Navigation("Status");
                 });
 
+            modelBuilder.Entity("TaskPilot.Domain.Entities.ApplicationRole", b =>
+                {
+                    b.Navigation("RoleClaims");
+
+                    b.Navigation("UserRoles");
+                });
+
             modelBuilder.Entity("TaskPilot.Domain.Entities.ApplicationUser", b =>
                 {
+                    b.Navigation("Claims");
+
+                    b.Navigation("Logins");
+
                     b.Navigation("Notifications");
+
+                    b.Navigation("Tokens");
+
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

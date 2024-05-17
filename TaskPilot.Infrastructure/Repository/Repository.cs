@@ -41,7 +41,7 @@ namespace TaskPilot.Infrastructure.Repository
             return dbSet.Where(filter).FirstOrDefault();
         }
 
-        public IEnumerable<T> GetAll(Expression<Func<T, bool>> filter, string? includeProperties = null)
+        public IEnumerable<T> GetAllInclude(Expression<Func<T, bool>>? filter, string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
             if (filter != null)
@@ -58,6 +58,11 @@ namespace TaskPilot.Infrastructure.Repository
             return query.ToList();
         }
 
+        public IEnumerable<T> GetAll()
+        {
+            return dbSet.ToList();
+        }
+
         public void Remove(T entity)
         {
             dbSet.Remove(entity);
@@ -70,7 +75,7 @@ namespace TaskPilot.Infrastructure.Repository
 
         public void Update(T entity)
         {
-            dbSet.Update(entity);
+            dbSet.Entry(entity).State = EntityState.Modified;
         }
     }
 }

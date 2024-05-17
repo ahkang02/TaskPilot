@@ -9,7 +9,7 @@ using TaskPilot.Infrastructure.Data;
 
 namespace TaskPilot.Infrastructure.Repository
 {
-    public class RoleRepository : Repository<Roles>, IRoleRepository
+    public class RoleRepository : Repository<ApplicationRole>, IRoleRepository
     {
         public RoleRepository(TaskContext context) : base(context) { }
     }

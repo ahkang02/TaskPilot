@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace TaskPilot.Domain.Entities
 {
-    public class Roles : IdentityRole
+    public class ApplicationRole : IdentityRole
     {
-        public Roles() : base()
+        public ApplicationRole() : base()
         {
             this.Permissions = new HashSet<Permission>();
         }
@@ -22,5 +22,10 @@ namespace TaskPilot.Domain.Entities
         public DateTime UpdatedAt { get; set; }
 
         public virtual ICollection<Permission> Permissions { get; set; }
+
+        public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
+
+        public virtual ICollection<ApplicationRoleClaim> RoleClaims { get; set; }
+
     }
 }
