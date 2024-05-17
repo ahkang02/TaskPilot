@@ -23,7 +23,7 @@ namespace TaskPilot.Web
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             //builder.Services.AddScoped<ISmsSender, SmsSender>();
 
-            builder.Services.AddIdentity<ApplicationUser, Roles>()
+            builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<TaskContext>()
                 .AddDefaultTokenProviders();
 

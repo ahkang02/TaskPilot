@@ -32,16 +32,16 @@ namespace TaskPilot.Web.Controllers
             {
                 var currentUser = _unitOfWork.Users.Get(u => u.Id == claim.Value);
                 var currentUserRole = await _userManager.GetRolesAsync(currentUser);
-                var roles = _unitOfWork.Roles.GetAll(r => r.Name == currentUserRole[0], "Permissions").Single();
-                //var permissions = _unitOfWork.Permissions.GetAll(filter: null, includeProperties: "Features, Roles");
+                var roles = _unitOfWork.Roles.GetAllInclude(r => r.Name == currentUserRole[0], "Permissions").Single();
+                var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
 
-                //foreach (var permission in permissions)
-                //{
-                //    if (permission.Roles.Any(r => r.Id == roles.Id))
-                //    {
-                //        viewModel.UserPermissions.Add(permission);
-                //    }
-                //}
+                foreach (var permission in permissions)
+                {
+                    if (permission.Roles.Any(r => r.Id == roles.Id))
+                    {
+                        viewModel.UserPermissions.Add(permission);
+                    }
+                }
 
             }
 
@@ -111,7 +111,7 @@ namespace TaskPilot.Web.Controllers
 
                     if (statusToDelete != null)
                     {
-                        if (_unitOfWork.Tasks.GetAll(null, null).Any(t => t.StatusId == statusToDelete.Id))
+                        if (_unitOfWork.Tasks.GetAll().Any(t => t.StatusId == statusToDelete.Id))
                         {
                             TempData["ErrorMsg"] = "Oops something went wrong, you can't delete a status that being use by some task currently.";
                             return RedirectToAction("Index", "Status");

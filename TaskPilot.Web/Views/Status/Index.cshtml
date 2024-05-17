@@ -67,7 +67,7 @@
         let dataTables = $('#example').DataTable({
             responsive: true,
             ajax: {
-                url: "/api/status",
+                url: "/api/Status",
                 dataSrc: ""
             },
             order: [[1, 'asc']],
@@ -77,18 +77,18 @@
                     orderable: false,
                 },
                 {
-                    data: "Description"
+                    data: "description"
                 },
                 {
-                    data: "CreatedAt",
-                    render: function (data, type, user) {
-                        return user.CreatedAt != null ? moment(data).format('YYYY', 'YYYY/MM/DD') : "";
+                    data: "createdAt",
+                    render: function (data, type, status) {
+                        return status.createdAt != null ? moment(data).format('YYYY', 'YYYY/MM/DD') : "";
                     }
                 },
                 {
-                    data: "UpdatedAt",
-                    render: function (data, type, user) {
-                        return user.UpdatedAt != null ? moment(data).format('DD/MM/YYYY', 'YYYY/MM/DD') : "";
+                    data: "updatedAt",
+                    render: function (data, type, status) {
+                        return status.updatedAt != null ? moment(data).format('DD/MM/YYYY', 'YYYY/MM/DD') : "";
                     }
                 },
 
