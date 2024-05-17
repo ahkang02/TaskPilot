@@ -1,0 +1,53 @@
+﻿@model TaskPilot.Web.ViewModels.EditPriorityViewModel
+
+@{
+    string currTask = string.Empty;
+    string action = string.Empty;
+
+    if (Model.Id == null)
+    {
+        currTask = "New Priority";
+        action = "New Priority";
+        ViewBag.Title = "New Priority";
+    }
+    else
+    {
+        currTask = Model.Name;
+        action = "Edit Priority";
+        ViewBag.Title = "Edit Priority";
+    }
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <nav aria-label="breadcrumb mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Priority">System Management</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@currTask</li>
+                    </ol>
+                </nav>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title fw-semibold mb-4">@action</h5>
+                        <form asp-action="New" asp-controller="Priority">
+
+                            <div class="card-body px-4 py-3">
+                                <div class="row mb-3 ">
+                                    <label asp-for="Name"></label>
+                                    <input type="text" asp-for="Name" class="form-control" />
+                                    <span asp-validation-for="Name"></span>
+                                </div>
+                                <input type="hidden" asp-for="Id" />
+                                <button type="submit" class="btn btn-primary float-end mb-3">@action</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
