@@ -20,7 +20,7 @@
         <div class="card-body">
             <ul class="nav nav-tabs user-profile-tab" id="pills-tab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    @if (Model.UserPermissions.Any(u => u.features.Name == "Profile" && u.Name == "EditDetail"))
+                    @if (Model.UserPermissions.Any(u => u.Features.Name == "Profile" && u.Name == "EditDetail"))
                     {
                         <a href="@Url.Action("Index", "Profile")" class="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center fs-3 py-3">
                             <i class="bi bi-person-vcard me-2 fs-6"></i>
@@ -29,7 +29,7 @@
                     }
                 </li>
                 <li class="nav-item" role="presentation">
-                    @if (Model.UserPermissions.Any(u => u.features.Name == "Profile" && u.Name == "EditPassword"))
+                    @if (Model.UserPermissions.Any(u => u.Features.Name == "Profile" && u.Name == "EditPassword"))
                     {
                         <a href="@Url.Action("EditPassword", "Profile")" class="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center fs-3 py-3">
                             <i class="bi bi-key me-2 fs-6"></i>
@@ -38,7 +38,7 @@
                     }
                 </li>
                 <li class="nav-item" role="presentation">
-                    @if (Model.UserPermissions.Any(u => u.features.Name == "Profile" && u.Name == "EditContact"))
+                    @if (Model.UserPermissions.Any(u => u.Features.Name == "Profile" && u.Name == "EditContact"))
                     {
                         <a href="@Url.Action("EditContact", "Profile")" class="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center fs-3 py-3 active">
                             <i class="bi bi-telephone me-2 fs-6"></i>
