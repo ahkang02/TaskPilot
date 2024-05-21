@@ -1,0 +1,141 @@
+﻿@model TaskPilot.Web.ViewModels.EditTaskViewModel
+
+@{
+    string currTask = string.Empty;
+    string action = string.Empty;
+
+    if (Model.TaskName == null)
+    {
+        currTask = "New Task";
+        action = "New Task";
+        ViewBag.Title = "New Task";
+    }
+    else
+    {
+        currTask = Model.TaskName;
+        action = "Edit Task";
+        ViewBag.Title = "Edit Task";
+    }
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <nav aria-label="breadcrumb mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Task">Task Management</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@currTask</li>
+                    </ol>
+                </nav>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title fw-semibold mb-4">@action</h5>
+                        <form asp-action="New" asp-controller="Task" method="post">
+                            <div class="card-body px-4 py-3">
+                                <div class="row mb-3 ">
+                                    <label asp-for="TaskName"></label>
+                                    <input type="text" asp-for="TaskName" class="form-control" />
+                                    <span asp-validation-for="TaskName"></span>
+                                </div>
+                                <div class="row mb-3 ">
+                                    <label asp-for="TaskDescription"></label>
+                                    <textarea asp-for="TaskDescription" class="form-control"></textarea>
+                                    <span asp-validation-for="TaskDescription"></span>
+                                </div>
+                                <div class="row mb-3 ">
+                                    <div class="col-md-6 m-0 p-0">
+                                        <label asp-for="PriorityId"></label>
+                                        <select class="form-control" asp-for="PriorityId" class="form-control"
+                                                asp-items="@(new SelectList(Model.PriorityList, "Id", "Description"))">
+                                            <option>Select </option>
+                                        </select>
+                                        <span asp-validation-for="PriorityId"></span>
+                                    </div>
+                                    <div class="col-md-6 m-0 p-0">
+                                        <label asp-for="StatusId"></label>
+                                        <select class="form-control" asp-for="StatusId" class="form-control"
+                                                asp-items="@(new SelectList(Model.StatusList, "Id", "Description"))">
+                                            <option>Select </option>
+                                        </select>
+                                        <span asp-validation-for="StatusId"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-3 dueDate">
+                                    <label asp-for="DueDate"></label>
+                                    <input type="date" asp-for="DueDate" class="form-control" value="@(Model.DueDate.HasValue ? Model.DueDate.Value.ToString("yyyy-MM-dd") : DateTime.Today.ToString("yyyy-MM-dd"))" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                    <span asp-validation-for="DueDate"></span>
+                                </div>
+                                <div class="form-check ps-3 mb-3">
+                                    <input type="checkbox" asp-for="IsRecurring" class="form-check-input" />
+                                    <label asp-for="IsRecurring" class="form-check-label"></label>
+                                </div>
+                                <div class="radio-group mb-3" id="RecurringControl">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6 p-0">
+                                            <label asp-for="StartDate"></label>
+                                            <input type="date" asp-for="StartDate" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                            <span asp-validation-for="StartDate"></span>
+                                        </div>
+                                        <div class="col-md-6 p-0">
+                                            <label asp-for="EndDate"></label>
+                                            <input type="date" asp-for="EndDate" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                            <span asp-validation-for="EndDate"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-check form-check-inline ps-3">
+                                        <input type="radio" asp-for="RecurringType" value="Daily" class="form-check-input" />
+                                        <label class="form-check-label">Daily</label>
+                                    </div>
+                                    <div class="form-check form-check-inline ">
+                                        <input type="radio" asp-for="RecurringType" value="Weekly" class="form-check-input" />
+                                        <label class="form-check-label">Weekly</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input type="radio" asp-for="RecurringType" value="Monthly" class="form-check-input" />
+                                        <label class="form-check-label">Monthly</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input type="radio" asp-for="RecurringType" value="Yearly" class="form-check-input" />
+                                        <label class="form-check-label">Yearly</label>
+                                    </div>
+                                </div>
+                                <div class="row mb-3 ">
+                                    <label asp-for="AssignToId"></label>
+                                    <select class="form-control" asp-for="AssignToId" class="form-control"
+                                            asp-items="@(new SelectList(Model.AssigneeList, "Id", "UserName"))">
+                                        <option>Select </option>
+                                    </select>
+                                    <span asp-validation-for="AssignToId"></span>
+                                </div>
+                                <input type="hidden" asp-for="Id" />
+                                <input type="hidden" asp-for="DependencyId" />
+                                <button type="submit" class="btn btn-primary float-end mb-3">@action</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $("#RecurringControl").hide()
+        })
+
+        $("#IsRecurring").on("click", function () {
+            if ($("#IsRecurring").is(":checked")) {
+                $('#RecurringControl').show()
+                $('.dueDate').hide()
+            } else {
+                $('#RecurringControl').hide()
+                $('.dueDate').show()
+            }
+        })
+    </script>
+}
+
