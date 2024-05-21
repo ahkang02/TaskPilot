@@ -21,7 +21,7 @@ namespace TaskPilot.Web
             option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
-            //builder.Services.AddScoped<ISmsSender, SmsSender>();
+            builder.Services.AddScoped<ISmsSender, SmsSender>();
 
             builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<TaskContext>()

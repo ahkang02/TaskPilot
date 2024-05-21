@@ -12,6 +12,7 @@ using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
 using TaskPilot.Infrastructure.Repository;
 using TaskPilot.Web.ViewModels;
+using Vonage.Users;
 
 namespace TaskPilot.Web.Controllers
 {
@@ -145,40 +146,36 @@ namespace TaskPilot.Web.Controllers
 
         public IActionResult Delete(string[] userName)
         {
+            var userToDelete = new List<ApplicationUser>();
             if (userName.Count() > 0)
             {
                 for (int i = 0; i < userName.Length; i++)
                 {
-                    var userToDelete = userName[i];
-                    var user = _unitOfWork.Users.Get(u => u.UserName == userToDelete);
+                    var uName = userName[i];
+                    userToDelete.Add(_unitOfWork.Users.Get(u => u.UserName == uName));
+                }
 
-                    if (user != null)
+                foreach (var user in userToDelete)
+                {
+                    if (_unitOfWork.Tasks.GetAll().Any(u => u.AssignToId == user.Id))
                     {
-                        if (_unitOfWork.Tasks.GetAll().Any(u => u.AssignToId == user.Id))
-                        {
-                            TempData["ErrorMsg"] = "Oops, something went wrong, the user you trying to delete has task tie to them, delete unsuccessful.";
-                            return RedirectToAction("Index", "User");
-                        }
-                        else
-                        {
-                            var notifInUser = _unitOfWork.Notification.GetAll().Where(u => u.UserId == user.Id).ToList();
-                            if (notifInUser.Count() > 0)
-                            {
-                                foreach (var notif in notifInUser)
-                                {
-                                    _unitOfWork.Notification.Remove(notif);
-                                }
-                            }
-                            _unitOfWork.Users.Remove(user);
-                        }
-
+                        TempData["ErrorMsg"] = "Oops, something went wrong, the user you trying to delete has task tie to them, delete unsuccessful.";
+                        return BadRequest(new { data = Url.Action("Index", "User") });
                     }
-
+                    else
+                    {
+                        var notifInUser = _unitOfWork.Notification.GetAll().Where(u => u.UserId == user.Id).ToList();
+                        if (notifInUser.Count() > 0)
+                        {
+                            _unitOfWork.Notification.RemoveRange(notifInUser);
+                        }
+                        _unitOfWork.Users.Remove(user);
+                    }
                 }
             }
             _unitOfWork.Save();
             TempData["SuccessMsg"] = userName.Length + " users has been deleted successfully";
-            return RedirectToAction("Index", "User");
+            return Json(Url.Action("Index", "User"));
         }
 
         public async Task<ActionResult> AssignRole(string username)

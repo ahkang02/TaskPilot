@@ -135,18 +135,25 @@
 
             const Id = [];
             data.forEach((row) => {
-                Id.push(row.Description);
+                Id.push(row.description);
             });
+
+            console.log(Id);
 
             if (confirm("Are you sure you want to delete " + Id.length + " priorities?")) {
                 $.ajax({
                     url: '@Url.Action("Delete", "Priority")',
                     type: "POST",
                     dataType: "json",
-                    data: { name: Id }
+                    data: { priority: Id },
+                    success: function (data) {
+                        window.location.href = data;
+                    },
+                    error: function(data) {
+                        window.location.href = data;
+                    }
                 });
             }
-            window.location.reload();
         });
 
         $('input[name="select-all"]').on('click', function (e) {

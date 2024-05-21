@@ -174,9 +174,14 @@
                     url: '@Url.Action("Delete", "User")',
                     type: "POST",
                     dataType: 'json',
-                    data: { userName: Id }
+                    data: { userName: Id },
+                    success: function (data) {
+                        window.location.href = data;
+                    },
+                    error: function (request, status, errorThrown) {
+                        window.location.href = request.responseJSON.data;
+                    }
                 });
-                window.location.reload();
             }
         });
 

@@ -103,30 +103,19 @@ namespace TaskPilot.Web.Controllers
 
         public IActionResult Delete(string[] priority)
         {
+            var priorityToDelete = new List<Priorities>();
             if (priority.Length > 0)
             {
                 for (int i = 0; i < priority.Length; i++)
                 {
                     var priorityName = priority[i];
-                    var priorityToDelete = _unitOfWork.Priority.Get(p => p.Description == priorityName);
-
-                    if (priorityToDelete != null)
-                    {
-                        if (_unitOfWork.Tasks.GetAll().Any(t => t.StatusId == priorityToDelete.Id))
-                        {
-                            TempData["ErrorMsg"] = "Oops something went wrong, you can't delete a priority that being use by some task currently.";
-                            return RedirectToAction("Index", "Status");
-                        }
-                        else
-                        {
-                            _unitOfWork.Priority.Remove(priorityToDelete);
-                        }
-                    }
+                    priorityToDelete.Add(_unitOfWork.Priority.Get(p => p.Description == priorityName));
                 }
-                _unitOfWork.Save();
-                TempData["SuccessMsg"] = priority.Length + " priority has been deleted successfully";
+                _unitOfWork.Priority.RemoveRange(priorityToDelete);
             }
-            return RedirectToAction("Index", "Priority");
+            _unitOfWork.Save();
+            TempData["SuccessMsg"] = priority.Length + " priority has been deleted successfully";
+            return Json(Url.Action("Index", "Priority"));
         }
 
     }

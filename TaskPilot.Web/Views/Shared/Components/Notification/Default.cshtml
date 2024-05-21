@@ -1,0 +1,32 @@
+﻿@model IEnumerable<TaskPilot.Web.ViewModels.NotificationViewModel>
+
+@{
+    Layout = null;
+}
+
+<a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="bi bi-bell"></i>
+    <div class="notification bg-primary rounded-circle"></div>
+</a>
+<div class="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2" data-bs-popper="static">
+    <div class="d-flex align-items-center justify-content-between py-3 px-3">
+        <h5 class="mb-0 fs-5 fw-semibold">Notifications</h5>
+        <span class="badge text-bg-primary rounded-4 px-3 py-1 lh-sm">@Model.Count()</span>
+    </div>
+    <div class="message-body overflow-auto" style="max-height: 360px;">
+        <div class="" style="padding: 0px;">
+            @foreach (var notif in Model)
+            {
+                <a href="@Url.Action("UpdateStatusRead", "Notification", new {Id = notif.Id, taskId = notif.taskId == null ? null : notif.taskId})" class="py-6 px-7 d-flex align-items-center dropdown-item">
+                    <span class="me-3">
+                    </span>
+                    <div class="w-75 d-inline-block v-middle">
+                        <h6 class="mb-1 fw-semibold lh-base">@notif.Title</h6>
+                        <span class="fs-2 text-end">Created @notif.CreatedAt</span>
+                    </div>
+                </a>
+            }
+        </div>
+    </div>
+</div>
+

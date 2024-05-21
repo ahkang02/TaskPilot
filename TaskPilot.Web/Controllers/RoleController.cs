@@ -75,7 +75,7 @@ namespace TaskPilot.Web.Controllers
                     };
 
                     await _roleManager.CreateAsync(roles);
-                    TempData["SuccessMsg"] = "A new status has been created";
+                    TempData["SuccessMsg"] = "A new role has been created";
                 }
                 else
                 {
@@ -109,41 +109,40 @@ namespace TaskPilot.Web.Controllers
 
         public async Task<IActionResult> Delete(string[] roleName)
         {
+            var roleToDelete = new List<ApplicationRole>();
             if (roleName.Length > 0)
             {
                 for (int i = 0; i < roleName.Length; i++)
                 {
                     var role = roleName[i];
-                    var roleToDelete = _unitOfWork.Roles.GetAllInclude(r => r.Name == role, null).Single();
-                    var users = _unitOfWork.Users.GetAll();
-                    if (roleToDelete != null)
-                    {
-                        foreach (var user in users)
-                        {
-                            bool flag = await _userManager.IsInRoleAsync(user, roleToDelete.Name);
-                            if (flag)
-                            {
+                    roleToDelete.Add(_unitOfWork.Roles.Get(r => r.Name == role));
+                }
 
-                                TempData["ErrorMsg"] = "There are user exist in the role, you can't delete a role when there's user exist.";
-                                return RedirectToAction("Index", "Role");
-                            }
-                            else
-                            {
-                                 _unitOfWork.Roles.Remove(roleToDelete);
-                            }
+                foreach (var role in roleToDelete)
+                {
+                    var users = _unitOfWork.Users.GetAll();
+                    foreach (var user in users)
+                    {
+                        bool flag = await _userManager.IsInRoleAsync(user, role.Name);
+                        if (flag)
+                        {
+                            TempData["ErrorMsg"] = "There are user exist in the role, you can't delete a role when there's user exist.";
+                            return BadRequest(new {data = Url.Action("Index", "Role")});
+                        }else
+                        {
+                            _unitOfWork.Roles.Remove(role);
                         }
                     }
-
                 }
             }
             _unitOfWork.Save();
             TempData["SuccessMsg"] = roleName.Length + " roles deleted successfully";
-            return RedirectToAction("Index", "Role");
+            return Json(Url.Action("Index", "Role"));
         }
 
         public IActionResult AssignPermission(string name)
         {
-            var role = _unitOfWork.Roles.GetAllInclude(r => r.Name == name, "Permissions" ).Single();
+            var role = _unitOfWork.Roles.GetAllInclude(r => r.Name == name, "Permissions").Single();
             var permissions = _unitOfWork.Permissions.GetAllInclude(null, "Features").OrderBy(r => r.Features.Name).ToList();
             var features = _unitOfWork.Features.GetAll().Select(r => r.Name);
 

@@ -135,8 +135,10 @@
 
             const Id = [];
             data.forEach((row) => {
-                Id.push(row.Description);
+                Id.push(row.description);
             });
+
+            console.log(Id);
 
             if (confirm("Are you sure you want to delete " + Id.length + " statuses")) {
                 for (let idx = 0; idx < Id.length; idx++) {
@@ -144,12 +146,13 @@
                         url: '@Url.Action("Delete", "Status")',
                         type: "POST",
                         dataType: "json",
-                        data: { status: Id }
-
+                        data: { status: Id },
+                        success: function(data) {
+                            window.location.href = data;
+                        }
                     });
                 }
             }
-            window.location.reload();
         });
 
         $('input[name="select-all"]').on('click', function (e) {

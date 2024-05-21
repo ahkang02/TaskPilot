@@ -1,0 +1,112 @@
+﻿@model TaskPilot.Web.ViewModels.UserPermissionViewModel;
+
+@{
+    Layout = null;
+}
+
+
+<nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+    <ul id="sidebarnav">
+        <li class="nav-small-cap">
+            <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+            <span class="hide-menu">Home</span>
+        </li>
+        @if (Model.UserPermissions.Any(r => r.Name == "Index" && r.Features.Name == "Dashboard"))
+        {
+        <li class="sidebar-item">
+                <a class="sidebar-link" asp-action="Index" asp-controller="Dashboard" aria-expanded="false">
+                <span>
+                    <i class="bi bi-columns-gap"></i>
+                </span>
+                <span class="hide-menu">Dashboard</span>
+            </a>
+        </li>
+        }
+        <li class="nav-small-cap">
+            <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+            <span class="hide-menu">Task Management</span>
+        </li>
+        @if (Model.UserPermissions.Any(r => r.Name == "Index" && r.Features.Name == "Task"))
+        {
+        <li class="sidebar-item">
+                    <a class="sidebar-link" asp-action="Index" asp-controller="Task" aria-expanded="false">
+                <span>
+                    <i class="bi bi-clipboard"></i>
+                </span>
+                <span class="hide-menu">Task List</span>
+            </a>
+        </li>
+        }
+        @if (Model.UserPermissions.Any(r => r.Name == "New" && r.Features.Name == "Task"))
+        {
+        <li class="sidebar-item">
+                    <a class="sidebar-link" asp-action="New" asp-controller="Task" aria-expanded="false">
+                <span>
+                    <i class="bi bi-clipboard-plus"></i>
+                </span>
+                <span class="hide-menu">Create New Task</span>
+            </a>
+        </li>
+        }
+            @if (Model.UserPermissions.Any(r => r.Name == "ImportTask" && r.Features.Name == "Task"))
+        {
+        <li class="sidebar-item">
+                    <a class="sidebar-link" asp-action="ImportTask" asp-controller="Task" aria-expanded="false">
+                <span>
+                    <i class="bi bi-file-earmark-arrow-up"></i>
+                </span>
+                <span class="hide-menu">Import Task</span>
+            </a>
+        </li>
+        }
+            @if (Model.UserPermissions.Any(r => r.Name == "Index" && r.Features.Name == "User"))
+        {
+        <li class="nav-small-cap">
+            <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+            <span class="hide-menu">System Management</span>
+        </li>
+
+        <li class="sidebar-item">
+                    <a class="sidebar-link" asp-action="Index" asp-controller="User"  aria-expanded="false">
+                <span>
+                    <i class="bi bi-person-add"></i>
+                </span>
+                <span class="hide-menu">User Management</span>
+            </a>
+        </li>
+        }
+            @if (Model.UserPermissions.Any(r => r.Name == "Index" && r.Features.Name == "Role"))
+        {
+        <li class="sidebar-item">
+                    <a class="sidebar-link" asp-action="Index" asp-controller="Role" aria-expanded="false">
+                <span>
+                    <i class="bi bi-person-gear"></i>
+                </span>
+                <span class="hide-menu">Role Management</span>
+            </a>
+        </li>
+        }
+            @if (Model.UserPermissions.Any(r => r.Name == "Index" && r.Features.Name == "Priority"))
+        {
+        <li class="sidebar-item">
+                    <a class="sidebar-link" asp-action="Index" asp-controller="Priority" aria-expanded="false">
+                <span>
+                    <i class="bi bi-sort-up"></i>
+                </span>
+                <span class="hide-menu">Priority Management</span>
+            </a>
+        </li>
+        }
+            @if (Model.UserPermissions.Any(r => r.Name == "Index" && r.Features.Name == "Status"))
+        {
+        <li class="sidebar-item">
+            <a class="sidebar-link" asp-action="Index" asp-controller="Status" aria-expanded="false">
+                <span>
+                    <i class="bi bi-check2-circle"></i>
+                </span>
+                <span class="hide-menu">Status Management</span>
+            </a>
+        </li>
+        }
+    </ul>
+</nav>

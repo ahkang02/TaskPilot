@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Abstractions;
 using System.Security.Claims;
 using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Domain.Entities;
@@ -102,30 +103,24 @@ namespace TaskPilot.Web.Controllers
 
         public IActionResult Delete(string[] status)
         {
+            var statusToDelete = new List<Statuses>();
             if (status.Length > 0)
             {
                 for (int i = 0; i < status.Length; i++)
                 {
                     var statusName = status[i];
-                    var statusToDelete = _unitOfWork.Status.Get(s => s.Description == statusName);
-
-                    if (statusToDelete != null)
-                    {
-                        if (_unitOfWork.Tasks.GetAll().Any(t => t.StatusId == statusToDelete.Id))
-                        {
-                            TempData["ErrorMsg"] = "Oops something went wrong, you can't delete a status that being use by some task currently.";
-                            return RedirectToAction("Index", "Status");
-                        }
-                        else
-                        {
-                            _unitOfWork.Status.Remove(statusToDelete);
-                        }
-                    }
+                    statusToDelete.Add(_unitOfWork.Status.Get(s => s.Description ==  statusName));
                 }
-                _unitOfWork.Save();
-                TempData["SuccessMsg"] = status.Length + " status has been deleted successfully";
+
+                if (statusToDelete != null)
+                {
+                    _unitOfWork.Status.RemoveRange(statusToDelete);
+                }
+
             }
-            return RedirectToAction("Index", "Status");
+            _unitOfWork.Save();
+            TempData["SuccessMsg"] = status.Length + " status has been deleted successfully";
+            return Json(Url.Action("Index", "Status"));
         }
     }
 
