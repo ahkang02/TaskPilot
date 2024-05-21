@@ -1,0 +1,145 @@
+﻿@model TaskPilot.Web.ViewModels.EditProfileViewModel
+
+@{
+    ViewBag.Title = "Profile";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <nav aria-label="breadcrumb" class="p-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Account</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Profile</li>
+            </ol>
+        </nav>
+        <div class="d-flex justify-content-center align-items-center">
+            <i class="bi bi-person-circle fw-bold" style="font-size: 10em;"></i>
+        </div>
+        <h1 class="text-center">User Profile</h1>
+        <div class="card-body">
+            <ul class="nav nav-tabs user-profile-tab" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a href="@Url.Action("Index", "Profile")" class="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center fs-3 py-3 active">
+                        <i class="bi bi-person-vcard me-2 fs-6"></i>
+                        <span class="d-none d-md-block">Detail</span>
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    @if (Model.UserPermissions.Any(u => u.Features.Name == "Profile" && u.Name == "EditPassword"))
+                    {
+                        <a href="@Url.Action("EditPassword", "Profile")" class="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center fs-3 py-3">
+                            <i class="bi bi-key me-2 fs-6"></i>
+                            <span class="d-none d-md-block">Credential</span>
+                        </a>
+                    }
+                </li>
+                <li class="nav-item" role="presentation">
+                    @if (Model.UserPermissions.Any(u => u.Features.Name == "Profile" && u.Name == "EditContact"))
+                    {
+                        <a href="@Url.Action("EditContact", "Profile")" class="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center fs-3 py-3">
+                            <i class="bi bi-telephone me-2 fs-6"></i>
+                            <span class="d-none d-md-block">Contact</span>
+                        </a>
+                    }
+                </li>
+            </ul>
+            <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-account" role="tabpanel" aria-labelledby="pills-account-tab" tabindex="0">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card w-100 border position-relative overflow-hidden mb-0">
+                                <div class="card-body p-4">
+                                    @if (Model.UserPermissions.Any(u => u.Features.Name == "Profile" && u.Name == "EditDetail"))
+                                    {
+                                        <a href="#" class="btn btn-sm btn-success float-end" id="editDetail">Edit</a>
+                                    }
+                                    <a href="#" class="btn bg-danger-subtle text-danger float-end btn-sm" id="cancelEdit">Cancel</a>
+
+                                    <h4 class="card-title">Personal Details</h4>
+                                    <p class="card-subtitle mb-4" id="editSubtitle">To change your personal detail click edit.</p>
+                                    @using (Html.BeginForm("EditDetail", "Profile", FormMethod.Post))
+                                    {
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    @Html.LabelFor(m => m.FirstName, new { @class = "form-label" })
+                                                    @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control editable", @readonly = "true", @disabled = "disabled" })
+                                                    @Html.ValidationMessageFor(m => m.FirstName)
+                                                </div>
+                                                <div class="mb-3">
+                                                    @Html.LabelFor(m => m.Email, new { @class = "form-label" })
+                                                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control editable", @readonly = "true", @disabled = "disabled" })
+                                                    @Html.ValidationMessageFor(m => m.Email)
+                                                </div>
+                                                <div class="mb-3">
+                                                    @Html.LabelFor(m => m.Username, new { @class = "form-label " })
+                                                    @Html.TextBoxFor(m => m.Username, new { @class = "form-control editable", @readonly = "true", @disabled = "disabled" })
+                                                    @Html.ValidationMessageFor(m => m.Username)
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    @Html.LabelFor(m => m.LastName, new { @class = "form-label " })
+                                                    @Html.TextBoxFor(m => m.LastName, new { @class = "form-control editable", @readonly = "true", @disabled = "disabled" })
+                                                    @Html.ValidationMessageFor(m => m.LastName)
+                                                </div>
+                                                <div class="mb-3 notEditable">
+                                                    @Html.LabelFor(m => m.UserRole, new { @class = "form-label" })
+                                                    @Html.TextBoxFor(m => m.UserRole, new { @class = "form-control", @disabled = "disabled" })
+                                                </div>
+                                                <div class="mb-3 notEditable">
+                                                    @Html.LabelFor(m => m.LastLogin, new { @class = "form-label" })
+                                                    @Html.TextBoxFor(m => m.LastLogin, new { @class = "form-control", @disabled = "disabled" })
+                                                </div>
+                                            </div>
+                                            @Html.HiddenFor(m => m.Id)
+                                            @Html.AntiForgeryToken()
+
+                                            <div class="col-12" id="editDiv">
+                                                <div class="d-flex align-items-center justify-content-end mt-4 gap-6">
+                                                    <button class="btn btn-primary">Save</button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#editDiv").hide();
+            $("#cancelEdit").hide();
+        })
+
+        $("#editDetail").on("click", function () {
+            $(".editable").removeAttr("readonly")
+            $(".editable").removeAttr("disabled")
+            $("#editDiv").show();
+            $(".notEditable").hide()
+            $("#editSubtitle").html("To save your changes on personal detail click save")
+            $("#editDetail").hide()
+            $("#cancelEdit").show()
+        })
+
+        $("#cancelEdit").on("click", function () {
+            $(".editable").attr("readonly", "true")
+            $(".editable").attr("disabled", "disabled")
+            $("#editDiv").hide();
+            $(".notEditable").show()
+            $("#editSubtitle").html("To change your personal detail click edit.")
+            $("#editDetail").show()
+            $("#cancelEdit").hide()
+        })
+
+    </script>
+}
