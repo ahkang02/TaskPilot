@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -8,6 +9,7 @@ using TaskPilot.Web.ViewModels;
 
 namespace TaskPilot.Web.Controllers
 {
+    [Authorize(Policy = "CustomPolicy")]
     public class RoleController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

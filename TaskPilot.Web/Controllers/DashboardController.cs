@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TaskPilot.Application.Common.Interfaces;
@@ -18,7 +19,7 @@ namespace TaskPilot.Web.Controllers
             _userManager = userManager;
         }
 
-
+        [Authorize(Policy = "CustomPolicy")]
         public async Task<IActionResult> Index()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;

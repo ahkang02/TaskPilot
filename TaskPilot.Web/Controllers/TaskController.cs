@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -11,6 +12,7 @@ using static Vonage.ProactiveConnect.Lists.SyncStatus;
 
 namespace TaskPilot.Web.Controllers
 {
+    [Authorize(Policy = "CustomPolicy")]
     public class TaskController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

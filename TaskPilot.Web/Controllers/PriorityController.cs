@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TaskPilot.Application.Common.Interfaces;
@@ -7,6 +8,7 @@ using TaskPilot.Web.ViewModels;
 
 namespace TaskPilot.Web.Controllers
 {
+    [Authorize(Policy = "CustomPolicy")]
     public class PriorityController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

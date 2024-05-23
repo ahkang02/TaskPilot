@@ -11,6 +11,7 @@ using TaskPilot.Web.ViewModels;
 
 namespace TaskPilot.Web.Controllers
 {
+    [AllowAnonymous]
     public class AccountController : Controller
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
@@ -28,6 +29,7 @@ namespace TaskPilot.Web.Controllers
             _emailSender = emailSender;
         }
 
+        [AllowAnonymous]
         public IActionResult Login(string? returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
@@ -128,6 +130,7 @@ namespace TaskPilot.Web.Controllers
             return View(viewModel);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
             if(userId == null || code == null)
@@ -141,6 +144,7 @@ namespace TaskPilot.Web.Controllers
           return View(result.Succeeded ? "ConfirmEmail" : BadRequest());
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel viewModel)
@@ -173,15 +177,20 @@ namespace TaskPilot.Web.Controllers
             return View(viewModel);
         }
 
+        [AllowAnonymous]
         public IActionResult ForgotPasswordConfirmation()
         {
             return View();
         }
 
+        [AllowAnonymous]
+
         public IActionResult ForgotPassword()
         {
             return View();
         }
+
+        [AllowAnonymous]
 
         public IActionResult ResetPassword(string code)
         {
@@ -192,6 +201,7 @@ namespace TaskPilot.Web.Controllers
             return View();
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel viewModel)
@@ -216,7 +226,8 @@ namespace TaskPilot.Web.Controllers
             ModelState.AddModelError("", result.ToString());
             return View();
         }
-
+        
+        [AllowAnonymous]
         public IActionResult ResetPasswordConfirmation()
         {
             return View();

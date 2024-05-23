@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -11,6 +12,7 @@ using Vonage.Users;
 
 namespace TaskPilot.Web.Controllers
 {
+    [Authorize(Policy = "CustomPolicy")]
     public class ProfileController : Controller
     {
         private IUnitOfWork _unitOfWork;

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Abstractions;
 using System.Security.Claims;
@@ -8,6 +9,7 @@ using TaskPilot.Web.ViewModels;
 
 namespace TaskPilot.Web.Controllers
 {
+    [Authorize(Policy = "CustomPolicy")]
     public class StatusController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
