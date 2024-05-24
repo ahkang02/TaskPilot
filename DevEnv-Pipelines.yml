@@ -51,16 +51,16 @@ stages:
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
 
-- stage: 'Release'
-  displayName: 'Releasing Successful Build'
-  dependsOn: 'Test'
-  condition: succeeded()
-  jobs:
-  - job: 'Release'
-    displayName: 'Release Build'
+# - stage: 'Release'
+#   displayName: 'Releasing Successful Build'
+#   dependsOn: 'Test'
+#   condition: succeeded()
+#   jobs:
+#   - job: 'Release'
+#     displayName: 'Release Build'
 
-- stage: 'Deploy'
-  displayName: 'Deploying Application To Azure'
-  dependsOn: 'Test'
+# - stage: 'Deploy'
+#   displayName: 'Deploying Application To Azure'
+#   dependsOn: 'Test'
 
 
