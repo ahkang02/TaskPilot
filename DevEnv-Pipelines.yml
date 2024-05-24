@@ -9,6 +9,7 @@ trigger:
 pool: 
   vmImage: 'ubuntu-latest'
   name: Dev-Agent-Pool
+  demands: agent.name -equals dev-agent
 
 variables:
   solution: '**/*.sln'
