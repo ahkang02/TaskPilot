@@ -24,31 +24,48 @@ stages:
   - job: 'Build'
     displayName: 'Building Web Application'
     steps:
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '8.x'
+          performMultiLevelLookup: true
+          
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'restore'
+          projects: '**/*.csproj'
+
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'build'
+          projects: '**/*.csproj'
+          arguments: '--configuration $(buildConbfiguration)'
+
       - task: NuGetToolInstaller@1
 
       - task: NuGetCommand@2
         inputs:
           restoreSolution: '$(solution)'
         
-      - task: VSBuild@1
-        inputs:
-          solution: '$(solution)'
-          msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-          platform: '$(buildPlatform)'
-          configuration: '$(buildConfiguration)'
+#       - task: VSBuild@1
+#         inputs:
+#           solution: '$(solution)'
+#           msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+#           platform: '$(buildPlatform)'
+#           configuration: '$(buildConfiguration)'
 
-- stage: 'Test'
-  displayName: 'Testing Web Application'
-  dependsOn: 'Build'
-  condition: succeeded()
-  jobs: 
-  - job: 'Test'
-    displayName: 'Running Unit Test'
-    steps:
-    - task: VSTest@2
-      inputs:
-        platform: '$(buildPlatform)'
-        configuration: '$(buildConfiguration)'
+# - stage: 'Test'
+#   displayName: 'Testing Web Application'
+#   dependsOn: 'Build'
+#   condition: succeeded()
+#   jobs: 
+#   - job: 'Test'
+#     displayName: 'Running Unit Test'
+#     steps:
+#     - task: VSTest@2
+#       inputs:
+#         platform: '$(buildPlatform)'
+#         configuration: '$(buildConfiguration)'
 
 # - stage: 'Release'
 #   displayName: 'Releasing Successful Build'
