@@ -1,8 +1,9 @@
 trigger:
 - master
 
-pool:
-  vmImage: 'windows-latest'
+pool: 
+  name: Dev
+  demands: agent.name -equals dev-build
 
 variables:
   solution: '**/*.sln'
