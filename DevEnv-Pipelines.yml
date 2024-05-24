@@ -28,7 +28,6 @@ stages:
         inputs:
           packageType: 'sdk'
           version: '8.x'
-          performMultiLevelLookup: true
           
       - task: DotNetCoreCLI@2
         inputs:
