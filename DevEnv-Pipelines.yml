@@ -1,0 +1,66 @@
+# ASP.NET
+# Build and test ASP.NET projects.
+# Add steps that publish symbols, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+
+trigger:
+- master
+
+pool: 
+  vmImage: 'ubuntu-latest'
+  name: Azure Pipelines
+  demands: agent.name -equals Hosted Agent
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  azureSubscription: 'Visual Studio Professional Subscription(77d14826-ec58-446e-aa89-f113654340aa)'
+  appServiceName: ''
+
+stages:
+- stage: 'Build'
+  displayName: 'Build Web Application'
+  jobs:
+  - job: 'Build'
+    displayName: 'Building Web Application'
+    steps:
+      - task: NuGetToolInstaller@1
+
+      - task: NuGetCommand@2
+        inputs:
+          restoreSolution: '$(solution)'
+        
+      - task: VSBuild@1
+        inputs:
+          solution: '$(solution)'
+          msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+          platform: '$(buildPlatform)'
+          configuration: '$(buildConfiguration)'
+
+- stage: 'Test'
+  displayName: 'Testing Web Application'
+  dependsOn: 'Build'
+  condition: succeeded()
+  jobs: 
+  - job: 'Test'
+    displayName: 'Running Unit Test'
+    steps:
+    - task: VSTest@2
+      inputs:
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+- stage: 'Release'
+  displayName: 'Releasing Successful Build'
+  dependsOn: 'Test'
+  condition: succeeded()
+  jobs:
+  - job: 'Release'
+    displayName: 'Release Build'
+
+- stage: 'Deploy'
+  displayName: 'Deploying Application To Azure'
+  dependsOn: 'Test'
+
+
