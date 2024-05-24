@@ -8,8 +8,8 @@ trigger:
 
 pool: 
   vmImage: 'ubuntu-latest'
-  name: Azure Pipelines
-  demands: agent.name -equals Hosted Agent
+  name: Default
+  demands: agent.name -equals dev-agent
 
 variables:
   solution: '**/*.sln'
