@@ -32,12 +32,12 @@ stages:
       - task: DotNetCoreCLI@2
         inputs:
           command: 'restore'
-          projects: '**/*.csproj'
+          projects: 'TaskPilot.Web/*.csproj'
 
       - task: DotNetCoreCLI@2
         inputs:
           command: 'build'
-          projects: '**/*.csproj'
+          projects: 'TaskPilot.Web/*.csproj'
           arguments: '--configuration $(buildConbfiguration)'
 
       - task: NuGetToolInstaller@1
