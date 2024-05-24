@@ -7,9 +7,8 @@ trigger:
 - master
 
 pool: 
-  vmImage: 'ubuntu-latest'
-  name: Dev-Agent-Pool
-  demands: agent.name -equals dev-agent
+  name: Dev
+  demands: agent.name -equals dev-build
 
 variables:
   solution: '**/*.sln'
