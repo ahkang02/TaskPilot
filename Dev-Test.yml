@@ -17,24 +17,8 @@ resources:
     trigger: true
 
 stages:
-- stage: 'Archiving'
-  displayName: 'Building Zip Packages'
-  jobs:
-  - job: 'Archiving'
-    displayName: 'Building Zip Packages'
-    steps:
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(Build.BinariesDirectory)'
-        includeRootFolder: false
-        archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-        replaceExistingArchive: true
-
 - stage: 'Release'
   displayName: 'Release Artifact'
-  dependsOn: 'Archiving'
-  condition: succeeded()
   jobs:
   - job: 'Release'
     displayName: 'Release Artifact'
