@@ -1,7 +1,7 @@
 trigger:
 - master
 
-pool: 
+pool:
   name: Dev
   demands: agent.name -equals dev-build
 
@@ -22,13 +22,13 @@ stages:
   jobs:
   - job: 'Archiving'
     displayName: 'Building Zip Packages'
-    steps: 
+    steps:
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: '$(Build.BinariesDirectory)'
         includeRootFolder: false
         archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.Id).zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
         replaceExistingArchive: true
 
 - stage: 'Release'
@@ -36,16 +36,16 @@ stages:
   dependsOn: 'Archiving'
   condition: succeeded()
   jobs:
-   - job: 'Release'
-     displayName: 'Release Artifact'
-     steps:
-     - task: CopyFiles@2
-       inputs:
+  - job: 'Release'
+    displayName: 'Release Artifact'
+    steps:
+    - task: CopyFiles@2
+      inputs:
         contents: '_buildOutput/**'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
-     - task: PublishBuildArtifacts@1
-       inputs:
+    - task: PublishBuildArtifacts@1
+      inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
         ArtifactName: 'drop'
         publishLocation: 'Container'
