@@ -66,3 +66,14 @@ stages:
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
         replaceExistingArchive: true
+
+- stage: 'Release'
+  displayName: 'Release Artifact'
+  jobs:
+  - job: 'Release'
+    displayName: 'Release Artifact'
+    steps:
+    - task: CopyFiles@2
+      inputs:
+        contents: '_buildOutput/**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
