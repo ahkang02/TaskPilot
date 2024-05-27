@@ -33,10 +33,10 @@ stages:
         artifactName: 'taskpilotartifact'
         downloadPath: '$(System.ArtifactsDirectory)'
 
-    - task: AzureWebApp@1
-      inputs:
-            azureSubscription: 'Visual Studio Professional Subscription(77d14826-ec58-446e-aa89-f113654340aa)'
-            appType: 'webApp'
-            appName: 'taskpilotdemo'
-            package: '$(System.DefaultWorkingDirectory)/**/*.zip'
-            deploymentMethod: 'auto'
+    # - task: AzureWebApp@1
+    #   inputs:
+    #         azureSubscription: 'Visual Studio Professional Subscription(77d14826-ec58-446e-aa89-f113654340aa)'
+    #         appType: 'webApp'
+    #         appName: 'taskpilotdemo'
+    #         package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    #         deploymentMethod: 'auto'
