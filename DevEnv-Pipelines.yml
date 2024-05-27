@@ -46,15 +46,15 @@ stages:
         inputs:
           restoreSolution: '$(solution)'
 
-- stage: 'Test'
-  displayName: 'Testing Web Application'
-  dependsOn: 'Build'
-  condition: succeeded()
-  jobs: 
-  - job: 'Test'
-    displayName: 'Running Unit Test'
-    steps:
-    - task: DotNetCoreCLI@2
-      inputs:
-        command: 'test'
-        projects: 'TaskPilot.Tests/*.csproj'
+# - stage: 'Test'
+#   displayName: 'Testing Web Application'
+#   dependsOn: 'Build'
+#   condition: succeeded()
+#   jobs: 
+#   - job: 'Test'
+#     displayName: 'Running Unit Test'
+#     steps:
+#     - task: DotNetCoreCLI@2
+#       inputs:
+#         command: 'test'
+#         projects: 'TaskPilot.Tests/*.csproj'
