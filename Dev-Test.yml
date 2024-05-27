@@ -5,31 +5,38 @@
 #   name: Dev
 #   demands: agent.name -equals dev-build
 
-# variables:
-#   solution: '**/*.sln'
-#   buildPlatform: 'Any CPU'
-#   buildConfiguration: 'Release'
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
 
-# resources:
-#   pipelines:
-#   - pipeline: Dev-Build
-#     source: Dev-Build
-#     trigger: true
+resources:
+  pipelines:
+  - pipeline: Dev-Build
+    source: Dev-Build
+    trigger: true
 
-# stages:
-# - stage: 'Release'
-#   displayName: 'Release Artifact'
-#   jobs:
-#   - job: 'Release'
-#     displayName: 'Release Artifact'
-#     steps:
-#     - task: CopyFiles@2
-#       inputs:
-#         contents: '_buildOutput/**'
-#         TargetFolder: '$(Build.ArtifactStagingDirectory)'
+stages:
+- stage: 'Release'
+  displayName: 'Download Artifact'
+  jobs:
+  - job: 'Release'
+    displayName: 'Download Artifact'
+    steps:
+    - task: DownloadBuildArtifacts@1
+      inputs:
+        buildType: 'specific'
+        project: '2eeadc56-68bf-40b7-b658-ea99a0e7a042'
+        pipeline: '4'
+        buildVersionToDownload: 'latest'
+        downloadType: 'specific'
+        artifactName: 'taskpilotartifact'
+        downloadPath: '$(System.ArtifactsDirectory)'
 
-#     - task: PublishBuildArtifacts@1
-#       inputs:
-#         PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-#         ArtifactName: 'drop'
-#         publishLocation: 'Container'
+    - task: AzureWebApp@1
+      inputs:
+            azureSubscription: 'Visual Studio Professional Subscription(77d14826-ec58-446e-aa89-f113654340aa)'
+            appType: 'webApp'
+            appName: 'taskpilotdemo'
+            package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+            deploymentMethod: 'auto'
