@@ -9,8 +9,6 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  azureSubscription: 'Visual Studio Professional Subscription(77d14826-ec58-446e-aa89-f113654340aa)'
-  appServiceName: 'your-app-service-name' # Update with your Azure Web App name
 
 stages:
 - stage: 'Build'
@@ -19,6 +17,17 @@ stages:
   - job: 'Build'
     displayName: 'Building Web Application'
     steps:
+    
+      - task: NuGetToolInstaller@1
+        name: 'NugetToolInstaller'
+
+      - task: NuGetCommand@2
+        name: 'RestoreNuget'
+        inputs:
+          command: 'restore'
+          restoreSolution: '$(solution)'
+          feedsToUse: 'select'
+
       - task: UseDotNet@2
         inputs:
           packageType: 'sdk'
@@ -35,47 +44,24 @@ stages:
           projects: 'TaskPilot.Web/*.csproj'
           arguments: '--configuration Release'
 
-      - task: ArchiveFiles@2
-        displayName: 'Archive Build Artifacts'
+      - task: DotNetCoreCLI@2
         inputs:
-          rootFolderOrFile: '$(Build.BinariesDirectory)'
-          includeRootFolder: false
-          archiveType: 'zip'
-          archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-          replaceExistingArchive: true
+          command: 'test'
+          projects: 'TaskPilot.Tests/*.csproj'
+          arguments: '--configuration Release'
 
-- stage: 'Test'
-  displayName: 'Testing Web Application'
-  dependsOn: 'Build'
-  condition: succeeded()
-  jobs: 
-  - job: 'Test'
-    displayName: 'Running Unit Test'
-    steps:
-    - task: DotNetCoreCLI@2
-      inputs:
-        command: 'test'
-        projects: 'TaskPilot.Tests/*.csproj'
-        arguments: '--configuration Release'
-
-- stage: 'Release'
-  displayName: 'Release Artifact'
-  dependsOn: 'Test'
-  condition: succeeded()
-  jobs:
-  - job: 'Release'
-    displayName: 'Release Artifact'
-    steps:
-    - task: PublishPipelineArtifact@1
-      displayName: 'Publish Artifact'
-      inputs:
-        targetPath: '$(Build.ArtifactStagingDirectory)'
-        artifact: 'website-artifact'
-
-    - task: AzureWebApp@1
-      inputs:
-        azureSubscription: $(azureSubscription)
-        appType: 'webApp'
-        appName: $(appServiceName)
-        package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-        deploymentMethod: 'auto'
+      - task: DotNetCoreCLI@2
+        name: 'buildArtifact'
+        inputs:
+          command: 'publish'
+          publishWebProjects: false
+          projects: 'TaskPilot.Web/*.csproj'
+          arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+          zipAfterPublish: true
+          
+      - task: PublishBuildArtifacts@1
+        name: 'publishArtifact'
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'taskpilotartifact'
+          publishLocation: Container
