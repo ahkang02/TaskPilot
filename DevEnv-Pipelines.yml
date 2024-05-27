@@ -16,7 +16,6 @@ variables:
   buildConfiguration: 'Release'
   azureSubscription: 'Visual Studio Professional Subscription(77d14826-ec58-446e-aa89-f113654340aa)'
   appServiceName: ''
-  customPath: 'C:\Users\CHON058\agent\bin'
 
 stages:
 - stage: 'Build'
@@ -41,6 +40,15 @@ stages:
           projects: 'TaskPilot.Web/*.csproj'
           arguments: '--configuration Release'
 
+      - task: ArchiveFiles@2
+        displayName: 'Archive Build Artifacts'
+        inputs:
+          rootFolderOrFile: '$(Build.BinariesDirectory)'
+          includeRootFolder: false
+          archiveType: 'zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+          replaceExistingArchive: true
+
 - stage: 'Test'
   displayName: 'Testing Web Application'
   dependsOn: 'Build'
@@ -55,26 +63,9 @@ stages:
         projects: 'TaskPilot.Tests/*.csproj'
         arguments: '--configuration Release'
 
-- stage: 'Archiving'
-  displayName: 'Building Zip Packages'
-  dependsOn: 'Test'
-  condition:  succeeded()
-  jobs:
-  - job: 'Archiving'
-    displayName: 'Building Zip Packages'
-    steps:
-    - task: ArchiveFiles@2
-      displayName: 'Archive Build Artifacts'
-      inputs:
-        rootFolderOrFile: '$(Build.BinariesDirectory)'
-        includeRootFolder: false
-        archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-        replaceExistingArchive: true
-
 - stage: 'Release'
   displayName: 'Release Artifact'
-  dependsOn: 'Archiving'
+  dependsOn: 'Test'
   condition: succeeded()
   jobs:
   - job: 'Release'
