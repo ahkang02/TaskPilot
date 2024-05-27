@@ -38,13 +38,7 @@ stages:
         inputs:
           command: 'build'
           projects: 'TaskPilot.Web/*.csproj'
-          arguments: '--configuration $(buildConbfiguration)'
-
-      - task: NuGetToolInstaller@1
-
-      - task: NuGetCommand@2
-        inputs:
-          restoreSolution: '$(solution)'
+          arguments: '--configuration $(buildConfiguration)'
 
 # - stage: 'Test'
 #   displayName: 'Testing Web Application'
