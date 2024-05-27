@@ -40,15 +40,29 @@ stages:
           projects: 'TaskPilot.Web/*.csproj'
           arguments: '--configuration $(buildConfiguration)'
 
-# - stage: 'Test'
-#   displayName: 'Testing Web Application'
-#   dependsOn: 'Build'
-#   condition: succeeded()
-#   jobs: 
-#   - job: 'Test'
-#     displayName: 'Running Unit Test'
-#     steps:
-#     - task: DotNetCoreCLI@2
-#       inputs:
-#         command: 'test'
-#         projects: 'TaskPilot.Tests/*.csproj'
+- stage: 'Test'
+  displayName: 'Testing Web Application'
+  dependsOn: 'Build'
+  condition: succeeded()
+  jobs: 
+  - job: 'Test'
+    displayName: 'Running Unit Test'
+    steps:
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'test'
+        projects: 'TaskPilot.Tests/*.csproj'
+
+- stage: 'Archiving'
+  displayName: 'Building Zip Packages'
+  jobs:
+  - job: 'Archiving'
+    displayName: 'Building Zip Packages'
+    steps:
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(Build.BinariesDirectory)'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        replaceExistingArchive: true
