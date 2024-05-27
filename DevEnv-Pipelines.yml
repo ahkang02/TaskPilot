@@ -32,12 +32,12 @@ stages:
       - task: DotNetCoreCLI@2
         inputs:
           command: 'restore'
-          projects: '**/*.csproj'
+          projects: 'TaskPilot.Web/*.csproj'
 
       - task: DotNetCoreCLI@2
         inputs:
           command: 'build'
-          projects: '**/*.csproj'
+          projects: 'TaskPilot.Web/*.csproj'
           arguments: '--configuration $(buildConbfiguration)'
 
       - task: NuGetToolInstaller@1
@@ -45,37 +45,16 @@ stages:
       - task: NuGetCommand@2
         inputs:
           restoreSolution: '$(solution)'
-        
-#       - task: VSBuild@1
-#         inputs:
-#           solution: '$(solution)'
-#           msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-#           platform: '$(buildPlatform)'
-#           configuration: '$(buildConfiguration)'
 
-# - stage: 'Test'
-#   displayName: 'Testing Web Application'
-#   dependsOn: 'Build'
-#   condition: succeeded()
-#   jobs: 
-#   - job: 'Test'
-#     displayName: 'Running Unit Test'
-#     steps:
-#     - task: VSTest@2
-#       inputs:
-#         platform: '$(buildPlatform)'
-#         configuration: '$(buildConfiguration)'
-
-# - stage: 'Release'
-#   displayName: 'Releasing Successful Build'
-#   dependsOn: 'Test'
-#   condition: succeeded()
-#   jobs:
-#   - job: 'Release'
-#     displayName: 'Release Build'
-
-# - stage: 'Deploy'
-#   displayName: 'Deploying Application To Azure'
-#   dependsOn: 'Test'
-
-
+- stage: 'Test'
+  displayName: 'Testing Web Application'
+  dependsOn: 'Build'
+  condition: succeeded()
+  jobs: 
+  - job: 'Test'
+    displayName: 'Running Unit Test'
+    steps:
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'test'
+        projects: 'TaskPilot.Tests/*.csproj'

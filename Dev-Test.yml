@@ -16,5 +16,31 @@ resources:
     source: Dev-Build
     trigger: true
 
-steps:
-- bash: echo "app-ci runs after security-lib-ci completes"
+stages:
+- stage: 'Archiving'
+  displayName: 'Building Zip Packages'
+  jobs:
+  - job: 'Archiving'
+    displayName: 'Building Zip Packages'
+    steps: 
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(Build.BinariesDirectory)'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.Id).zip'
+        replaceExistingArchive: true
+
+- stage: 'Release'
+  displayName: 'Release Artifact'
+  dependsOn: 'Archiving'
+  condition: succeeded()
+  jobs:
+   - job: 'Release'
+     displayName: 'Release Artifact'
+     steps:
+     - task: PublishBuildArtifacts@1
+       inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
