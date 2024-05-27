@@ -39,7 +39,7 @@ stages:
         inputs:
           command: 'build'
           projects: 'TaskPilot.Web/*.csproj'
-          arguments: '--configuration $(buildConfiguration)'
+          arguments: '--configuration Release'
 
 - stage: 'Test'
   displayName: 'Testing Web Application'
@@ -53,16 +53,20 @@ stages:
       inputs:
         command: 'test'
         projects: 'TaskPilot.Tests/*.csproj'
+        arguments: '--configuration Release'
 
 - stage: 'Archiving'
   displayName: 'Building Zip Packages'
+  dependsOn: 'Test'
+  condition:  succeeded()
   jobs:
   - job: 'Archiving'
     displayName: 'Building Zip Packages'
     steps:
     - task: ArchiveFiles@2
+      displayName: 'Archive Build Artifacts'
       inputs:
-        rootFolderOrFile: '$(customPath)'
+        rootFolderOrFile: '$(Build.BinariesDirectory)'
         includeRootFolder: false
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
@@ -70,11 +74,14 @@ stages:
 
 - stage: 'Release'
   displayName: 'Release Artifact'
+  dependsOn: 'Archiving'
+  condition: succeeded()
   jobs:
   - job: 'Release'
     displayName: 'Release Artifact'
     steps:
-    - task: CopyFiles@2
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Artifact'
       inputs:
-        contents: '_buildOutput/**'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+        targetPath: '$(Build.ArtifactStagingDirectory)'
+        artifact: 'website-artifact'
