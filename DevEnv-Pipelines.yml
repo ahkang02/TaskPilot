@@ -16,6 +16,7 @@ variables:
   buildConfiguration: 'Release'
   azureSubscription: 'Visual Studio Professional Subscription(77d14826-ec58-446e-aa89-f113654340aa)'
   appServiceName: ''
+  customPath: 'C:\Users\CHON058\agent\bin'
 
 stages:
 - stage: 'Build'
@@ -61,7 +62,7 @@ stages:
     steps:
     - task: ArchiveFiles@2
       inputs:
-        rootFolderOrFile: '$(Build.BinariesDirectory)'
+        rootFolderOrFile: '$(customPath)'
         includeRootFolder: false
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
