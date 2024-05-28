@@ -31,12 +31,12 @@ stages:
         buildVersionToDownload: 'latest'
         downloadType: 'specific'
         artifactName: 'taskpilotartifact'
-        downloadPath: '$(System.ArtifactsDirectory)'
+        downloadPath: '$(Build.ArtifactsDirectory)'
 
     - task: AzureWebApp@1
       inputs:
         azureSubscription: 'UADEVOPS'
         appType: 'webApp'
         appName: 'taskpilotdemo'
-        package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+        package: '$(Build.ArtifactsDirectory)/taskpilotartifact/*.zip'
         deploymentMethod: 'auto'
