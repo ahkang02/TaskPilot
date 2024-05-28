@@ -31,19 +31,11 @@ stages:
         downloadType: 'specific'
         artifactName: 'taskpilotartifact'
         downloadPath: '$(Build.ArtifactsDirectory)'
-
-- stage: 'Deploying'
-  dependsOn: 'Downloading'
-  condition: succeeded()
-  displayName: 'Deploying To Azure'
-  jobs:
-   - job: 'Deploying'
-     displayName: 'Deplyoing To Azure'
-     steps:
-      - task: AzureWebApp@1
-        inputs:
-          azureSubscription: 'UADEVOPS'
-          appType: 'webApp'
-          appName: 'taskpilotdemo'
-          package: '$(Build.ArtifactsDirectory)/taskpilotartifact/*.zip'
-          deploymentMethod: 'auto'
+      
+    - task: AzureWebApp@1
+      inputs:
+        azureSubscription: 'UADEVOPS'
+        appType: 'webApp'
+        appName: 'taskpilotdemo'
+        package: '$(Build.ArtifactsDirectory)/taskpilotartifact/*.zip'
+        deploymentMethod: 'auto'
