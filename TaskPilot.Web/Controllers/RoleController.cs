@@ -117,7 +117,7 @@ namespace TaskPilot.Web.Controllers
                 for (int i = 0; i < roleName.Length; i++)
                 {
                     var role = roleName[i];
-                    roleToDelete.Add(_unitOfWork.Roles.Get(r => r.Name == role));
+                    roleToDelete.Add(_unitOfWork.Roles.Get(r => r.Id == role));
                 }
 
                 foreach (var role in roleToDelete)

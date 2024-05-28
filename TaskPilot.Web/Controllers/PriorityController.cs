@@ -103,18 +103,34 @@ namespace TaskPilot.Web.Controllers
             return View("New", viewModel);
         }
 
-        public IActionResult Delete(string[] priority)
+        public IActionResult Delete(Guid[] priority)
         {
             var priorityToDelete = new List<Priorities>();
             if (priority.Length > 0)
             {
                 for (int i = 0; i < priority.Length; i++)
                 {
-                    var priorityName = priority[i];
-                    priorityToDelete.Add(_unitOfWork.Priority.Get(p => p.Description == priorityName));
+                    var priorityId = priority[i];
+                    priorityToDelete.Add(_unitOfWork.Priority.Get(p => p.Id == priorityId));
                 }
-                _unitOfWork.Priority.RemoveRange(priorityToDelete);
             }
+
+            if (priorityToDelete != null)
+            {
+                foreach (var priorities in priorityToDelete)
+                {
+                    if (_unitOfWork.Tasks.GetAll().Any(s => s.PriorityId == priorities.Id))
+                    {
+                        TempData["ErrorMsg"] = "You can't delete a priority that is being used by any task currently.";
+                        return Json(Url.Action("Index", "Priority"));
+                    }
+                    else
+                    {
+                        _unitOfWork.Priority.Remove(priorities);
+                    }
+                }
+            }
+
             _unitOfWork.Save();
             TempData["SuccessMsg"] = priority.Length + " priority has been deleted successfully";
             return Json(Url.Action("Index", "Priority"));

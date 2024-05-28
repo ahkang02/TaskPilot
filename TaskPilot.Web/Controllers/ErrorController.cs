@@ -3,21 +3,30 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace TaskPilot.Web.Controllers
 {
-    [AllowAnonymous]
     public class ErrorController : Controller
     {
-        public IActionResult AccessDenied()
+        [Route("/Error/{statusCode}")]
+        public IActionResult HttpStatusCodeHandler(int statusCode)
         {
-            return View();
-        }
-        public IActionResult NotFound()
-        {
-            return View();
-        }
+            ViewBag.Title = "Error: Access Denied";
+            ViewBag.ErrorMessage = "Hey! You're not supposed to be here!";
 
-        public IActionResult Back()
-        {
-            return RedirectToAction("Login", "Account");
+            switch (statusCode)
+            {
+                case 404:
+                    ViewBag.Title = "Error 404: Not Found";
+                    ViewBag.ErrorMessage = "The page you trying to access is not found.";
+                    break;
+                case 401:
+                    ViewBag.Title = "Error 403: Access Denied";
+                    ViewBag.ErrorMessage = "Hey! You're not supposed to be here!";
+                    break;
+                case 400:
+                    ViewBag.Title = "Error 400: Bad Request";
+                    ViewBag.ErrorMessage = "Something went wrong!";
+                    break;
+            }
+            return View("Error");
         }
     }
 }

@@ -22,7 +22,7 @@ namespace TaskPilot.Web.ViewModels
         public string Email { get; set; }
 
         [Display(Name = "User Role")]
-        public string UserRole { get; set; }
+        public string? UserRole { get; set; }
 
         [Display(Name = "Last Logged In")]
         public DateTime? LastLogin { get; set; }

@@ -103,20 +103,31 @@ namespace TaskPilot.Web.Controllers
             return View("New", viewModel);
         }
 
-        public IActionResult Delete(string[] status)
+        public IActionResult Delete(Guid[] status)
         {
             var statusToDelete = new List<Statuses>();
             if (status.Length > 0)
             {
                 for (int i = 0; i < status.Length; i++)
                 {
-                    var statusName = status[i];
-                    statusToDelete.Add(_unitOfWork.Status.Get(s => s.Description ==  statusName));
+                    var statusId = status[i];
+                    statusToDelete.Add(_unitOfWork.Status.Get(s => s.Id == statusId));
                 }
 
                 if (statusToDelete != null)
                 {
-                    _unitOfWork.Status.RemoveRange(statusToDelete);
+                    foreach (var statuses in statusToDelete)
+                    {
+                        if (_unitOfWork.Tasks.GetAll().Any(s => s.StatusId == statuses.Id))
+                        {
+                            TempData["ErrorMsg"] = "You can't delete a status that is being used by any task currently.";
+                            return Json(Url.Action("Index", "Status"));
+                        }
+                        else
+                        {
+                            _unitOfWork.Status.Remove(statuses);
+                        }
+                    }
                 }
 
             }

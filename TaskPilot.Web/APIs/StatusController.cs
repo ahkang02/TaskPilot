@@ -25,6 +25,7 @@ namespace TaskPilot.Web.APIs
             {
                 statusDTOs.Add(new StatusDTO
                 {
+                    Id = stat.Id,
                     CreatedAt = stat.CreatedAt,
                     Description = stat.Description,
                     UpdatedAt = stat.UpdatedAt,

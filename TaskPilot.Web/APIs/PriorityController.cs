@@ -24,6 +24,7 @@ namespace TaskPilot.Web.APIs
             {
                 priorityDTOs.Add(new PriorityDTO
                 {
+                    Id = prior.Id,
                     CreatedAt = prior.CreatedAt,
                     Description = prior.Description,
                     UpdatedAt = prior.UpdatedAt,

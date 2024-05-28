@@ -11,7 +11,6 @@ using TaskPilot.Web.ViewModels;
 
 namespace TaskPilot.Web.Controllers
 {
-    [AllowAnonymous]
     public class AccountController : Controller
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
@@ -29,9 +28,13 @@ namespace TaskPilot.Web.Controllers
             _emailSender = emailSender;
         }
 
-        [AllowAnonymous]
         public IActionResult Login(string? returnUrl = null)
         {
+            if(User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Dashboard");
+            }
+
             returnUrl ??= Url.Content("~/");
             return View();
         }
@@ -81,7 +84,8 @@ namespace TaskPilot.Web.Controllers
                 }
                 else
                 {
-                    return NotFound();
+                    ModelState.AddModelError("", "Error: No such user found, please proceed to register");
+                    return View(viewModel);
                 }
 
             }
@@ -97,7 +101,7 @@ namespace TaskPilot.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                bool isUserExisted = _unitOfWork.Users.Get(u => u.UserName == viewModel.Username && u.Email == viewModel.Email) != null;
+                bool isUserExisted = _unitOfWork.Users.Get(u => u.UserName == viewModel.Username || u.Email == viewModel.Email) != null;
 
                 if (!isUserExisted)
                 {
@@ -125,6 +129,7 @@ namespace TaskPilot.Web.Controllers
                         return View("Login");
                     }
                     ModelState.AddModelError("", "User existed, please try logging-in");
+                    return View(viewModel);
                 }
             }
             return View(viewModel);
