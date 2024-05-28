@@ -1,9 +1,8 @@
-# trigger:
-# - master
+trigger: none
 
-# pool:
-#   name: Dev
-#   demands: agent.name -equals dev-build
+pool:
+  name: Dev
+  demands: agent.name -equals dev-build
 
 variables:
   solution: '**/*.sln'
