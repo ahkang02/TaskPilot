@@ -8,7 +8,7 @@ namespace TaskPilot.Web.ViewModels
         [Display(Name = "Current Task")]
         public string CurrentTask { get; set; }
 
-        public List<Tasks> ListOfTasks { get; set; }
+        public List<Tasks>? ListOfTasks { get; set; }
 
         [Display(Name = "Assign Dependency")]
         public Guid? DependencyID { get; set; }
