@@ -11,10 +11,10 @@ variables:
   buildConfiguration: 'Release'
 
 stages:
-- stage: 'Build'
-  displayName: 'Build Web Application'
+- stage: 'Building'
+  displayName: 'Building Web Application'
   jobs:
-  - job: 'Build'
+  - job: 'Building'
     displayName: 'Building Web Application'
     steps:
     
@@ -34,22 +34,40 @@ stages:
           version: '8.x'
           
       - task: DotNetCoreCLI@2
+        displayName: 'Restoring Project Files'
         inputs:
           command: 'restore'
           projects: 'TaskPilot.Web/*.csproj'
 
       - task: DotNetCoreCLI@2
+        displayName: 'Building Project Files'
         inputs:
           command: 'build'
           projects: 'TaskPilot.Web/*.csproj'
           arguments: '--configuration Release'
 
+- stage: 'Testing'
+  displayName: 'Running Unit Test'
+  dependsOn: 'Building'
+  condition: succeeded()
+  jobs:
+  - job: 'Testing'
+    displayName: 'Running Unit Test'
+    steps:
       - task: DotNetCoreCLI@2
         inputs:
           command: 'test'
           projects: 'TaskPilot.Tests/*.csproj'
           arguments: '--configuration Release'
 
+- stage: 'Compiling'
+  displayName: 'Building Artifact'
+  dependsOn: 'Testing'
+  condition: succeeded()
+  jobs:
+  - job: 'Compiling'
+    displayName: 'Building Artifact'
+    steps:
       - task: DotNetCoreCLI@2
         name: 'buildArtifact'
         inputs:
