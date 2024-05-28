@@ -16,10 +16,10 @@ resources:
     trigger: true
 
 stages:
-- stage: 'Release'
+- stage: 'Downloading'
   displayName: 'Download Artifact'
   jobs:
-  - job: 'Release'
+  - job: 'Downloading'
     displayName: 'Download Artifact'
     steps:
     - task: DownloadBuildArtifacts@1
@@ -32,10 +32,18 @@ stages:
         artifactName: 'taskpilotartifact'
         downloadPath: '$(Build.ArtifactsDirectory)'
 
-    - task: AzureWebApp@1
-      inputs:
-        azureSubscription: 'UADEVOPS'
-        appType: 'webApp'
-        appName: 'taskpilotdemo'
-        package: '$(Build.ArtifactsDirectory)/taskpilotartifact/*.zip'
-        deploymentMethod: 'auto'
+- stage: 'Deploying'
+  dependsOn: 'Downloading'
+  condition: succeeded()
+  displayName: 'Deploying To Azure'
+  jobs:
+   - job: 'Deploying'
+     displayName: 'Deplyoing To Azure'
+     steps:
+      - task: AzureWebApp@1
+        inputs:
+          azureSubscription: 'UADEVOPS'
+          appType: 'webApp'
+          appName: 'taskpilotdemo'
+          package: '$(Build.ArtifactsDirectory)/taskpilotartifact/*.zip'
+          deploymentMethod: 'auto'
