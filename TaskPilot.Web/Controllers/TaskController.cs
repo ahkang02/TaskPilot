@@ -662,7 +662,7 @@ namespace TaskPilot.Web.Controllers
                 ImportInfo = new List<TaskImportInfo>()
             };
 
-            if(formFile != null)
+            if (formFile != null)
             {
                 StreamReader csvReader = new StreamReader(formFile.OpenReadStream());
                 csvReader.ReadLine();
@@ -677,7 +677,7 @@ namespace TaskPilot.Web.Controllers
                         Description = value[1],
                         PriorityLevel = value[2],
                         Status = value[3],
-                        DueDate = DateTime.Parse(value[4]),
+                        DueDate = DateTime.Now.Date,
                         AssignToUser = value[5]
                     });
 
