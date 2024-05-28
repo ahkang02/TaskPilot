@@ -81,7 +81,6 @@ namespace TaskPilot.Web
                 app.UseHsts();
             }
 
-            app.UseStatusCodePagesWithRedirects("/Error/{0}");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
