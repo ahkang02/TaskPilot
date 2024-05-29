@@ -46,7 +46,7 @@ namespace TaskPilot.Web.Controllers
             }
             else
             {
-                var user = await _userManager.FindByNameAsync(viewModel.Username);
+                var user = await _userManager.FindByNameAsync(viewModel.Username!);
                 if (user != null)
                 {
 
@@ -54,7 +54,7 @@ namespace TaskPilot.Web.Controllers
                     {
                         return View("Error");
                     }
-                    var result = await _signInManager.PasswordSignInAsync(viewModel.Username, viewModel.Password, viewModel.RememberMe, true);
+                    var result = await _signInManager.PasswordSignInAsync(viewModel.Username!, viewModel.Password!, viewModel.RememberMe, true);
 
                     if (result.Succeeded)
                     {
@@ -103,8 +103,8 @@ namespace TaskPilot.Web.Controllers
 
                 if (!isUserExisted)
                 {
-                    var newUser = new ApplicationUser { UserName = viewModel.Username, Email = viewModel.Email, FirstName = viewModel.FirstName, LastName = viewModel.LastName, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now };
-                    var result = await _userManager.CreateAsync(newUser, viewModel.Password);
+                    var newUser = new ApplicationUser { UserName = viewModel.Username, Email = viewModel.Email, FirstName = viewModel.FirstName!, LastName = viewModel.LastName!, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now };
+                    var result = await _userManager.CreateAsync(newUser, viewModel.Password!);
 
                     if (result.Succeeded)
                     {
@@ -122,7 +122,7 @@ namespace TaskPilot.Web.Controllers
                         body = body.Replace("{Content}", "Account Confirmation");
                         body = body.Replace("{ConfirmationLink}", callbackUrl);
                         body = body.Replace("{UserName}", newUser.UserName);
-                        await _emailSender.SendEmailAsync(newUser.Email, subject: "Confirm your account", htmlMessage: body);
+                        await _emailSender.SendEmailAsync(newUser.Email!, subject: "Confirm your account", htmlMessage: body);
 
                         return View("Login");
                     }
@@ -154,7 +154,7 @@ namespace TaskPilot.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByEmailAsync(viewModel.Email)!;
+                var user = await _userManager.FindByEmailAsync(viewModel.Email!)!;
 
                 if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 {
@@ -219,14 +219,14 @@ namespace TaskPilot.Web.Controllers
                 return View(viewModel);
             }
 
-            var user = await _userManager.FindByEmailAsync(viewModel.Email);
+            var user = await _userManager.FindByEmailAsync(viewModel.Email!);
             if (user == null)
             {
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
             }
 
-            viewModel.Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(viewModel.Code));
-            var result = await _userManager.ResetPasswordAsync(user, viewModel.Code, viewModel.Password);
+            viewModel.Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(viewModel.Code!));
+            var result = await _userManager.ResetPasswordAsync(user, viewModel.Code, viewModel.Password!);
             if (result.Succeeded)
             {
                 return RedirectToAction("ResetPasswordConfirmation", "Account");

@@ -68,7 +68,7 @@ namespace TaskPilot.Web.Controllers
                 {
                     Priorities priority = new Priorities
                     {
-                        Description = viewModel.Name,
+                        Description = viewModel.Name!,
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now,
                     };
@@ -79,7 +79,7 @@ namespace TaskPilot.Web.Controllers
                 else
                 {
                     Priorities priorityToEdit = _unitOfWork.Priority.Get(p => p.Id == viewModel.Id);
-                    priorityToEdit.Description = viewModel.Name;
+                    priorityToEdit.Description = viewModel.Name!;
                     priorityToEdit.UpdatedAt = DateTime.Now;
 
                     _unitOfWork.Priority.Update(priorityToEdit);

@@ -18,9 +18,9 @@ namespace TaskPilot.Web.ViewComponents
             _userManager = userManager;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync()
+        public IViewComponentResult Invoke()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claimsIdentity = (ClaimsIdentity)User.Identity!;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             List<NotificationViewModel> viewModel = new List<NotificationViewModel>();
 
@@ -39,7 +39,7 @@ namespace TaskPilot.Web.ViewComponents
                         taskId = notification.TasksId,
                         Title = notification.Description,
                         CreatedAt = notification.CreatedAt,
-                        User = notification.User
+                        User = notification.User!
                     });
                 }
             }

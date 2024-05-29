@@ -6,13 +6,13 @@
 
     if (Model.RoleId == null)
     {
-        currTask = Model.Username;
+        currTask = Model.Username!;
         action = "Assign Role";
         ViewBag.Title = "New Role";
     }
     else
     {
-        currTask = Model.Username;
+        currTask = Model.Username!;
         action = "Assign Role";
         ViewBag.Title = "Assign Role";
     }

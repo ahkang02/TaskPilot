@@ -4,6 +4,6 @@ namespace TaskPilot.Web.ViewModels
 {
     public class UserPermissionViewModel
     {
-        public List<Permission> UserPermissions;
+        public required List<Permission> UserPermissions;
     }
 }

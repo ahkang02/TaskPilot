@@ -6,22 +6,22 @@ namespace TaskPilot.Web.ViewModels
     public class TaskImportInfo
     {
         [Required]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [Required]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [Required]
         [DateLessThanToday(ErrorMessage = "Due date cannot be in the past")]
-        public DateTime DueDate { get; set; }
+        public DateTime? DueDate { get; set; }
 
         [Required]
-        public string PriorityLevel { get; set; }
+        public string? PriorityLevel { get; set; }
 
         [Required]
-        public string Status { get; set; }
+        public string? Status { get; set; }
 
         [Required]
-        public string AssignToUser { get; set; }
+        public string? AssignToUser { get; set; }
     }
 }

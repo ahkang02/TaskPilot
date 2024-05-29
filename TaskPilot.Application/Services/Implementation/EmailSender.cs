@@ -19,10 +19,10 @@ namespace TaskPilot.Application.Services.Implementation
 
         public EmailSender(IConfiguration _config)
         {
-            Sender = _config.GetValue<string>("SMTP:Sender");
-            SecretKey = _config.GetValue<string>("SMTP:SecretKey");
-            Host = _config.GetValue<string>("SMTP:Host");
-            Port = _config.GetValue<string>("SMTP:Port");
+            Sender = _config.GetValue<string>("SMTP:Sender")!;
+            SecretKey = _config.GetValue<string>("SMTP:SecretKey")!;
+            Host = _config.GetValue<string>("SMTP:Host")!;
+            Port = _config.GetValue<string>("SMTP:Port")!;
         }
 
         public async Task SendEmailAsync(string email, string subject, string htmlMessage)

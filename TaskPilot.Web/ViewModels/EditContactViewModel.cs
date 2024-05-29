@@ -9,8 +9,8 @@ namespace TaskPilot.Web.ViewModels
         [Display(Name = "Phone Number")]
         [Required]
         [Phone]
-        public string PhoneNumber { get; set; }
+        public required string PhoneNumber { get; set; }
 
-        public List<Permission> UserPermissions;
+        public required List<Permission> UserPermissions;
     }
 }

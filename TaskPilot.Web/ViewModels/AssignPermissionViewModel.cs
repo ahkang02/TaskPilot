@@ -12,6 +12,6 @@ namespace TaskPilot.Web.ViewModels
         [Display(Name = "Active")]
         public bool IsActive { get; set; }
 
-        public List<FeaturePermissionViewModel>? FeaturePermissions { get; set; }
+        public required List<FeaturePermissionViewModel> FeaturePermissions { get; set; }
     }
 }

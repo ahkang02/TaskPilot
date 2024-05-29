@@ -146,7 +146,7 @@ namespace TaskPilot.Web.Controllers
         public IActionResult AssignPermission(string name)
         {
             var role = _unitOfWork.Roles.GetAllInclude(r => r.Name == name, "Permissions").Single();
-            var permissions = _unitOfWork.Permissions.GetAllInclude(null, "Features").OrderBy(r => r.Features.Name).ToList();
+            var permissions = _unitOfWork.Permissions.GetAllInclude(null, "Features").OrderBy(r => r.Features!.Name).ToList();
             var features = _unitOfWork.Features.GetAll().Select(r => r.Name);
 
             AssignPermissionViewModel viewModel = new AssignPermissionViewModel
@@ -161,23 +161,23 @@ namespace TaskPilot.Web.Controllers
             {
                 viewModel.FeaturePermissions.Add(new FeaturePermissionViewModel
                 {
-                    FeatureName = feature
+                    FeatureName = feature,
+                    Permissions = new List<PermissionSelectViewModel>()
                 });
             }
 
             foreach (var featurePermission in viewModel.FeaturePermissions)
             {
-                featurePermission.Permissions = new List<PermissionSelectViewModel>();
-
                 foreach (var permission in permissions)
                 {
-                    if (featurePermission.FeatureName == permission.Features.Name)
+                    if (featurePermission.FeatureName == permission.Features!.Name)
                     {
                         featurePermission.Permissions.Add(new PermissionSelectViewModel
                         {
                             IsSelected = false,
                             Name = permission.Name,
                             PermissionId = permission.Id,
+                            FeaturesName = permission.Features.Name,
                         });
                     }
                 }

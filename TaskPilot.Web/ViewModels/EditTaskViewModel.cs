@@ -10,23 +10,23 @@ namespace TaskPilot.Web.ViewModels
 
         [Required]
         [Display(Name = "Title")]
-        public string TaskName { get; set; }
+        public string? TaskName { get; set; }
 
         [Required]
         [Display(Name = "Task Description")]
-        public string TaskDescription { get; set; }
+        public string? TaskDescription { get; set; }
 
         [Required]
         [Display(Name = "Priority Indicator")]
-        public Guid PriorityId { get; set; }
+        public Guid? PriorityId { get; set; }
 
-        public List<Priorities>? PriorityList { get; set; }
+        public required List<Priorities> PriorityList { get; set; }
 
         [Required]
         [Display(Name = "Task Status")]
-        public Guid StatusId { get; set; }
+        public Guid? StatusId { get; set; }
 
-        public List<Statuses>? StatusList { get; set; }
+        public required List<Statuses>? StatusList { get; set; }
 
         [Display(Name = "Due Date")]
         [DateLessThanToday(ErrorMessage = "Due date cannot be in the past")]
@@ -34,9 +34,9 @@ namespace TaskPilot.Web.ViewModels
 
         [Required]
         [Display(Name = "Assign To")]
-        public string AssignToId { get; set; }
+        public string? AssignToId { get; set; }
 
-        public List<ApplicationUser>? AssigneeList { get; set; }
+        public required List<ApplicationUser>? AssigneeList { get; set; }
 
         public Nullable<Guid> DependencyId { get; set; }
 

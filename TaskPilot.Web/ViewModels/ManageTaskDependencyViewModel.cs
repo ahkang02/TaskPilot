@@ -6,9 +6,9 @@ namespace TaskPilot.Web.ViewModels
     public class ManageTaskDependencyViewModel
     {
         [Display(Name = "Current Task")]
-        public string CurrentTask { get; set; }
+        public string? CurrentTask { get; set; }
 
-        public List<Tasks>? ListOfTasks { get; set; }
+        public required List<Tasks>? ListOfTasks { get; set; }
 
         [Display(Name = "Assign Dependency")]
         public Guid? DependencyID { get; set; }

@@ -61,7 +61,7 @@
 
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(m => Model.ImportInfo[i].DueDate, new { @class = "form-control", type = "date", @Value = Model.ImportInfo[i].DueDate != null ? Model.ImportInfo[i].DueDate.ToString("yyyy-MM-dd") : DateTime.Today.Date.ToShortDateString(), @min = DateTime.Today.AddDays(1).ToString("yyyy-MM-dd") })
+                                            @Html.TextBoxFor(m => Model.ImportInfo[i].DueDate, new { @class = "form-control", type = "date", @Value = Model.ImportInfo[i].DueDate != null ? Model.ImportInfo[i].DueDate!.Value.ToString("yyyy-MM-dd") : DateTime.Today.Date.ToShortDateString(), @min = DateTime.Today.AddDays(1).ToString("yyyy-MM-dd") })
                                             @Html.ValidationMessageFor(m => Model.ImportInfo[i].DueDate)
                                         </td>
                                         <td>

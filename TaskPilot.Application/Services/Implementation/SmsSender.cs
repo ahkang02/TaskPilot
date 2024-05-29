@@ -14,9 +14,9 @@ namespace TaskPilot.Application.Services.Implementation
 
         public SmsSender(IConfiguration _config)
         {
-            Sender = _config.GetValue<string>("Vonage:Sender");
-            Account = _config.GetValue<string>("Vonage:Account");
-            SecretKey = _config.GetValue<string>("Vonage:SecretKey");
+            Sender = _config.GetValue<string>("Vonage:Sender")!;
+            Account = _config.GetValue<string>("Vonage:Account")!;
+            SecretKey = _config.GetValue<string>("Vonage:SecretKey")!;
         }
 
         public async Task SendSmsAsync(string to, string body, string text)

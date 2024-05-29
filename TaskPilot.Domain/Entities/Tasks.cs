@@ -18,9 +18,9 @@ namespace TaskPilot.Domain.Entities
 
         public required string Description { get; set; }
 
-        public Priorities Priority { get; set; }
+        public Priorities? Priority { get; set; }
 
-        public Statuses Status { get; set; }
+        public Statuses? Status { get; set; }
 
         public Guid PriorityId { get; set; }
 
@@ -30,11 +30,11 @@ namespace TaskPilot.Domain.Entities
 
         public DateTime Created { get; set; }
 
-        public ApplicationUser AssignTo { get; set; }
+        public ApplicationUser? AssignTo { get; set; }
 
-        public string? AssignToId { get; set; }
+        public required string AssignToId { get; set; }
 
-        public ApplicationUser AssignFrom { get; set; }
+        public ApplicationUser? AssignFrom { get; set; }
 
         public required string AssignFromId { get; set; }
 

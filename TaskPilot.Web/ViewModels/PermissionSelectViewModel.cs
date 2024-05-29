@@ -4,10 +4,10 @@
     {
         public Guid PermissionId { get; set; }
 
-        public string? Name { get; set; }
+        public required string Name { get; set; }
 
         public bool IsSelected { get; set; }
 
-        public string? FeaturesName { get; set; }
+        public required string FeaturesName { get; set; }
     }
 }

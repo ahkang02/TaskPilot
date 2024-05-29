@@ -24,11 +24,11 @@ namespace TaskPilot.Web.APIs
             List<RoleDTO> roleDTOs = new List<RoleDTO>();
             foreach (var role in roles)
             {
-                var users = _unitOfWork.Users.GetAllInclude(u => u.UserRoles.Any(r => r.RoleId == role.Id)).ToList();
+                var users = _unitOfWork.Users.GetAllInclude(u => u.UserRoles!.Any(r => r.RoleId == role.Id)).ToList();
                 roleDTOs.Add(new RoleDTO
                 {
                     RoleId = role.Id,
-                    RoleName = role.Name,
+                    RoleName = role.Name!,
                     IsActive = role.IsActive,
                     Created = role.CreatedAt,
                     Permissions = role.Permissions.Count(),

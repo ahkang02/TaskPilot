@@ -16,19 +16,19 @@ namespace TaskPilot.Web
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, CustomRequirement requirement)
         {
-            if(!context.User.Identity.IsAuthenticated) { 
+            if(!context.User.Identity!.IsAuthenticated) { 
                 context.Fail();
                 return;
             }
 
             var httpContext = context.Resource as HttpContext;
-            var routeData = httpContext.GetRouteData();
+            var routeData = httpContext!.GetRouteData();
 
             var controller = routeData.Values["controller"] as string;
             var action = routeData.Values["action"] as string;
 
-            var currentUser = _unitOfWork.Users.GetAllInclude(u => u.Id == context.User.FindFirst(ClaimTypes.NameIdentifier).Value, "UserRoles").First();
-            var userRoles = _unitOfWork.Roles.Get(r => r.Id == currentUser.UserRoles.First().RoleId);
+            var currentUser = _unitOfWork.Users.GetAllInclude(u => u.Id == context.User.FindFirst(ClaimTypes.NameIdentifier)!.Value, "UserRoles").First();
+            var userRoles = _unitOfWork.Roles.Get(r => r.Id == currentUser.UserRoles!.First().RoleId);
             var permissions = _unitOfWork.Permissions.GetAllInclude(null, "Roles,Features");
             var permissionInRole = new List<Permission>();
 

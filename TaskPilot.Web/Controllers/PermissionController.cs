@@ -40,10 +40,11 @@ namespace TaskPilot.Web.Controllers
                 {
                     Permission permission = new Permission
                     {
-                        Name = viewModel.Name,
+                        Name = viewModel.Name!,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
                         FeaturesId = viewModel.FeatureId,
+                        Features = _unitOfWork.Features.Get(f => f.Id == viewModel.FeatureId)
                     };
                     TempData["SuccessMsg"] = Message.PERMIT_CREATION;
                     _unitOfWork.Permissions.Add(permission);
@@ -51,7 +52,7 @@ namespace TaskPilot.Web.Controllers
                 else
                 {
                     Permission permissionToEdit = _unitOfWork.Permissions.Get(p => p.Name == viewModel.Name);
-                    permissionToEdit.Name = viewModel.Name;
+                    permissionToEdit.Name = viewModel.Name!;
                     permissionToEdit.UpdatedAt = DateTime.Now;
 
                     _unitOfWork.Permissions.Update(permissionToEdit);

@@ -6,14 +6,14 @@ namespace TaskPilot.Web.ViewModels
     public class AssignRoleViewModel
     {
         [Display(Name = "New Role")]
-        public string RoleId { get; set; }
+        public string? RoleId { get; set; }
 
         [Display(Name = "User")]
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
         [Display(Name = "Current User Role")]
-        public string CurrentUserRole { get; set; }
+        public string? CurrentUserRole { get; set; }
 
-        public List<ApplicationRole> RoleToSelect { get; set; }
+        public List<ApplicationRole>? RoleToSelect { get; set; }
     }
 }

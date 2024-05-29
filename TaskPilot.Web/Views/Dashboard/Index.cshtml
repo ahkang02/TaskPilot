@@ -109,7 +109,7 @@
                                 @{
                                     var i = 0;
                                 }
-                                @foreach (var task in Model.UserTaskList)
+                                @foreach (var task in Model.UserTaskList!)
                                 {
                                     i++;
                                     var priorityString = string.Empty;
@@ -168,7 +168,7 @@
                                             <span class="@statusString">@task.Status</span>
                                         </td>
                                         <td class="border-bottom-0">
-                                            <h6 class="mb-0 fw-normal">@task.DueDate.Value.ToString("dd/MM/yyyy")</h6>
+                                            <h6 class="mb-0 fw-normal">@task.DueDate.GetValueOrDefault().ToString("dd/MM/yyyy")</h6>
                                         </td>
                                         <td class="border-bottom-0">
                                             <h6 class="mb-0 fw-normal">@task.CreatedDate.ToString("dd/MM/yyyy")</h6>

@@ -53,7 +53,7 @@
                     <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
                         <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
                             <li class="nav-item">
-                                Welcome, @User.Identity.Name
+                                Welcome, @User!.Identity!.Name
                             </li>
                             <li class="nav-item dropdown">
                                 @await Component.InvokeAsync("Notification")
@@ -88,14 +88,14 @@
                 @if (TempData["SuccessMsg"] != null)
                 {
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        @TempData["SuccessMsg"].ToString()
+                        @TempData["SuccessMsg"]!.ToString()
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 }
                 else if (TempData["ErrorMsg"] != null)
                 {
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        @TempData["ErrorMsg"].ToString()
+                        @TempData["ErrorMsg"]!.ToString()
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 }

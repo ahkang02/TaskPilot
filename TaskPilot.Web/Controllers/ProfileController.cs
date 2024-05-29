@@ -31,32 +31,29 @@ namespace TaskPilot.Web.Controllers
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity!;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            EditProfileViewModel viewModel = new EditProfileViewModel();
-            if (claim != null)
+
+            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
+            var currentUserRole = await _userManager.GetRolesAsync(currentUser);
+            var roles = _unitOfWork.Roles.GetAllInclude(r => r.Name == currentUserRole[0], "Permissions").Single();
+            var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
+
+            EditProfileViewModel viewModel = new EditProfileViewModel
             {
-                var currentUser = _unitOfWork.Users.Get(u => u.Id == claim.Value);
-                var currentUserRole = await _userManager.GetRolesAsync(currentUser);
-                var roles = _unitOfWork.Roles.GetAllInclude(r => r.Name == currentUserRole[0], "Permissions").Single();
-                var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
+                Email = currentUser.Email!,
+                FirstName = currentUser.FirstName,
+                Id = currentUser.Id,
+                LastLogin = currentUser.LastLogin,
+                LastName = currentUser.LastName,
+                Username = currentUser.UserName!,
+                UserRole = currentUserRole[0],
+                UserPermissions = new List<Permission>()
+            };
 
-                viewModel = new EditProfileViewModel
+            foreach (var permission in permissions)
+            {
+                if (permission.Roles.Any(r => r.Id == roles.Id))
                 {
-                    Email = currentUser.Email!,
-                    FirstName = currentUser.FirstName,
-                    Id = currentUser.Id,
-                    LastLogin = currentUser.LastLogin,
-                    LastName = currentUser.LastName,
-                    Username = currentUser.UserName!,
-                    UserRole = currentUserRole[0],
-                    UserPermissions = new List<Permission>()
-                };
-
-                foreach (var permission in permissions)
-                {
-                    if (permission.Roles.Any(r => r.Id == roles.Id))
-                    {
-                        viewModel.UserPermissions.Add(permission);
-                    }
+                    viewModel.UserPermissions.Add(permission);
                 }
             }
             return View(viewModel);
@@ -80,8 +77,8 @@ namespace TaskPilot.Web.Controllers
                 if (ModelState.IsValid)
                 {
                     var userInDb = _unitOfWork.Users.Get(u => u.Id == viewModel.Id);
-                    userInDb.FirstName = viewModel.FirstName;
-                    userInDb.LastName = viewModel.LastName;
+                    userInDb.FirstName = viewModel.FirstName!;
+                    userInDb.LastName = viewModel.LastName!;
                     userInDb.Email = viewModel.Email;
                     userInDb.UserName = viewModel.Username;
                     userInDb.UpdatedAt = DateTime.Now;
@@ -116,30 +113,27 @@ namespace TaskPilot.Web.Controllers
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity!;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            EditProfilePasswordViewModel viewModel = new EditProfilePasswordViewModel();
 
-            if (claim != null)
+            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
+            var currentUserRole = await _userManager.GetRolesAsync(currentUser);
+            var roles = _unitOfWork.Roles.GetAllInclude(r => r.Name == currentUserRole[0], "Permissions").Single();
+            var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
+
+            EditProfilePasswordViewModel viewModel = new EditProfilePasswordViewModel
             {
-                var currentUser = _unitOfWork.Users.Get(u => u.Id == claim.Value);
-                var currentUserRole = await _userManager.GetRolesAsync(currentUser);
-                var roles = _unitOfWork.Roles.GetAllInclude(r => r.Name == currentUserRole[0], "Permissions").Single();
-                var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
+                Id = currentUser.Id,
+                UserPermissions = new List<Permission>()
+            };
 
-                viewModel = new EditProfilePasswordViewModel
+            foreach (var permission in permissions)
+            {
+                if (permission.Roles.Any(r => r.Id == roles.Id))
                 {
-                    Id = currentUser.Id,
-                    UserPermissions = new List<Permission>()
-                };
-
-                foreach (var permission in permissions)
-                {
-                    if (permission.Roles.Any(r => r.Id == roles.Id))
-                    {
-                        viewModel.UserPermissions.Add(permission);
-                    }
+                    viewModel.UserPermissions.Add(permission);
                 }
-
             }
+
+
             return View(viewModel);
         }
 
@@ -153,7 +147,7 @@ namespace TaskPilot.Web.Controllers
             if (ModelState.IsValid)
             {
                 var userInDB = _unitOfWork.Users.Get(u => u.Id == viewModel.Id);
-                var result = await _userManager.ChangePasswordAsync(userInDB, viewModel.CurrentPassword, viewModel.NewPassword);
+                var result = await _userManager.ChangePasswordAsync(userInDB, viewModel.CurrentPassword!, viewModel.NewPassword!);
                 userInDB.UpdatedAt = DateTime.Now;
 
                 if (result.Succeeded)
@@ -221,13 +215,13 @@ namespace TaskPilot.Web.Controllers
             var roles = _unitOfWork.Roles.GetAllInclude(r => r.Name == currentUserRole[0], "Permissions").Single();
             var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
 
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var code = await _userManager.GenerateChangePhoneNumberTokenAsync(currentUser, viewModel.PhoneNumber);
 
-                if(_smsSender != null)
+                if (_smsSender != null)
                 {
-                    await _smsSender.SendSmsAsync(to: viewModel.PhoneNumber, body:"Your security code is " + code, text: "Your security code is " + code);
+                    await _smsSender.SendSmsAsync(to: viewModel.PhoneNumber, body: "Your security code is " + code, text: "Your security code is " + code);
                     return RedirectToAction("VerifyPhoneNumber", new { PhoneNumber = viewModel.PhoneNumber });
                 }
             }
@@ -257,14 +251,14 @@ namespace TaskPilot.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> VerifyPhoneNumber(VerifyPhoneNumberViewModel viewModel)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var claimsIdentity = (ClaimsIdentity)User.Identity!;
                 var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
                 var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
 
-                var result = await _userManager.ChangePhoneNumberAsync(currentUser, viewModel.PhoneNumber, viewModel.Code);
-                if(result.Succeeded)
+                var result = await _userManager.ChangePhoneNumberAsync(currentUser, viewModel.PhoneNumber!, viewModel.Code!);
+                if (result.Succeeded)
                 {
                     TempData["SuccessMsg"] = Message.PROF_CONTACT_EDIT;
                     return RedirectToAction("Index", "Profile");

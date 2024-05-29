@@ -68,7 +68,7 @@ namespace TaskPilot.Web.Controllers
                 {
                     Statuses status = new Statuses
                     {
-                        Description = viewModel.Name,
+                        Description = viewModel.Name!,
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now,
                     };
@@ -79,7 +79,7 @@ namespace TaskPilot.Web.Controllers
                 else
                 {
                     Statuses statusToEdit = _unitOfWork.Status.Get(s => s.Id == viewModel.Id);
-                    statusToEdit.Description = viewModel.Name;
+                    statusToEdit.Description = viewModel.Name!;
                     statusToEdit.UpdatedAt = DateTime.Now;
 
                     _unitOfWork.Status.Update(statusToEdit);

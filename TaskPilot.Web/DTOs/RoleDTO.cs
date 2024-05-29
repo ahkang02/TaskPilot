@@ -2,9 +2,9 @@
 {
     public class RoleDTO
     {
-        public string RoleId { get; set; }
+        public required string RoleId { get; set; }
 
-        public string RoleName { get; set; }
+        public required string RoleName { get; set; }
 
         public bool IsActive { get; set; }
 

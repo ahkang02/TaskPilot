@@ -36,7 +36,7 @@ namespace TaskPilot.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claimsIdentity = (ClaimsIdentity)User.Identity!;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
             UserPermissionViewModel viewModel = new UserPermissionViewModel
@@ -88,9 +88,9 @@ namespace TaskPilot.Web.Controllers
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now,
                         Email = viewModel.Email,
-                        FirstName = viewModel.FirstName,
-                        LastName = viewModel.LastName,
-                        UserName = new MailAddress(viewModel.Email).User
+                        FirstName = viewModel.FirstName!,
+                        LastName = viewModel.LastName!,
+                        UserName = new MailAddress(viewModel.Email!).User
                     };
 
                     StringBuilder sanitizedName = new StringBuilder(applicationUser.UserName);
@@ -111,7 +111,7 @@ namespace TaskPilot.Web.Controllers
                         var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = applicationUser.Id, code = code }, protocol: Request.Scheme);
                         string body = string.Empty;
 
-                        using (StreamReader reader = new(path: _webHostEnvironment.ContentRootPath + "/Views/Template/AccountCreation.cshtml"))
+                        using (StreamReader reader = new(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "template", "AccountCreation.html")))
                         {
                             body = reader.ReadToEnd();
                         }
@@ -120,7 +120,7 @@ namespace TaskPilot.Web.Controllers
                         body = body.Replace("{ConfirmationLink}", callbackUrl);
                         body = body.Replace("{UserName}", applicationUser.UserName);
                         body = body.Replace("{Password}", generatedPassword);
-                        await _emailSender.SendEmailAsync(applicationUser.Email, subject: "Account Creation", htmlMessage: body);
+                        await _emailSender.SendEmailAsync(applicationUser.Email!, subject: "Account Creation", htmlMessage: body);
                         TempData["SuccessMsg"] = Message.USER_CREATION;
 
                         return RedirectToAction("Index", "User");
@@ -192,7 +192,7 @@ namespace TaskPilot.Web.Controllers
                 CurrentUserRole = userCurrentRole[0]
             };
 
-            foreach (var role in user.UserRoles)
+            foreach (var role in user.UserRoles!)
             {
                 viewModel.RoleId = role.RoleId;
             }
@@ -207,8 +207,8 @@ namespace TaskPilot.Web.Controllers
             var user = _unitOfWork.Users.Get(u => u.UserName == viewModel.Username);
             var role = _unitOfWork.Roles.Get(r => r.Id == viewModel.RoleId);
 
-            await _userManager.RemoveFromRoleAsync(user, viewModel.CurrentUserRole);
-            await _userManager.AddToRoleAsync(user, role.Name);
+            await _userManager.RemoveFromRoleAsync(user, viewModel.CurrentUserRole!);
+            await _userManager.AddToRoleAsync(user, role.Name!);
 
             user.UpdatedAt = DateTime.Now;
             _unitOfWork.Users.Update(user);

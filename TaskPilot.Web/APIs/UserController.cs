@@ -31,8 +31,8 @@ namespace TaskPilot.Web.APIs
                 userDTOs.Add((new UserDTO
                 {
                     Id = u.Id,
-                    Email = u.Email,
-                    Username = u.UserName,
+                    Email = u.Email!,
+                    Username = u.UserName!,
                     UserRole = rolesForUser[0],
                     AccessFailedCount = u.AccessFailedCount,
                     Name = u.LastName + " " + u.FirstName,

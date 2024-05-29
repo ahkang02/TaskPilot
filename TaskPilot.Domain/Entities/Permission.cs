@@ -19,7 +19,7 @@ namespace TaskPilot.Domain.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
@@ -27,7 +27,8 @@ namespace TaskPilot.Domain.Entities
 
         public virtual ICollection<ApplicationRole> Roles { get; set; }
 
-        public Guid FeaturesId { get; set; }
-        public Features Features { get; set; }
+        public required Guid FeaturesId { get; set; }
+
+        public required Features Features { get; set; }
     }
 }

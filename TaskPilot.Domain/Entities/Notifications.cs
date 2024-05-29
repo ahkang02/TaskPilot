@@ -20,11 +20,11 @@ namespace TaskPilot.Domain.Entities
 
         public Guid? TasksId { get; set; }
 
-        public Tasks Tasks { get; set; }
+        public Tasks? Tasks { get; set; }
 
         public required string UserId { get; set; }
 
-        public ApplicationUser User { get; set; }
+        public ApplicationUser? User { get; set; }
 
         public DateTime CreatedAt { get; set; }
 

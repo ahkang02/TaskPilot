@@ -4,13 +4,13 @@
     {
         public Guid? Id { get; set; }
 
-        public string TaskName { get; set; }
+        public required string TaskName { get; set; }
 
-        public string Priority { get; set; }
+        public required string Priority { get; set; }
 
-        public string Status { get; set; }
+        public required string Status { get; set; }
 
-        public string AssignTo { get; set; }
+        public required string AssignTo { get; set; }
 
         public DateTime? dueDate { get; set; }
     }

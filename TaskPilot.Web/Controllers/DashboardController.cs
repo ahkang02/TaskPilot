@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -25,7 +25,7 @@ namespace TaskPilot.Web.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity!;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
-            var userTaskList = _unitOfWork.Tasks.GetAllInclude(u => u.AssignToId == currentUser.Id && u.Status.Description != "Closed", "Status,Priority,AssignFrom,AssignTo").OrderByDescending(u => u.Created).ToList();
+            var userTaskList = _unitOfWork.Tasks.GetAllInclude(u => u.AssignToId == currentUser.Id && u.Status!.Description != "Closed", "Status,Priority,AssignFrom,AssignTo").OrderByDescending(u => u.Created).ToList();
 
             Tasks? overDueTask = null;
             List<TaskDetailViewModel> taskDetail = new List<TaskDetailViewModel>();
@@ -34,7 +34,7 @@ namespace TaskPilot.Web.Controllers
 
             if (userTaskList.Count > 0)
             {
-                overDueTask = userTaskList.Where(u => u.DueDate!.Value.Day >= DateTime.Now.Day && u.Status.Description != "Closed").OrderBy(u => u.DueDate).FirstOrDefault();
+                overDueTask = userTaskList.Where(u => u.DueDate!.Value.Day >= DateTime.Now.Day && u.Status!.Description != "Closed").OrderBy(u => u.DueDate).FirstOrDefault();
                 if (overDueTask == null)
                 {
                     overDueTask = null;
@@ -49,7 +49,7 @@ namespace TaskPilot.Web.Controllers
 
             foreach (var task in userTaskList)
             {
-                var userRole = await _userManager.GetRolesAsync(task.AssignFrom);
+                var userRole = await _userManager.GetRolesAsync(task.AssignFrom!);
 
                 taskDetail.Add(new TaskDetailViewModel
                 {
@@ -58,10 +58,10 @@ namespace TaskPilot.Web.Controllers
                     Description = task.Description,
                     DueDate = task.DueDate,
                     CreatedDate = task.Created,
-                    Priority = task.Priority.Description,
-                    Status = task.Status.Description,
-                    AssignTo = task.AssignTo.UserName!,
-                    AssignFrom = task.AssignFrom.UserName!,
+                    Priority = task.Priority!.Description,
+                    Status = task.Status!.Description,
+                    AssignTo = task.AssignTo!.UserName!,
+                    AssignFrom = task.AssignFrom!.UserName!,
                     AssignFromRole = userRole[0],
                 });
             }

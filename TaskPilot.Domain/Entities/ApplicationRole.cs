@@ -23,9 +23,9 @@ namespace TaskPilot.Domain.Entities
 
         public virtual ICollection<Permission> Permissions { get; set; }
 
-        public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
+        public virtual ICollection<ApplicationUserRole>? UserRoles { get; set; }
 
-        public virtual ICollection<ApplicationRoleClaim> RoleClaims { get; set; }
+        public virtual ICollection<ApplicationRoleClaim>? RoleClaims { get; set; }
 
     }
 }

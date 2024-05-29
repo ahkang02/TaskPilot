@@ -27,9 +27,9 @@ namespace TaskPilot.Web.APIs
                 {
                     Id = t.Id,
                     TaskName = t.Name,
-                    Priority = t.Priority.Description,
-                    Status = t.Status.Description,
-                    AssignTo = t.AssignTo.UserName,
+                    Priority = t.Priority!.Description,
+                    Status = t.Status!.Description,
+                    AssignTo = t.AssignTo!.UserName!,
                     dueDate = t.DueDate
                 });
             }

@@ -22,7 +22,7 @@ namespace TaskPilot.Web.ViewComponents
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claimsIdentity = (ClaimsIdentity)User.Identity!;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
             UserPermissionViewModel viewModel = new UserPermissionViewModel
