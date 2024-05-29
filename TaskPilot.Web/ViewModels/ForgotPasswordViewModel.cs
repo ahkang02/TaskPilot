@@ -7,6 +7,6 @@ namespace TaskPilot.Web.ViewModels
         [Required]
         [Display(Name = "Email")]
         [EmailAddress]
-        public string Email { get; set; }
+        public required string Email { get; set; }
     }
 }

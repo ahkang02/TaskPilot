@@ -14,7 +14,7 @@ using TaskPilot.Domain.Entities;
 using TaskPilot.Infrastructure.Repository;
 using TaskPilot.Web.ViewModels;
 using Vonage.Users;
-
+                                                                                                                                                                                                                                                                                                                        
 namespace TaskPilot.Web.Controllers
 {
     [Authorize(Policy = "CustomPolicy")]
@@ -121,12 +121,12 @@ namespace TaskPilot.Web.Controllers
                         body = body.Replace("{UserName}", applicationUser.UserName);
                         body = body.Replace("{Password}", generatedPassword);
                         await _emailSender.SendEmailAsync(applicationUser.Email, subject: "Account Creation", htmlMessage: body);
-                        TempData["SuccessMsg"] = "A new user has been created successfully.";
+                        TempData["SuccessMsg"] = Message.USER_CREATION;
 
                         return RedirectToAction("Index", "User");
                     }
                 }
-                ModelState.AddModelError("", "User existed, please re-try to create or logging into the existing user.");
+                ModelState.AddModelError("", Message.USER_CREATION_FAIL);
             }
             return View(viewModel);
         }
@@ -161,7 +161,7 @@ namespace TaskPilot.Web.Controllers
                 {
                     if (_unitOfWork.Tasks.GetAll().Any(u => u.AssignToId == user.Id))
                     {
-                        TempData["ErrorMsg"] = "Oops, something went wrong, the user you trying to delete has task tie to them, delete unsuccessful.";
+                        TempData["ErrorMsg"] = Message.USER_DELETION_FAIL;
                         return BadRequest(new { data = Url.Action("Index", "User") });
                     }
                     else
@@ -176,7 +176,7 @@ namespace TaskPilot.Web.Controllers
                 }
             }
             _unitOfWork.Save();
-            TempData["SuccessMsg"] = userName.Length + " users has been deleted successfully";
+            TempData["SuccessMsg"] = userName.Length + Message.USER_DELETION;
             return Json(Url.Action("Index", "User"));
         }
 

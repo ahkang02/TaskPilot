@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TaskPilot.Application.Common.Interfaces;
+using TaskPilot.Application.Common.Utility;
 using TaskPilot.Domain.Entities;
 using TaskPilot.Web.ViewModels;
 
@@ -26,7 +27,7 @@ namespace TaskPilot.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claimsIdentity = (ClaimsIdentity)User.Identity!;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
             UserPermissionViewModel viewModel = new UserPermissionViewModel
@@ -77,7 +78,7 @@ namespace TaskPilot.Web.Controllers
                     };
 
                     await _roleManager.CreateAsync(roles);
-                    TempData["SuccessMsg"] = "A new role has been created";
+                    TempData["SuccessMsg"] = Message.ROLE_CREATION;
                 }
                 else
                 {
@@ -88,7 +89,7 @@ namespace TaskPilot.Web.Controllers
                         rolesToEdit.Name = viewModel.Name;
                         rolesToEdit.UpdatedAt = DateTime.Now;
                         await _roleManager.UpdateAsync(rolesToEdit);
-                        TempData["SuccessMsg"] = rolesToEdit.Name + "'s Roles has been updated.";
+                        TempData["SuccessMsg"] = rolesToEdit.Name + Message.ROLE_UPDATE;
                     }
                 }
                 return RedirectToAction("Index", "Role");
@@ -99,11 +100,11 @@ namespace TaskPilot.Web.Controllers
 
         public IActionResult Update(string name)
         {
-            var roleInDB = _unitOfWork.Roles.Get(r => r.Name == name);
+            var roleInDB = _unitOfWork.Roles.Get(r => r.Name == name)!;
             EditRoleViewModel viewModel = new EditRoleViewModel
             {
                 Id = roleInDB.Id,
-                Name = roleInDB.Name
+                Name = roleInDB.Name!
             };
 
             return View("New", viewModel);
@@ -125,10 +126,10 @@ namespace TaskPilot.Web.Controllers
                     var users = _unitOfWork.Users.GetAll();
                     foreach (var user in users)
                     {
-                        bool flag = await _userManager.IsInRoleAsync(user, role.Name);
+                        bool flag = await _userManager.IsInRoleAsync(user, role.Name!);
                         if (flag)
                         {
-                            TempData["ErrorMsg"] = "There are user exist in the role, you can't delete a role when there's user exist.";
+                            TempData["ErrorMsg"] = Message.ROLE_DELETION_FAIL;
                             return BadRequest(new {data = Url.Action("Index", "Role")});
                         }else
                         {
@@ -138,7 +139,7 @@ namespace TaskPilot.Web.Controllers
                 }
             }
             _unitOfWork.Save();
-            TempData["SuccessMsg"] = roleName.Length + " roles deleted successfully";
+            TempData["SuccessMsg"] = roleName.Length + Message.ROLE_DELETION;
             return Json(Url.Action("Index", "Role"));
         }
 
@@ -184,7 +185,7 @@ namespace TaskPilot.Web.Controllers
 
             foreach (var fp in viewModel.FeaturePermissions)
             {
-                foreach (var p in fp.Permissions)
+                foreach (var p in fp.Permissions!)
                 {
                     foreach (var rp in role.Permissions)
                     {
@@ -206,7 +207,7 @@ namespace TaskPilot.Web.Controllers
             if (ModelState.IsValid)
             {
                 List<Permission> permissions = new List<Permission>();
-                foreach (var features in viewModel.FeaturePermissions)
+                foreach (var features in viewModel.FeaturePermissions!)
                 {
                     foreach (var permission in features.Permissions ?? new List<PermissionSelectViewModel>())
                     {
@@ -242,11 +243,11 @@ namespace TaskPilot.Web.Controllers
                 roleToEdit.Permissions = permissions;
                 _unitOfWork.Roles.Update(roleToEdit);
                 _unitOfWork.Save();
-                TempData["SuccessMsg"] = "Role '" + roleToEdit.Name + "' permission has been updated";
+                TempData["SuccessMsg"] = "Role '" + roleToEdit.Name + Message.ROLE_UPDATE;
                 return RedirectToAction("Index", "Role");
 
             }
-            TempData["ErrorMsg"] = "Oops! Something went wrong, please go through the error message";
+            TempData["ErrorMsg"] = Message.COMMON_ERROR;
             return View(viewModel);
         }
 

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TaskPilot.Application.Common.Interfaces;
+using TaskPilot.Application.Common.Utility;
 using TaskPilot.Domain.Entities;
 using TaskPilot.Web.ViewModels;
 
@@ -22,7 +23,7 @@ namespace TaskPilot.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claimsIdentity = (ClaimsIdentity)User.Identity!;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
             UserPermissionViewModel viewModel = new UserPermissionViewModel
@@ -73,7 +74,7 @@ namespace TaskPilot.Web.Controllers
                     };
 
                     _unitOfWork.Priority.Add(priority);
-                    TempData["SuccessMsg"] = "A new priority has been created";
+                    TempData["SuccessMsg"] = Message.PRIOR_CREATION;
                 }
                 else
                 {
@@ -82,12 +83,12 @@ namespace TaskPilot.Web.Controllers
                     priorityToEdit.UpdatedAt = DateTime.Now;
 
                     _unitOfWork.Priority.Update(priorityToEdit);
-                    TempData["SuccessMsg"] = priorityToEdit.Description + "'s Priority has been updated.";
+                    TempData["SuccessMsg"] = priorityToEdit.Description + Message.PRIOR_UPDATE;
                 }
                 _unitOfWork.Save();
                 return RedirectToAction("Index", "Priority");
             }
-            TempData["ErrorMsg"] = "Oops! Something went wrong, please go through the error message";
+            TempData["ErrorMsg"] = Message.COMMON_ERROR;
             return View(viewModel);
         }
 
@@ -121,7 +122,7 @@ namespace TaskPilot.Web.Controllers
                 {
                     if (_unitOfWork.Tasks.GetAll().Any(s => s.PriorityId == priorities.Id))
                     {
-                        TempData["ErrorMsg"] = "You can't delete a priority that is being used by any task currently.";
+                        TempData["ErrorMsg"] = Message.PRIOR_DELETION_FAIL;
                         return Json(Url.Action("Index", "Priority"));
                     }
                     else
@@ -132,7 +133,7 @@ namespace TaskPilot.Web.Controllers
             }
 
             _unitOfWork.Save();
-            TempData["SuccessMsg"] = priority.Length + " priority has been deleted successfully";
+            TempData["SuccessMsg"] = priority.Length + Message.PRIOR_DELETION;
             return Json(Url.Action("Index", "Priority"));
         }
 

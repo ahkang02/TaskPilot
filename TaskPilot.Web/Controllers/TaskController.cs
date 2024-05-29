@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using TaskPilot.Application.Common.Interfaces;
+using TaskPilot.Application.Common.Utility;
 using TaskPilot.Domain.Entities;
 using TaskPilot.Infrastructure.Repository;
 using TaskPilot.Web.ViewModels;
@@ -118,14 +119,14 @@ namespace TaskPilot.Web.Controllers
                         Notifications notif = new Notifications
                         {
                             CreatedAt = DateTime.Now,
-                            Status = "New",
-                            Description = "A new task has been created for you",
+                            Status = SD.NEW_NOTIF_STATUS,
+                            Description = Message.TASK_NOTIF_CREATION,
                             UserId = task.AssignToId,
                             TasksId = task.Id
                         };
 
                         _unitOfWork.Notification.Add(notif);
-                        TempData["SuccessMsg"] = "A new task has been created successfully.";
+                        TempData["SuccessMsg"] = Message.TASK_CREATION;
                     }
                     else
                     {
@@ -212,14 +213,14 @@ namespace TaskPilot.Web.Controllers
                             _unitOfWork.Notification.Add(new Notifications
                             {
                                 CreatedAt = DateTime.Now,
-                                Status = "New",
-                                Description = "A new task has been created for you",
+                                Status = SD.NEW_NOTIF_STATUS,
+                                Description = Message.TASK_NOTIF_CREATION,
                                 UserId = task.AssignToId,
                                 TasksId = task.Id
                             });
                         }
 
-                        TempData["SuccessMsg"] = tasks.Count + " Recurring Task's has been created successfully";
+                        TempData["SuccessMsg"] = tasks.Count + Message.TASK_CREATION_RECURR;
                     }
                 }
                 else
@@ -233,7 +234,7 @@ namespace TaskPilot.Web.Controllers
                             viewModel.PriorityList = _unitOfWork.Priority.GetAll().ToList();
                             viewModel.StatusList = _unitOfWork.Status.GetAll().ToList();
                             viewModel.AssigneeList = _unitOfWork.Users.GetAll().ToList();
-                            TempData["ErrorMsg"] = "Oops! Dependencies Found: You cannot edit the task as the dependent task are not completed yet.";
+                            TempData["ErrorMsg"] = Message.TASK_UPDATE_FAIL;
                             return View(viewModel);
                         }
                         else
@@ -332,28 +333,28 @@ namespace TaskPilot.Web.Controllers
                                     _unitOfWork.Notification.Add(new Notifications
                                     {
                                         CreatedAt = DateTime.Now,
-                                        Status = "New",
-                                        Description = "A new task has been created for you",
+                                        Status = SD.NEW_NOTIF_STATUS,
+                                        Description = Message.TASK_NOTIF_CREATION,
                                         UserId = task.AssignToId,
                                         TasksId = task.Id
                                     });
                                 }
 
-                                TempData["SuccessMsg"] = "Task #" + taskToEdit.Name + " has been updated and " + tasks.Count + " Recurring Task's has been created successfully";
+                                TempData["SuccessMsg"] = "Task #" + taskToEdit.Name + Message.TASK_UPDATE + " and " + tasks.Count + Message.TASK_CREATION_RECURR;
                             }
                             else
                             {
                                 Notifications notif = new Notifications
                                 {
                                     CreatedAt = DateTime.Now,
-                                    Status = "New",
+                                    Status = SD.NEW_NOTIF_STATUS,
                                     Description = taskToEdit.Name + "'s has been edited",
                                     TasksId = taskToEdit.Id,
                                     UserId = taskToEdit.AssignToId
                                 };
 
                                 _unitOfWork.Notification.Add(notif);
-                                TempData["SuccessMsg"] = "Task #" + taskToEdit.Name + " has been updated";
+                                TempData["SuccessMsg"] = "Task #" + taskToEdit.Name + Message.TASK_UPDATE;
 
                                 _unitOfWork.Save();
                             }
@@ -455,14 +456,14 @@ namespace TaskPilot.Web.Controllers
                                 _unitOfWork.Notification.Add(new Notifications
                                 {
                                     CreatedAt = DateTime.Now,
-                                    Status = "New",
-                                    Description = "A new task has been created for you",
+                                    Status = SD.NEW_NOTIF_STATUS,
+                                    Description = Message.TASK_NOTIF_CREATION,
                                     UserId = task.AssignToId,
                                     TasksId = task.Id
                                 });
                             }
 
-                            TempData["SuccessMsg"] = "Task #" + taskToEdit.Name + " has been updated and " + tasks.Count + " Recurring Task's has been created successfully";
+                            TempData["SuccessMsg"] = "Task #" + taskToEdit.Name + Message.TASK_UPDATE + " and " + tasks.Count + Message.TASK_CREATION_RECURR;
                         }
                         else
                         {
@@ -476,7 +477,7 @@ namespace TaskPilot.Web.Controllers
                             };
 
                             _unitOfWork.Notification.Add(notif);
-                            TempData["SuccessMsg"] = "Task #" + taskToEdit.Name + " has been updated";
+                            TempData["SuccessMsg"] = "Task #" + taskToEdit.Name + Message.TASK_UPDATE;
                             _unitOfWork.Save();
                         }
                     }
@@ -548,7 +549,7 @@ namespace TaskPilot.Web.Controllers
                 }
             }
             _unitOfWork.Save();
-            TempData["SuccessMsg"] = taskId.Length + " tasks has been deleted successfully.";
+            TempData["SuccessMsg"] = taskId.Length + Message.TASK_DELETION;
             return Json(Url.Action("Index", "Task"));
         }
 
@@ -572,7 +573,7 @@ namespace TaskPilot.Web.Controllers
                 _unitOfWork.Save();
             }
 
-            TempData["SuccessMsg"] = "Tasks has been closed";
+            TempData["SuccessMsg"] = Message.TASK_CLOSED;
 
             return RedirectToAction("Detail", "Task", new { Id = Id });
         }
@@ -608,7 +609,7 @@ namespace TaskPilot.Web.Controllers
                 }
             }
             _unitOfWork.Save();
-            TempData["SuccessMsg"] = taskId.Length + " tasks has been closed";
+            TempData["SuccessMsg"] = taskId.Length + Message.TASK_CLOSED;
             return Json(Url.Action("Index", "Task"));
         }
 
@@ -637,10 +638,10 @@ namespace TaskPilot.Web.Controllers
                 taskToUpdate.DependencyId = viewModel.DependencyID;
                 _unitOfWork.Tasks.Update(taskToUpdate);
                 _unitOfWork.Save();
-                TempData["SuccessMsg"] = "Dependency assigned successfully!";
+                TempData["SuccessMsg"] = Message.TASK_DEPENDENCY;
                 return RedirectToAction("Index", "Task");
             }
-            TempData["ErrorMsg"] = "Oops! Something went wrong. Please go thru the error message.";
+            TempData["ErrorMsg"] = Message.COMMON_ERROR;
             return View(viewModel);
         }
 
@@ -682,10 +683,10 @@ namespace TaskPilot.Web.Controllers
                     });
 
                 }
-                TempData["SuccessMsg"] = "Data retrieved from CSV successfully!.";
+                TempData["SuccessMsg"] = Message.TASK_READ_CSV;
             }else
             {
-                TempData["ErrorMsg"] = "Oops! something went wrong, Did you input any file?";
+                TempData["ErrorMsg"] = Message.TASK_IMPORT_FAIL;
             }
             return View(viewModel);
         }
@@ -723,10 +724,10 @@ namespace TaskPilot.Web.Controllers
                 }
 
                 _unitOfWork.Save();
-                TempData["SuccessMsg"] = viewModel.ImportInfo.Count + " tasks imported successfully.";
+                TempData["SuccessMsg"] = viewModel.ImportInfo.Count + Message.TASK_IMPORT;
                 return RedirectToAction("Index", "Task");
             }
-            TempData["ErrorMsg"] = "Oops! Something went wrong, please go through the error message";
+            TempData["ErrorMsg"] = Message.COMMON_ERROR;
             return RedirectToAction("ImportTask", "Task", viewModel);
         }
 

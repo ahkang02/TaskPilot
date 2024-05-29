@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Abstractions;
 using System.Security.Claims;
 using TaskPilot.Application.Common.Interfaces;
+using TaskPilot.Application.Common.Utility;
 using TaskPilot.Domain.Entities;
 using TaskPilot.Web.ViewModels;
 
@@ -23,7 +24,7 @@ namespace TaskPilot.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claimsIdentity = (ClaimsIdentity)User.Identity!;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
             UserPermissionViewModel viewModel = new UserPermissionViewModel
@@ -73,7 +74,7 @@ namespace TaskPilot.Web.Controllers
                     };
 
                     _unitOfWork.Status.Add(status);
-                    TempData["SuccessMsg"] = "A new status has been created";
+                    TempData["SuccessMsg"] = Message.STAT_CREATION;
                 }
                 else
                 {
@@ -82,12 +83,12 @@ namespace TaskPilot.Web.Controllers
                     statusToEdit.UpdatedAt = DateTime.Now;
 
                     _unitOfWork.Status.Update(statusToEdit);
-                    TempData["SuccessMsg"] = statusToEdit.Description + "'s Status has been updated.";
+                    TempData["SuccessMsg"] = statusToEdit.Description + Message.STAT_UPDATE;
                 }
                 _unitOfWork.Save();
                 return RedirectToAction("Index", "Status");
             }
-            TempData["ErrorMsg"] = "Oops! Something went wrong, please go through the error message";
+            TempData["ErrorMsg"] = Message.COMMON_ERROR;
             return View(viewModel);
         }
 
@@ -120,7 +121,7 @@ namespace TaskPilot.Web.Controllers
                     {
                         if (_unitOfWork.Tasks.GetAll().Any(s => s.StatusId == statuses.Id))
                         {
-                            TempData["ErrorMsg"] = "You can't delete a status that is being used by any task currently.";
+                            TempData["ErrorMsg"] = Message.STAT_DELETION_FAIL;
                             return Json(Url.Action("Index", "Status"));
                         }
                         else
@@ -132,7 +133,7 @@ namespace TaskPilot.Web.Controllers
 
             }
             _unitOfWork.Save();
-            TempData["SuccessMsg"] = status.Length + " status has been deleted successfully";
+            TempData["SuccessMsg"] = status.Length + Message.STAT_DELETION;
             return Json(Url.Action("Index", "Status"));
         }
     }

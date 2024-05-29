@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TaskPilot.Application.Common.Interfaces;
+using TaskPilot.Application.Common.Utility;
 using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
 using TaskPilot.Infrastructure.Repository;
@@ -28,7 +29,7 @@ namespace TaskPilot.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claimsIdentity = (ClaimsIdentity)User.Identity!;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             EditProfileViewModel viewModel = new EditProfileViewModel();
             if (claim != null)
@@ -40,12 +41,12 @@ namespace TaskPilot.Web.Controllers
 
                 viewModel = new EditProfileViewModel
                 {
-                    Email = currentUser.Email,
+                    Email = currentUser.Email!,
                     FirstName = currentUser.FirstName,
                     Id = currentUser.Id,
                     LastLogin = currentUser.LastLogin,
                     LastName = currentUser.LastName,
-                    Username = currentUser.UserName,
+                    Username = currentUser.UserName!,
                     UserRole = currentUserRole[0],
                     UserPermissions = new List<Permission>()
                 };
@@ -65,7 +66,7 @@ namespace TaskPilot.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditDetail(EditProfileViewModel viewModel)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claimsIdentity = (ClaimsIdentity)User.Identity!;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
             if (claim != null)
@@ -91,12 +92,12 @@ namespace TaskPilot.Web.Controllers
                     viewModel.LastLogin = userInDb.LastLogin;
 
                     _unitOfWork.Users.Update(userInDb);
-                    TempData["SuccessMsg"] = "Your user profile has been updated successfully";
+                    TempData["SuccessMsg"] = Message.PROF_DETAIL_EDIT;
                     RedirectToAction("Index", "Profile", viewModel);
                 }
                 else
                 {
-                    TempData["ErrorMsg"] = "Oops, something went wrong, please go thru error message";
+                    TempData["ErrorMsg"] = Message.COMMON_ERROR;
                 }
 
                 viewModel.UserPermissions = new List<Permission>();
@@ -113,7 +114,7 @@ namespace TaskPilot.Web.Controllers
 
         public async Task<IActionResult> EditPassword()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claimsIdentity = (ClaimsIdentity)User.Identity!;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             EditProfilePasswordViewModel viewModel = new EditProfilePasswordViewModel();
 
@@ -146,7 +147,7 @@ namespace TaskPilot.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditPassword(EditProfilePasswordViewModel viewModel)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claimsIdentity = (ClaimsIdentity)User.Identity!;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
             if (ModelState.IsValid)
@@ -159,16 +160,15 @@ namespace TaskPilot.Web.Controllers
                 {
                     _unitOfWork.Users.Update(userInDB);
                     _unitOfWork.Save();
-                    TempData["SuccessMsg"] = "Your password has been updated successfully";
+                    TempData["SuccessMsg"] = Message.PROF_PASS_EDIT;
                     return RedirectToAction("Index", "Profile");
                 }
                 else
                 {
-                    TempData["ErrorMsg"] = "Oops, something went wrong, current password mismatch.";
+                    TempData["ErrorMsg"] = Message.PROF_PASS_EDIT_FAIL;
                 }
             }
-            TempData["ErrorMsg"] = "Oops, something went wrong, current password mismatch.";
-            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim.Value);
+            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
             var currentUserRole = await _userManager.GetRolesAsync(currentUser);
             var roles = _unitOfWork.Roles.GetAllInclude(r => r.Name == currentUserRole[0], "Permissions").Single();
             var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
@@ -186,9 +186,9 @@ namespace TaskPilot.Web.Controllers
 
         public async Task<IActionResult> EditContact()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claimsIdentity = (ClaimsIdentity)User.Identity!;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim.Value);
+            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
             var currentUserRole = await _userManager.GetRolesAsync(currentUser);
             var roles = _unitOfWork.Roles.GetAllInclude(r => r.Name == currentUserRole[0], "Permissions").Single();
             var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
@@ -214,9 +214,9 @@ namespace TaskPilot.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditContact(EditContactViewModel viewModel)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claimsIdentity = (ClaimsIdentity)User.Identity!;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim.Value);
+            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
             var currentUserRole = await _userManager.GetRolesAsync(currentUser);
             var roles = _unitOfWork.Roles.GetAllInclude(r => r.Name == currentUserRole[0], "Permissions").Single();
             var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
@@ -231,7 +231,8 @@ namespace TaskPilot.Web.Controllers
                     return RedirectToAction("VerifyPhoneNumber", new { PhoneNumber = viewModel.PhoneNumber });
                 }
             }
-            TempData["ErrorMsg"] = "Oops, something went wrong, please go thru the error message.";
+
+            TempData["ErrorMsg"] = Message.COMMON_ERROR;
             viewModel.UserPermissions = new List<Permission>();
             foreach (var permission in permissions)
             {
@@ -245,9 +246,9 @@ namespace TaskPilot.Web.Controllers
 
         public async Task<IActionResult> VerifyPhoneNumber(string phoneNumber)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claimsIdentity = (ClaimsIdentity)User.Identity!;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim.Value);
+            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(currentUser, phoneNumber);
             return phoneNumber == null ? View("Error") : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
         }
@@ -258,18 +259,18 @@ namespace TaskPilot.Web.Controllers
         {
             if(ModelState.IsValid)
             {
-                var claimsIdentity = (ClaimsIdentity)User.Identity;
+                var claimsIdentity = (ClaimsIdentity)User.Identity!;
                 var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-                var currentUser = _unitOfWork.Users.Get(u => u.Id == claim.Value);
+                var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
 
                 var result = await _userManager.ChangePhoneNumberAsync(currentUser, viewModel.PhoneNumber, viewModel.Code);
                 if(result.Succeeded)
                 {
-                    TempData["SuccessMsg"] = "Your contact has been updated.";
+                    TempData["SuccessMsg"] = Message.PROF_CONTACT_EDIT;
                     return RedirectToAction("Index", "Profile");
                 }
             }
-            TempData["ErrorMsg"] = "Failed to verify phone";
+            TempData["ErrorMsg"] = Message.PROF_CONTACT_EDIT_FAIL;
             return View(viewModel);
         }
 

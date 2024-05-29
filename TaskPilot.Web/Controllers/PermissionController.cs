@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TaskPilot.Application.Common.Interfaces;
+using TaskPilot.Application.Common.Utility;
 using TaskPilot.Domain.Entities;
 using TaskPilot.Web.ViewModels;
 
@@ -44,7 +45,7 @@ namespace TaskPilot.Web.Controllers
                         UpdatedAt = DateTime.UtcNow,
                         FeaturesId = viewModel.FeatureId,
                     };
-                    TempData["SuccessMsg"] = "A new permission has been created";
+                    TempData["SuccessMsg"] = Message.PERMIT_CREATION;
                     _unitOfWork.Permissions.Add(permission);
                 }
                 else
@@ -54,13 +55,13 @@ namespace TaskPilot.Web.Controllers
                     permissionToEdit.UpdatedAt = DateTime.Now;
 
                     _unitOfWork.Permissions.Update(permissionToEdit);
-                    TempData["SuccessMsg"] = permissionToEdit.Name + "'s permission has been updated";
+                    TempData["SuccessMsg"] = permissionToEdit.Name + Message.PERMIT_UPDATE;
 
                 }
                 _unitOfWork.Save();
                 return RedirectToAction("Index", "Permission");
             }
-            TempData["ErrorMsg"] = "Oops! Something went wrong, please go through the error message";
+            TempData["ErrorMsg"] = Message.COMMON_ERROR;
             return View(viewModel);
         }
     }

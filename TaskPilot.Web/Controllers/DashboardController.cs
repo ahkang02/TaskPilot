@@ -22,17 +22,19 @@ namespace TaskPilot.Web.Controllers
         [Authorize(Policy = "CustomPolicy")]
         public async Task<IActionResult> Index()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claimsIdentity = (ClaimsIdentity)User.Identity!;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim.Value);
+            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
             var userTaskList = _unitOfWork.Tasks.GetAllInclude(u => u.AssignToId == currentUser.Id && u.Status.Description != "Closed", "Status,Priority,AssignFrom,AssignTo").OrderByDescending(u => u.Created).ToList();
-            Tasks overDueTask = null;
+
+            Tasks? overDueTask = null;
             List<TaskDetailViewModel> taskDetail = new List<TaskDetailViewModel>();
+
             int dueDayRemaining = 0;
 
             if (userTaskList.Count > 0)
             {
-                overDueTask = userTaskList.Where(u => u.DueDate.Value.Day >= DateTime.Now.Day && u.Status.Description != "Closed").OrderBy(u => u.DueDate).FirstOrDefault();
+                overDueTask = userTaskList.Where(u => u.DueDate!.Value.Day >= DateTime.Now.Day && u.Status.Description != "Closed").OrderBy(u => u.DueDate).FirstOrDefault();
                 if (overDueTask == null)
                 {
                     overDueTask = null;
@@ -40,7 +42,7 @@ namespace TaskPilot.Web.Controllers
                 }
                 else
                 {
-                    dueDayRemaining = (overDueTask.DueDate.Value.Date - DateTime.Now.Date).Days;
+                    dueDayRemaining = (overDueTask.DueDate!.Value.Date - DateTime.Now.Date).Days;
                 }
 
             }
@@ -58,8 +60,8 @@ namespace TaskPilot.Web.Controllers
                     CreatedDate = task.Created,
                     Priority = task.Priority.Description,
                     Status = task.Status.Description,
-                    AssignTo = task.AssignTo.UserName,
-                    AssignFrom = task.AssignFrom.UserName,
+                    AssignTo = task.AssignTo.UserName!,
+                    AssignFrom = task.AssignFrom.UserName!,
                     AssignFromRole = userRole[0],
                 });
             }
@@ -67,7 +69,7 @@ namespace TaskPilot.Web.Controllers
             DashboardViewModel viewModel = new DashboardViewModel
             {
                 UserTaskList = taskDetail,
-                OverDueTask = overDueTask,
+                OverDueTask = overDueTask!,
                 dayLeftDue = dueDayRemaining
             };
 
