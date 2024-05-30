@@ -20,34 +20,10 @@ namespace TaskPilot.Web.ViewComponents
             _userManager = userManager;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync()
+        public IViewComponentResult Invoke()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity!;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-
-            UserPermissionViewModel viewModel = new UserPermissionViewModel
-            {
-                UserPermissions = new List<Permission>()
-            };
-
-            if (claim != null)
-            {
-                var currentUser = _unitOfWork.Users.Get(u => u.Id == claim.Value);
-                var currentUserRole = await _userManager.GetRolesAsync(currentUser);
-                var roles = _unitOfWork.Roles.GetAllInclude(r => r.Name == currentUserRole[0], "Permissions").Single();
-                var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
-
-                foreach (var permission in permissions)
-                {
-                    if (permission.Roles.Any(r => r.Id == roles.Id))
-                    {
-                        viewModel.UserPermissions.Add(permission);
-                    }
-                }
-
-            }
-
-            return View(viewModel);
+            return View(Helper.GetUserPermission(_unitOfWork, claimsIdentity));
         }
 
     }

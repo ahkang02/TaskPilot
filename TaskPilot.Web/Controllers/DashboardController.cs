@@ -5,6 +5,7 @@ using System.Security.Claims;
 using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Domain.Entities;
 using TaskPilot.Web.ViewModels;
+using TaskPilot.Application.Common;
 
 namespace TaskPilot.Web.Controllers
 {
@@ -22,9 +23,8 @@ namespace TaskPilot.Web.Controllers
         [Authorize(Policy = "CustomPolicy")]
         public async Task<IActionResult> Index()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity!;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
+            var username = User.Identity!.Name;
+            var currentUser = _unitOfWork.Users.Get(u => u.UserName == username);
             var userTaskList = _unitOfWork.Tasks.GetAllInclude(u => u.AssignToId == currentUser.Id && u.Status!.Description != "Closed", "Status,Priority,AssignFrom,AssignTo").OrderByDescending(u => u.Created).ToList();
 
             Tasks? overDueTask = null;

@@ -30,8 +30,6 @@ namespace TaskPilot.Web.Controllers
             {
                 return RedirectToAction("Detail", "Task", new { id = taskId });
             }
-
-
         }
     }
 }

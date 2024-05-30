@@ -52,6 +52,8 @@ namespace TaskPilot.Web.Controllers
 
                     if (!await _userManager.IsEmailConfirmedAsync(user))
                     {
+                        ViewBag.Title = "Error: Email Confirmation Missing";
+                        ViewBag.ErrorMessage = Message.EMAIL_CONFIRMATION;
                         return View("Error");
                     }
                     var result = await _signInManager.PasswordSignInAsync(viewModel.Username!, viewModel.Password!, viewModel.RememberMe, true);

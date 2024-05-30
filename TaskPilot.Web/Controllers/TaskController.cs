@@ -25,34 +25,10 @@ namespace TaskPilot.Web.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity!;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-
-            UserPermissionViewModel viewModel = new UserPermissionViewModel
-            {
-                UserPermissions = new List<Permission>()
-            };
-
-            if (claim != null)
-            {
-                var currentUser = _unitOfWork.Users.Get(u => u.Id == claim.Value);
-                var currentUserRole = await _userManager.GetRolesAsync(currentUser);
-                var roles = _unitOfWork.Roles.GetAllInclude(r => r.Name == currentUserRole[0], "Permissions").Single();
-                var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
-
-                foreach (var permission in permissions)
-                {
-                    if (permission.Roles.Any(r => r.Id == roles.Id))
-                    {
-                        viewModel.UserPermissions.Add(permission);
-                    }
-                }
-
-            }
-
-            return View(viewModel);
+            return View(Helper.GetUserPermission(_unitOfWork, claimsIdentity));
         }
 
         public IActionResult Detail(Guid Id)
@@ -130,81 +106,7 @@ namespace TaskPilot.Web.Controllers
                     }
                     else
                     {
-                        List<Tasks> tasks = new List<Tasks>();
-
-                        // Different Recurring Handle Differently
-                        switch (viewModel.RecurringType)
-                        {
-                            case "Daily":
-                                for (var date = viewModel.StartDate; date!.Value.Date <= viewModel.EndDate!.Value.Date; date = date.Value.AddDays(1))
-                                {
-                                    tasks.Add(new Tasks
-                                    {
-                                        Created = DateTime.Now,
-                                        AssignToId = viewModel.AssignToId!,
-                                        Description = viewModel.TaskDescription!,
-                                        DueDate = date,
-                                        Name = viewModel.TaskName + " " + date.Value.ToString("yyyy-MM-dd"),
-                                        PriorityId = viewModel.PriorityId.GetValueOrDefault(),
-                                        StatusId = viewModel.StatusId.GetValueOrDefault(),
-                                        AssignFromId = currentUser.Id,
-                                    });
-
-                                }
-                                break;
-                            case "Weekly":
-                                for (var date = viewModel.StartDate; date!.Value.Date <= viewModel.EndDate!.Value.Date; date = date.Value.AddDays(7))
-                                {
-                                    tasks.Add(new Tasks
-                                    {
-                                        Created = DateTime.Now,
-                                        AssignToId = viewModel.AssignToId!,
-                                        Description = viewModel.TaskDescription!,
-                                        DueDate = date,
-                                        Name = viewModel.TaskName + " " + date.Value.ToString("yyyy-MM-dd"),
-                                        PriorityId = viewModel.PriorityId!.Value,
-                                        StatusId = viewModel.StatusId!.Value,
-                                        AssignFromId = currentUser.Id,
-                                    });
-                                }
-                                break;
-                            case "Monthly":
-                                for (var month = viewModel.StartDate; month!.Value.Month <= viewModel.EndDate!.Value.Month; month = month.Value.AddMonths(1))
-                                {
-                                    tasks.Add(new Tasks
-                                    {
-                                        Created = DateTime.Now,
-                                        AssignToId = viewModel.AssignToId!,
-                                        Description = viewModel.TaskDescription!,
-                                        DueDate = month,
-                                        Name = viewModel.TaskName + " " + month.Value.ToString("MMM"),
-                                        PriorityId = viewModel.PriorityId!.Value,
-                                        StatusId = viewModel.StatusId!.Value,
-                                        AssignFromId = currentUser.Id,
-                                    });
-
-
-                                }
-                                break;
-                            case "Yearly":
-                                for (var year = viewModel.StartDate; year!.Value.Year <= viewModel.EndDate!.Value.Year; year = year.Value.AddYears(1))
-                                {
-                                    tasks.Add(new Tasks
-                                    {
-                                        Created = DateTime.Now,
-                                        AssignToId = viewModel.AssignToId!,
-                                        Description = viewModel.TaskDescription!,
-                                        DueDate = year,
-                                        Name = viewModel.TaskName + " " + year.Value.ToString("yyyy"),
-                                        PriorityId = viewModel.PriorityId!.Value,
-                                        StatusId = viewModel.StatusId!.Value,
-                                        AssignFromId = currentUser.Id,
-                                    });
-
-                                }
-                                break;
-                        }
-
+                        List<Tasks> tasks = GetRecurringTask(viewModel, currentUser);
                         _unitOfWork.Tasks.AddRange(tasks);
                         _unitOfWork.Save();
 
@@ -250,81 +152,7 @@ namespace TaskPilot.Web.Controllers
 
                             if (viewModel.IsRecurring)
                             {
-                                List<Tasks> tasks = new List<Tasks>();
-
-                                // Different Recurring Handle Differently
-                                switch (viewModel.RecurringType)
-                                {
-                                    case "Daily":
-                                        for (var date = viewModel.StartDate; date!.Value.Date <= viewModel.EndDate!.Value.Date; date = date.Value.AddDays(1))
-                                        {
-                                            tasks.Add(new Tasks
-                                            {
-                                                Created = DateTime.Now,
-                                                AssignToId = viewModel.AssignToId!,
-                                                Description = viewModel.TaskDescription!,
-                                                DueDate = date,
-                                                Name = viewModel.TaskName + " " + date.Value.ToString("yyyy-MM-dd"),
-                                                PriorityId = viewModel.PriorityId.GetValueOrDefault(),
-                                                StatusId = viewModel.StatusId.GetValueOrDefault(),
-                                                AssignFromId = currentUser.Id,
-                                            });
-
-                                        }
-                                        break;
-                                    case "Weekly":
-                                        for (var date = viewModel.StartDate; date!.Value.Date <= viewModel.EndDate!.Value.Date; date = date.Value.AddDays(7))
-                                        {
-                                            tasks.Add(new Tasks
-                                            {
-                                                Created = DateTime.Now,
-                                                AssignToId = viewModel.AssignToId!,
-                                                Description = viewModel.TaskDescription!,
-                                                DueDate = date,
-                                                Name = viewModel.TaskName + " " + date.Value.ToString("yyyy-MM-dd"),
-                                                PriorityId = viewModel.PriorityId.GetValueOrDefault(),
-                                                StatusId = viewModel.StatusId.GetValueOrDefault(),
-                                                AssignFromId = currentUser.Id,
-                                            });
-                                        }
-                                        break;
-                                    case "Monthly":
-                                        for (var month = viewModel.StartDate; month!.Value.Month <= viewModel.EndDate!.Value.Month; month = month.Value.AddMonths(1))
-                                        {
-                                            tasks.Add(new Tasks
-                                            {
-                                                Created = DateTime.Now,
-                                                AssignToId = viewModel.AssignToId!,
-                                                Description = viewModel.TaskDescription!,
-                                                DueDate = month,
-                                                Name = viewModel.TaskName + " " + month.Value.ToString("MMM"),
-                                                PriorityId = viewModel.PriorityId.GetValueOrDefault(),
-                                                StatusId = viewModel.StatusId.GetValueOrDefault(),
-                                                AssignFromId = currentUser.Id,
-                                            });
-
-
-                                        }
-                                        break;
-                                    case "Yearly":
-                                        for (var year = viewModel.StartDate; year!.Value.Year <= viewModel.EndDate!.Value.Year; year = year.Value.AddYears(1))
-                                        {
-                                            tasks.Add(new Tasks
-                                            {
-                                                Created = DateTime.Now,
-                                                AssignToId = viewModel.AssignToId!,
-                                                Description = viewModel.TaskDescription!,
-                                                DueDate = year,
-                                                Name = viewModel.TaskName + " " + year.Value.ToString("yyyy"),
-                                                PriorityId = viewModel.PriorityId.GetValueOrDefault(),
-                                                StatusId = viewModel.StatusId.GetValueOrDefault(),
-                                                AssignFromId = currentUser.Id,
-                                            });
-
-                                        }
-                                        break;
-                                }
-
+                                List<Tasks> tasks = GetRecurringTask(viewModel, currentUser);
                                 _unitOfWork.Tasks.AddRange(tasks);
                                 _unitOfWork.Save();
 
@@ -373,81 +201,7 @@ namespace TaskPilot.Web.Controllers
 
                         if (viewModel.IsRecurring)
                         {
-                            List<Tasks> tasks = new List<Tasks>();
-
-                            // Different Recurring Handle Differently
-                            switch (viewModel.RecurringType)
-                            {
-                                case "Daily":
-                                    for (var date = viewModel.StartDate; date!.Value.Date <= viewModel.EndDate!.Value.Date; date = date.Value.AddDays(1))
-                                    {
-                                        tasks.Add(new Tasks
-                                        {
-                                            Created = DateTime.Now,
-                                            AssignToId = viewModel.AssignToId!,
-                                            Description = viewModel.TaskDescription!,
-                                            DueDate = date,
-                                            Name = viewModel.TaskName + " " + date.Value.ToString("yyyy-MM-dd"),
-                                            PriorityId = viewModel.PriorityId.GetValueOrDefault(),
-                                            StatusId = viewModel.StatusId.GetValueOrDefault(),
-                                            AssignFromId = currentUser.Id,
-                                        });
-
-                                    }
-                                    break;
-                                case "Weekly":
-                                    for (var date = viewModel.StartDate; date!.Value.Date <= viewModel.EndDate!.Value.Date; date = date.Value.AddDays(7))
-                                    {
-                                        tasks.Add(new Tasks
-                                        {
-                                            Created = DateTime.Now,
-                                            AssignToId = viewModel.AssignToId!,
-                                            Description = viewModel.TaskDescription!,
-                                            DueDate = date,
-                                            Name = viewModel.TaskName + " " + date.Value.ToString("yyyy-MM-dd"),
-                                            PriorityId = viewModel.PriorityId.GetValueOrDefault(),
-                                            StatusId = viewModel.StatusId.GetValueOrDefault(),
-                                            AssignFromId = currentUser.Id,
-                                        });
-                                    }
-                                    break;
-                                case "Monthly":
-                                    for (var month = viewModel.StartDate; month!.Value.Month <= viewModel.EndDate!.Value.Month; month = month.Value.AddMonths(1))
-                                    {
-                                        tasks.Add(new Tasks
-                                        {
-                                            Created = DateTime.Now,
-                                            AssignToId = viewModel.AssignToId!,
-                                            Description = viewModel.TaskDescription!,
-                                            DueDate = month,
-                                            Name = viewModel.TaskName + " " + month.Value.ToString("MMM"),
-                                            PriorityId = viewModel.PriorityId.GetValueOrDefault(),
-                                            StatusId = viewModel.StatusId.GetValueOrDefault(),
-                                            AssignFromId = currentUser.Id,
-                                        });
-
-
-                                    }
-                                    break;
-                                case "Yearly":
-                                    for (var year = viewModel.StartDate; year!.Value.Year <= viewModel.EndDate!.Value.Year; year = year.Value.AddYears(1))
-                                    {
-                                        tasks.Add(new Tasks
-                                        {
-                                            Created = DateTime.Now,
-                                            AssignToId = viewModel.AssignToId!,
-                                            Description = viewModel.TaskDescription!,
-                                            DueDate = year,
-                                            Name = viewModel.TaskName + " " + year.Value.ToString("yyyy"),
-                                            PriorityId = viewModel.PriorityId.GetValueOrDefault(),
-                                            StatusId = viewModel.StatusId.GetValueOrDefault(),
-                                            AssignFromId = currentUser.Id,
-                                        });
-
-                                    }
-                                    break;
-                            }
-
+                            List<Tasks> tasks = GetRecurringTask(viewModel, currentUser);
                             _unitOfWork.Tasks.AddRange(tasks);
                             _unitOfWork.Save();
 
@@ -731,5 +485,84 @@ namespace TaskPilot.Web.Controllers
             return RedirectToAction("ImportTask", "Task", viewModel);
         }
 
+        private List<Tasks> GetRecurringTask(EditTaskViewModel viewModel, ApplicationUser currentUser)
+        {
+            List<Tasks> tasks = new List<Tasks>();
+
+            switch (viewModel.RecurringType)
+            {
+                case "Daily":
+                    for (var date = viewModel.StartDate; date!.Value.Date <= viewModel.EndDate!.Value.Date; date = date.Value.AddDays(1))
+                    {
+                        tasks.Add(new Tasks
+                        {
+                            Created = DateTime.Now,
+                            AssignToId = viewModel.AssignToId!,
+                            Description = viewModel.TaskDescription!,
+                            DueDate = date,
+                            Name = viewModel.TaskName + " " + date.Value.ToString("yyyy-MM-dd"),
+                            PriorityId = viewModel.PriorityId.GetValueOrDefault(),
+                            StatusId = viewModel.StatusId.GetValueOrDefault(),
+                            AssignFromId = currentUser.Id,
+                        });
+
+                    }
+                    break;
+                case "Weekly":
+                    for (var date = viewModel.StartDate; date!.Value.Date <= viewModel.EndDate!.Value.Date; date = date.Value.AddDays(7))
+                    {
+                        tasks.Add(new Tasks
+                        {
+                            Created = DateTime.Now,
+                            AssignToId = viewModel.AssignToId!,
+                            Description = viewModel.TaskDescription!,
+                            DueDate = date,
+                            Name = viewModel.TaskName + " " + date.Value.ToString("yyyy-MM-dd"),
+                            PriorityId = viewModel.PriorityId!.Value,
+                            StatusId = viewModel.StatusId!.Value,
+                            AssignFromId = currentUser.Id,
+                        });
+                    }
+                    break;
+                case "Monthly":
+                    for (var month = viewModel.StartDate; month!.Value.Month <= viewModel.EndDate!.Value.Month; month = month.Value.AddMonths(1))
+                    {
+                        tasks.Add(new Tasks
+                        {
+                            Created = DateTime.Now,
+                            AssignToId = viewModel.AssignToId!,
+                            Description = viewModel.TaskDescription!,
+                            DueDate = month,
+                            Name = viewModel.TaskName + " " + month.Value.ToString("MMM"),
+                            PriorityId = viewModel.PriorityId!.Value,
+                            StatusId = viewModel.StatusId!.Value,
+                            AssignFromId = currentUser.Id,
+                        });
+
+
+                    }
+                    break;
+                case "Yearly":
+                    for (var year = viewModel.StartDate; year!.Value.Year <= viewModel.EndDate!.Value.Year; year = year.Value.AddYears(1))
+                    {
+                        tasks.Add(new Tasks
+                        {
+                            Created = DateTime.Now,
+                            AssignToId = viewModel.AssignToId!,
+                            Description = viewModel.TaskDescription!,
+                            DueDate = year,
+                            Name = viewModel.TaskName + " " + year.Value.ToString("yyyy"),
+                            PriorityId = viewModel.PriorityId!.Value,
+                            StatusId = viewModel.StatusId!.Value,
+                            AssignFromId = currentUser.Id,
+                        });
+
+                    }
+                    break;
+            }
+            return tasks;
+        }
     }
 }
+
+

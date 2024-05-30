@@ -21,121 +21,97 @@ namespace TaskPilot.Web.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity!;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            return View(Helper.GetUserPermission(_unitOfWork, claimsIdentity));
+        }
 
-            UserPermissionViewModel viewModel = new UserPermissionViewModel
+
+    public IActionResult New()
+    {
+        EditPriorityViewModel viewModel = new EditPriorityViewModel();
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult New(EditPriorityViewModel viewModel)
+    {
+        if (ModelState.IsValid)
+        {
+            if (viewModel.Id == null)
             {
-                UserPermissions = new List<Permission>()
-            };
-
-            if (claim != null)
-            {
-                var currentUser = _unitOfWork.Users.Get(u => u.Id == claim.Value);
-                var currentUserRole = await _userManager.GetRolesAsync(currentUser);
-                var roles = _unitOfWork.Roles.GetAllInclude(r => r.Name == currentUserRole[0], "Permissions").Single();
-                var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
-
-                foreach (var permission in permissions)
+                Priorities priority = new Priorities
                 {
-                    if (permission.Roles.Any(r => r.Id == roles.Id))
-                    {
-                        viewModel.UserPermissions.Add(permission);
-                    }
-                }
+                    Description = viewModel.Name!,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                };
 
+                _unitOfWork.Priority.Add(priority);
+                TempData["SuccessMsg"] = Message.PRIOR_CREATION;
             }
-
-            return View(viewModel);
-        }
-
-
-        public IActionResult New()
-        {
-            EditPriorityViewModel viewModel = new EditPriorityViewModel();
-            return View(viewModel);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult New(EditPriorityViewModel viewModel)
-        {
-            if (ModelState.IsValid)
+            else
             {
-                if (viewModel.Id == null)
-                {
-                    Priorities priority = new Priorities
-                    {
-                        Description = viewModel.Name!,
-                        CreatedAt = DateTime.Now,
-                        UpdatedAt = DateTime.Now,
-                    };
+                Priorities priorityToEdit = _unitOfWork.Priority.Get(p => p.Id == viewModel.Id);
+                priorityToEdit.Description = viewModel.Name!;
+                priorityToEdit.UpdatedAt = DateTime.Now;
 
-                    _unitOfWork.Priority.Add(priority);
-                    TempData["SuccessMsg"] = Message.PRIOR_CREATION;
+                _unitOfWork.Priority.Update(priorityToEdit);
+                TempData["SuccessMsg"] = priorityToEdit.Description + Message.PRIOR_UPDATE;
+            }
+            _unitOfWork.Save();
+            return RedirectToAction("Index", "Priority");
+        }
+        TempData["ErrorMsg"] = Message.COMMON_ERROR;
+        return View(viewModel);
+    }
+
+    public IActionResult Update(string name)
+    {
+        var priorityInDb = _unitOfWork.Priority.Get(p => p.Description == name);
+        EditStatusViewModel viewModel = new EditStatusViewModel
+        {
+            Id = priorityInDb.Id,
+            Name = priorityInDb.Description,
+        };
+
+        return View("New", viewModel);
+    }
+
+    public IActionResult Delete(Guid[] priority)
+    {
+        var priorityToDelete = new List<Priorities>();
+        if (priority.Length > 0)
+        {
+            for (int i = 0; i < priority.Length; i++)
+            {
+                var priorityId = priority[i];
+                priorityToDelete.Add(_unitOfWork.Priority.Get(p => p.Id == priorityId));
+            }
+        }
+
+        if (priorityToDelete != null)
+        {
+            foreach (var priorities in priorityToDelete)
+            {
+                if (_unitOfWork.Tasks.GetAll().Any(s => s.PriorityId == priorities.Id))
+                {
+                    TempData["ErrorMsg"] = Message.PRIOR_DELETION_FAIL;
+                    return Json(Url.Action("Index", "Priority"));
                 }
                 else
                 {
-                    Priorities priorityToEdit = _unitOfWork.Priority.Get(p => p.Id == viewModel.Id);
-                    priorityToEdit.Description = viewModel.Name!;
-                    priorityToEdit.UpdatedAt = DateTime.Now;
-
-                    _unitOfWork.Priority.Update(priorityToEdit);
-                    TempData["SuccessMsg"] = priorityToEdit.Description + Message.PRIOR_UPDATE;
-                }
-                _unitOfWork.Save();
-                return RedirectToAction("Index", "Priority");
-            }
-            TempData["ErrorMsg"] = Message.COMMON_ERROR;
-            return View(viewModel);
-        }
-
-        public IActionResult Update(string name)
-        {
-            var priorityInDb = _unitOfWork.Priority.Get(p => p.Description == name);
-            EditStatusViewModel viewModel = new EditStatusViewModel
-            {
-                Id = priorityInDb.Id,
-                Name = priorityInDb.Description,
-            };
-
-            return View("New", viewModel);
-        }
-
-        public IActionResult Delete(Guid[] priority)
-        {
-            var priorityToDelete = new List<Priorities>();
-            if (priority.Length > 0)
-            {
-                for (int i = 0; i < priority.Length; i++)
-                {
-                    var priorityId = priority[i];
-                    priorityToDelete.Add(_unitOfWork.Priority.Get(p => p.Id == priorityId));
+                    _unitOfWork.Priority.Remove(priorities);
                 }
             }
-
-            if (priorityToDelete != null)
-            {
-                foreach (var priorities in priorityToDelete)
-                {
-                    if (_unitOfWork.Tasks.GetAll().Any(s => s.PriorityId == priorities.Id))
-                    {
-                        TempData["ErrorMsg"] = Message.PRIOR_DELETION_FAIL;
-                        return Json(Url.Action("Index", "Priority"));
-                    }
-                    else
-                    {
-                        _unitOfWork.Priority.Remove(priorities);
-                    }
-                }
-            }
-
-            _unitOfWork.Save();
-            TempData["SuccessMsg"] = priority.Length + Message.PRIOR_DELETION;
-            return Json(Url.Action("Index", "Priority"));
         }
 
+        _unitOfWork.Save();
+        TempData["SuccessMsg"] = priority.Length + Message.PRIOR_DELETION;
+        return Json(Url.Action("Index", "Priority"));
     }
+
+}
 }

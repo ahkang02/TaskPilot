@@ -13,6 +13,7 @@ namespace TaskPilot.Application.Common.Utility
         public const string USER_EXIST = "Error: User already exist, please try logging in.";
         public const string ACCESS_DENIED = "Error: Access Denied, You're not authorized to access this resources.";
         public const string NOT_FOUND = "Error: Not Found, The resources you're trying to access is no longer available.";
+        public const string EMAIL_CONFIRMATION = "Error: Email Confirmation Missing, Please Confirm Your Email & Re-try.";
 
         public const string PERMIT_CREATION = "A new permission has been created";
         public const string PERMIT_UPDATE = "'s permission has been updated";
