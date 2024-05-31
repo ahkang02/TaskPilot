@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using TaskPilot.Application.Common.Utility.CustomValidator;
+using TaskPilot.Domain.Entities;
 
 namespace TaskPilot.Web.ViewModels
 {
@@ -18,10 +19,22 @@ namespace TaskPilot.Web.ViewModels
         [Required]
         public string? PriorityLevel { get; set; }
 
-        [Required]
+        public Guid? PriorityId { get; set; }
+
+        public List<Priorities>? PriorityList {  get; set; }
+
+       
         public string? Status { get; set; }
+
+        public Guid? StatusId { get; set; }
+
+        public List<Statuses>? StatusList { get; set; }
 
         [Required]
         public string? AssignToUser { get; set; }
+
+        public string? UserId { get; set; }
+
+        public List<ApplicationUser>? AssigeeList {  get; set; }
     }
 }

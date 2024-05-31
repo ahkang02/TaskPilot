@@ -30,9 +30,7 @@
             </div>
             @if (Model.ImportInfo.Count > 0)
             {
-                using (Html.BeginForm("SyncToDB", "Task", FormMethod.Post))
-                {
-
+                <form asp-action="SyncToDB" asp-controller="Task" method="post">
                     <div class="table-wrapper table-responsive overflow-auto" style="max-height: 350px;">
                         <table class="table caption-top text-center" id="example" style="width:1500px">
                             <caption class="fw-bold">Data Retrieved From CSV</caption>
@@ -52,33 +50,30 @@
                                 {
                                     <tr>
                                         <td>
-                                            @Html.TextBoxFor(m => Model.ImportInfo[i].Name, new { @class = "form-control" })
-                                            @Html.ValidationMessageFor(m => Model.ImportInfo[i].Name)
+                                            <input type="text" asp-for="ImportInfo[i].Name" class="form-control"/>
+                                            <span asp-validation-for="ImportInfo[i].Name"></span>
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(m => Model.ImportInfo[i].Description, new { @class = "form-control" })
-                                            @Html.ValidationMessageFor(m => Model.ImportInfo[i].Description)
+                                            <input type="text" asp-for="ImportInfo[i].Description" class="form-control" />
+                                            <span asp-validation-for="ImportInfo[i].Description"></span>
 
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(m => Model.ImportInfo[i].DueDate, new { @class = "form-control", type = "date", @Value = Model.ImportInfo[i].DueDate != null ? Model.ImportInfo[i].DueDate!.Value.ToString("yyyy-MM-dd") : DateTime.Today.Date.ToShortDateString(), @min = DateTime.Today.AddDays(1).ToString("yyyy-MM-dd") })
-                                            @Html.ValidationMessageFor(m => Model.ImportInfo[i].DueDate)
+                                            <input type="date" asp-for="ImportInfo[i].DueDate" class="form-control" value="@(Model.ImportInfo[i].DueDate.HasValue ? Model.ImportInfo[i].DueDate.Value.ToString("yyyy-MM-dd") : DateTime.Today.ToString("yyyy-MM-dd"))" min="@DateTime.Today.ToString("yyyy-MM-dd")"/>
+                                            <span asp-validation-for="ImportInfo[i].DueDate"></span>
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(m => Model.ImportInfo[i].PriorityLevel, new { @class = "form-control" })
-                                            @Html.ValidationMessageFor(m => Model.ImportInfo[i].PriorityLevel)
-
+                                            <select class="form-control" asp-for="ImportInfo[i].PriorityId" asp-items="@(new SelectList(Model.ImportInfo[i].PriorityList, "Id", "Description"))"></select>
+                                            <span asp-validation-for="ImportInfo[i].PriorityId"></span>
                                         </td>
 
                                         <td>
-                                            @Html.TextBoxFor(m => Model.ImportInfo[i].Status, new { @class = "form-control" })
-                                            @Html.ValidationMessageFor(m => Model.ImportInfo[i].Status)
-
+                                            <select class="form-control" asp-for="ImportInfo[i].StatusId" asp-items="@(new SelectList(Model.ImportInfo[i].StatusList, "Id", "Description"))"></select>
+                                            <span asp-validation-for="ImportInfo[i].StatusId"></span>
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(m => Model.ImportInfo[i].AssignToUser, new { @class = "form-control" })
-                                            @Html.ValidationMessageFor(m => Model.ImportInfo[i].AssignToUser)
-
+                                            <select class="form-control" asp-for="ImportInfo[i].UserId" asp-items="@(new SelectList(Model.ImportInfo[i].AssigeeList, "Id", "UserName"))"></select>
+                                            <span asp-validation-for="ImportInfo[i].UserId"></span>
                                         </td>
                                     </tr>
                                 }
@@ -86,25 +81,18 @@
                         </table>
                     </div>
 
-                    for (int i = 0; i < Model.ImportInfo.Count; i++)
+                    @for (int i = 0; i < Model.ImportInfo.Count; i++)
                     {
-                        @Html.HiddenFor(m => Model.ImportInfo[i].Name)
-                        ;
-                        @Html.HiddenFor(m => Model.ImportInfo[i].Description)
-                        ;
-                        @Html.HiddenFor(m => Model.ImportInfo[i].DueDate)
-                        ;
-                        @Html.HiddenFor(m => Model.ImportInfo[i].PriorityLevel)
-                        ;
-                        @Html.HiddenFor(m => Model.ImportInfo[i].Status)
-                        ;
-                        @Html.HiddenFor(m => Model.ImportInfo[i].AssignToUser)
-                        ;
+                        <input type="hidden" asp-for="ImportInfo[i].Name" />
+                        <input type="hidden" asp-for="ImportInfo[i].Description" />
+                        <input type="hidden" asp-for="ImportInfo[i].DueDate" />
+                        <input type="hidden" asp-for="ImportInfo[i].PriorityLevel" />
+                        <input type="hidden" asp-for="ImportInfo[i].Status" />
+                        <input type="hidden" asp-for="ImportInfo[i].AssignToUser" />
                     }
                     <br />
                     <button type="submit" class="btn btn-primary btn-sm float-end">Import</button>
-
-                }
+                </form>
             }
         </div>
     </div>

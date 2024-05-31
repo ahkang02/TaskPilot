@@ -283,7 +283,7 @@ namespace TaskPilot.Web.Controllers
 
                 foreach (var task in taskToDelete)
                 {
-                    var notifInTask = _unitOfWork.Notification.GetAll().Where(t => t.TasksId == task.Id);
+                    var notifInTask = _unitOfWork.Notification.GetAll().Where(t => t.TasksId == task.Id) != null ? _unitOfWork.Notification.GetAll().Where(t => t.TasksId == task.Id) : null;
 
                     if (notifInTask != null)
                     {
@@ -426,14 +426,25 @@ namespace TaskPilot.Web.Controllers
                     var line = csvReader.ReadLine();
                     var value = line!.Split(',');
 
+                    var status = _unitOfWork.Status.Get(r => r.Description == value[3])  != null ? _unitOfWork.Status.Get(r => r.Description == value[3]) : null;
+                    var priority = _unitOfWork.Priority.Get(r => r.Description == value[2])  != null ? _unitOfWork.Priority.Get(r => r.Description == value[2]) : null;
+                    var assignee = _unitOfWork.Users.Get(u => u.UserName == value[5]) != null ? _unitOfWork.Users.Get(u => u.UserName == value[5]) : null;
+
+
                     viewModel.ImportInfo.Add(new TaskImportInfo
                     {
                         Name = value[0],
                         Description = value[1],
                         PriorityLevel = value[2],
                         Status = value[3],
-                        DueDate = DateTime.Now.Date,
-                        AssignToUser = value[5]
+                        DueDate = DateTime.Parse(value[4]).Date < DateTime.Now.Date ? DateTime.Now : DateTime.Parse(value[4]),
+                        AssignToUser = value[5],
+                        AssigeeList = _unitOfWork.Users.GetAll().ToList(),
+                        PriorityList = _unitOfWork.Priority.GetAll().ToList(),
+                        StatusList = _unitOfWork.Status.GetAll().ToList(),
+                        PriorityId = priority != null ? priority.Id : null,  
+                        StatusId = status != null ? status.Id : null,  
+                        UserId = assignee != null ? assignee.Id : null,  
                     });
 
                 }
