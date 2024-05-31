@@ -18,6 +18,9 @@
 
 </head>
 <body>
+    <div class="spinner-border position-absolute spinner" role="status" style="z-index:1; left: 50%; top: 50%;">
+        <span class="visually-hidden">Loading...</span>
+    </div>
     <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
          data-sidebar-position="fixed" data-header-position="fixed">
         <aside class="left-sidebar">
@@ -129,5 +132,27 @@
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
     <script src="~/lib/jquery-validation/dist/additional-methods.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        $(document).ready(function () {
+            $('.spinner').hide();
+            $('a.dropdown-item, a.sidebar-link').on('click', function (e) {
+                e.preventDefault();
+
+                var targetUrl = $(this).attr('href');
+                var spinner = $('.spinner').show();
+                setTimeout(function () {
+                    window.location.href = targetUrl;
+                }, 50);
+            })
+        })
+
+        $('form').submit(function () {
+            if ($(this).valid()) {
+                $(this).find(':submit').attr('disabled', 'disabled');
+                var spinner = $('.spinner').show();
+            }
+        });
+    </script>
+
 </body>
 </html>
