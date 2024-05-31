@@ -128,9 +128,8 @@ namespace TaskPilot.Web.Controllers
 
                         return View("Login");
                     }
-                    ModelState.AddModelError("", Message.USER_EXIST);
-                    return View(viewModel);
                 }
+                ModelState.AddModelError("", Message.USER_EXIST);
             }
             return View(viewModel);
         }

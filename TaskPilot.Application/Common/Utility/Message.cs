@@ -8,6 +8,8 @@ namespace TaskPilot.Application.Common.Utility
 {
     public static class Message
     {
+        public const string DUPLICATE_REQUEST = "Error: It seems like you're trying to submit the same form twice.";
+
         public const string INVALID_LOGIN_ATTEMPT = "Error: Invalid login attempt, please retry with correct credentials.";
         public const string NO_USER_FOUND = "Error: User not found, please proceed to registration before logging in.";
         public const string USER_EXIST = "Error: User already exist, please try logging in.";

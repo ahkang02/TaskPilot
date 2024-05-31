@@ -13,7 +13,7 @@
 </head>
 <body>
     <div class="container-fluid">
-        <main role="main" class="pb-3">
+        <main role="main">
             <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
                  data-sidebar-position="fixed" data-header-position="fixed">
                 <div class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
@@ -22,6 +22,13 @@
                             <div class="col-md-8 col-lg-6 col-xxl-3">
                                 <div class="card mb-0">
                                     <div class="card-body">
+                                        @if (ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count > 0)
+                                        {
+                                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                <div asp-validation-summary="ModelOnly"></div>
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
+                                        }
                                         <a href="#" class="text-nowrap logo-img text-center d-block py-3 w-100">
                                             <img src="~/img/Logo.png" width="180" alt="">
                                         </a>
@@ -45,5 +52,15 @@
     <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        $('form').submit(function () {
+            if ($(this).valid()) {
+                $(this).find(':submit').attr('disabled', 'disabled')
+                .html("<span class='spinner-border spinner-border-sm' aria-hidden='true'></span><span role='status'> Loading...</span>");
+            }
+        });
+    </script>
+
 </body>
 </html>
