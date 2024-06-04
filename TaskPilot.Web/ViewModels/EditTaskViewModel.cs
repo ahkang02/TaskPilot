@@ -20,7 +20,7 @@ namespace TaskPilot.Web.ViewModels
         [Display(Name = "Priority Indicator")]
         public Guid? PriorityId { get; set; }
 
-        public required List<Priorities> PriorityList { get; set; }
+        public required List<Priorities>? PriorityList { get; set; }
 
         [Required]
         [Display(Name = "Task Status")]
