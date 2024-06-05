@@ -30,6 +30,8 @@ namespace TaskPilot.Application.Common.Utility
         public const string PROF_PASS_EDIT_FAIL = "Error: Oops! It seems that you entered the invalid current password, please re-try";
         public const string PROF_CONTACT_EDIT = "Your contact detail has been updated successfully";
         public const string PROF_CONTACT_EDIT_FAIL = "Error: Oops! Unable to verify your contact, please enter the correct code";
+        public const string PROF_EMAIL_EDIT = "Your email has been updated successfully";
+        public const string PROF_EMAIL_EDIT_FAIL = "Error: Oops! Unable to verify your email, please enter the correct code";
 
         public const string ROLE_CREATION = "A new role has been created";
         public const string ROLE_UPDATE = "'s Role has been updated";

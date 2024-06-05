@@ -1,15 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using System.Security.Claims;
+using System.Text;
 using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Application.Common.Utility;
 using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
-using TaskPilot.Infrastructure.Repository;
 using TaskPilot.Web.ViewModels;
-using Vonage.Users;
 
 namespace TaskPilot.Web.Controllers
 {
@@ -19,12 +18,14 @@ namespace TaskPilot.Web.Controllers
         private IUnitOfWork _unitOfWork;
         private UserManager<ApplicationUser> _userManager;
         private ISmsSender _smsSender;
+        private IEmailSender _emailSender;
 
-        public ProfileController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, ISmsSender smsSender)
+        public ProfileController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, ISmsSender smsSender, IEmailSender emailSender)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _smsSender = smsSender;
+            _emailSender = emailSender;
         }
 
         public async Task<IActionResult> Index()
@@ -77,20 +78,35 @@ namespace TaskPilot.Web.Controllers
                 if (ModelState.IsValid)
                 {
                     var userInDb = _unitOfWork.Users.Get(u => u.Id == viewModel.Id);
+
+                    if (userInDb.Email != viewModel.Email)
+                    {
+                        var code = await _userManager.GenerateChangeEmailTokenAsync(userInDb, viewModel.Email!);
+                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                        var callbackUrl = Url.Action("ChangeEmail", "Profile", new { userId = userInDb.Id, viewModel.Email, code }, protocol: Request.Scheme);
+                        string body = string.Empty;
+
+                        using (StreamReader reader = new(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "template", "AccountConfirmation.html")))
+                        {
+                            body = reader.ReadToEnd();
+                        }
+
+                        body = body.Replace("{Content}", "Email Change Request");
+                        body = body.Replace("{ConfirmationLink}", callbackUrl);
+                        body = body.Replace("{UserName}", userInDb.UserName);
+                        await _emailSender.SendEmailAsync(viewModel.Email!, subject: "Confirm your email change request", htmlMessage: body);
+                    }
+
                     userInDb.FirstName = viewModel.FirstName!;
                     userInDb.LastName = viewModel.LastName!;
-                    userInDb.Email = viewModel.Email;
                     userInDb.UserName = viewModel.Username;
                     userInDb.UpdatedAt = DateTime.Now;
-
-
-
                     viewModel.UserRole = currentUserRole[0];
                     viewModel.LastLogin = userInDb.LastLogin;
-
                     _unitOfWork.Users.Update(userInDb);
                     TempData["SuccessMsg"] = Message.PROF_DETAIL_EDIT;
                     RedirectToAction("Index", "Profile", viewModel);
+
                 }
                 else
                 {
@@ -107,6 +123,33 @@ namespace TaskPilot.Web.Controllers
                 }
             }
             return View("Index", viewModel);
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> ChangeEmail(string userId, string email, string code)
+        {
+            if (userId == null || code == null || email == null)
+            {
+                return RedirectToAction("Index", "Profile");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Profile");
+            }
+
+            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+            var result = await _userManager.ChangeEmailAsync(user, email, code);
+
+            if (result.Succeeded)
+            {
+                TempData["SuccessMsg"] = Message.PROF_EMAIL_EDIT;
+                return RedirectToAction("Index", "Profile");
+            }
+
+            TempData["ErrorMsg"] = Message.PROF_EMAIL_EDIT_FAIL;
+            return RedirectToAction("Index", "Profile");
         }
 
         public async Task<IActionResult> EditPassword()
