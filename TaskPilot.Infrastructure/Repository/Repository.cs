@@ -75,7 +75,7 @@ namespace TaskPilot.Infrastructure.Repository
 
         public void Update(T entity)
         {
-            dbSet.Entry(entity).State = EntityState.Modified;
+            dbSet.Update(entity);
         }
     }
 }

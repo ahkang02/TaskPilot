@@ -19,6 +19,10 @@ namespace TaskPilot.Infrastructure.Data
     {
         public TaskContext(DbContextOptions<TaskContext> options) : base(options) { }
 
+        public TaskContext()
+        {
+            
+        }
         public DbSet<Tasks> Tasks { get; set; }
 
         public DbSet<Priorities> Priorities { get; set; }
