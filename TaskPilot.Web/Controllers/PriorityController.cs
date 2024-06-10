@@ -44,6 +44,7 @@ namespace TaskPilot.Web.Controllers
             {
                 Priorities priority = new Priorities
                 {
+                    ColorCode = viewModel.ColorCode!,
                     Description = viewModel.Name!,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,
@@ -71,11 +72,12 @@ namespace TaskPilot.Web.Controllers
     public IActionResult Update(string name)
     {
         var priorityInDb = _unitOfWork.Priority.Get(p => p.Description == name);
-        EditStatusViewModel viewModel = new EditStatusViewModel
-        {
-            Id = priorityInDb.Id,
-            Name = priorityInDb.Description,
-        };
+            EditStatusViewModel viewModel = new EditStatusViewModel
+            {
+                Id = priorityInDb.Id,
+                Name = priorityInDb.Description,
+                ColorCode = priorityInDb.ColorCode != null ? priorityInDb.ColorCode : ""
+            };
 
         return View("New", viewModel);
     }

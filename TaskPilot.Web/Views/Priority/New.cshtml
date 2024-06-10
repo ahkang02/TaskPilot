@@ -40,6 +40,11 @@
                                     <input type="text" asp-for="Name" class="form-control" />
                                     <span asp-validation-for="Name"></span>
                                 </div>
+                                <div class="row mb-3 ">
+                                    <label asp-for="ColorCode"></label>
+                                    <input type="color" asp-for="ColorCode" class="form-control" />
+                                    <span asp-validation-for="ColorCode"></span>
+                                </div>
                                 <input type="hidden" asp-for="Id" />
                                 <button type="submit" class="btn btn-primary float-end mb-3">@action</button>
                             </div>
