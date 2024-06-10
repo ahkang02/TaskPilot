@@ -59,6 +59,7 @@ namespace TaskPilot.Web.Controllers
                     Statuses statusToEdit = _unitOfWork.Status.Get(s => s.Id == viewModel.Id);
                     statusToEdit.Description = viewModel.Name!;
                     statusToEdit.UpdatedAt = DateTime.Now;
+                    statusToEdit.ColorCode = viewModel.ColorCode!;
 
                     _unitOfWork.Status.Update(statusToEdit);
                     TempData["SuccessMsg"] = statusToEdit.Description + Message.STAT_UPDATE;

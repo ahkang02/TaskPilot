@@ -44,7 +44,9 @@ namespace TaskPilot.Web.Controllers
                 Name = task.Name,
                 DueDate = task.DueDate,
                 Priority = task.Priority!.Description,
-                Status = task.Status!.Description
+                Status = task.Status!.Description,
+                PriorityColorCode = task.Priority!.ColorCode,
+                StatusColorCode = task.Status!.ColorCode,
             };
 
             return View(viewModel);

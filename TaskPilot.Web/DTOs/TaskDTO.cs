@@ -12,6 +12,10 @@
 
         public required string AssignTo { get; set; }
 
+        public required string priorityColorCode { get; set;}
+
+        public required string statusColorCode { get; set;}
+
         public DateTime? dueDate { get; set; }
     }
 }

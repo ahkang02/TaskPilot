@@ -4,48 +4,6 @@
     Layout = "_Layout";
 }
 
-@{
-    var statusString = string.Empty;
-    var priorityString = string.Empty;
-
-    switch (Model.Status)
-    {
-        case "New":
-            statusString = "badge bg-primary";
-            break;
-        case "In-Progress":
-            statusString = "badge bg-warning text-dark";
-            break;
-        case "Resolved":
-            statusString = "badge bg-success";
-            break;
-        case "Closed":
-            statusString = "badge bg-secondary";
-            break;
-        case "Removed":
-            statusString = "badge bg-danger";
-            break;
-    }
-
-    switch (Model.Priority)
-    {
-
-        case "High":
-            priorityString = "badge bg-danger";
-            break;
-        case "Medium":
-            priorityString = "badge bg-warning text-dark";
-            break;
-        case "Low":
-            priorityString = "badge bg-success";
-            break;
-        case "Lowest":
-            priorityString = "badge text-dark";
-            break;
-    }
-
-}
-
 <div class="container vh-100 d-flex justify-content-center align-items-center">
     <div class="card shadow-lg p-2" style="background: rgba(255, 255, 255, 0.2); border-radius: 16px; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.3); width:100vh;">
         <div class="card-header" style="border-radius: 16px">
@@ -68,8 +26,8 @@
                 <div class="col-md">
                     <i class="bi bi-tag"></i>
                     <span class="icon-link hover"><a href="@Url.Action("Update", "Task", new { Id = Model.Id })">Add Label</a></span>
-                    <span class="@priorityString">@Model.Priority</span>
-                    <span class="@statusString">@Model.Status</span>
+                    <span class="badge rounded-pill" style="background-color: @Model.PriorityColorCode">@Model.Priority</span>
+                    <span class="badge rounded-pill" style="background-color: @Model.StatusColorCode">@Model.Status</span>
                 </div>
             </div>
             <div class="row mb-4">
@@ -82,12 +40,12 @@
                     <div class="col-md">
                         <p class="fw-semibold m-0">Priority</p>
                         <i class="bi bi-calendar-check"></i>
-                        <span class="@priorityString">@Model.Priority</span>
+                        <span class="badge rounded-pill" style="background-color: @Model.PriorityColorCode">@Model.Priority</span>
                     </div>
                     <div class="col-md">
                         <p class="fw-semibold m-0">Status</p>
                         <i class="bi bi-calendar-check"></i>
-                        <span class="@statusString">@Model.Status</span>
+                        <span class="badge rounded-pill" style="background-color: @Model.StatusColorCode">@Model.Status</span>
                     </div>
                 </div>
             </div>

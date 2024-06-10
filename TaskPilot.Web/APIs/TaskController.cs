@@ -30,7 +30,9 @@ namespace TaskPilot.Web.APIs
                     Priority = t.Priority!.Description,
                     Status = t.Status!.Description,
                     AssignTo = t.AssignTo!.UserName!,
-                    dueDate = t.DueDate
+                    dueDate = t.DueDate,
+                    priorityColorCode = t.Priority!.ColorCode,
+                    statusColorCode = t.Status!.ColorCode
                 });
             }
             return tasks;

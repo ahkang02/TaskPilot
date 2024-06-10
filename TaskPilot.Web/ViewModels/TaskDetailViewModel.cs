@@ -20,6 +20,10 @@
 
         public required string Priority { get; set; }
 
+        public required string PriorityColorCode { get ; set; }
+
         public required string Status { get; set; }
+
+        public required string StatusColorCode { get; set; }
     }
 }

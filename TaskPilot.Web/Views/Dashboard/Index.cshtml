@@ -1,7 +1,7 @@
 ﻿@model TaskPilot.Web.ViewModels.DashboardViewModel
 @{
     ViewBag.Title = "Dashboard";
-    Layout = "_Layout"; 
+    Layout = "_Layout";
 }
 
 <!--  Header Start -->
@@ -112,43 +112,6 @@
                                 @foreach (var task in Model.UserTaskList!)
                                 {
                                     i++;
-                                    var priorityString = string.Empty;
-                                    switch (task.Priority)
-                                    {
-                                        case "High":
-                                            priorityString = "badge rounded-pill bg-danger";
-                                            break;
-                                        case "Medium":
-                                            priorityString = "badge rounded-pill bg-warning text-dark";
-                                            break;
-                                        case "Low":
-                                            priorityString = "badge rounded-pill bg-success";
-                                            break;
-                                        case "Lowest":
-                                            priorityString = "badge bg-light text-dark";
-                                            break;
-                                    }
-
-                                    var statusString = string.Empty;
-                                    switch (task.Status)
-                                    {
-                                        case "New":
-                                            statusString = "badge rounded-pill bg-primary";
-                                            break;
-                                        case "In-Progress":
-                                            statusString = "badge rounded-pill bg-warning text-dark";
-                                            break;
-                                        case "Resolved":
-                                            statusString = "badge rounded-pill bg-success";
-                                            break;
-                                        case "Closed":
-                                            statusString = "badge rounded-pill bg-secondary";
-                                            break;
-                                        case "Removed":
-                                            statusString = "badge rounded-pill bg-danger";
-                                            break;
-                                    }
-
                                     <tr>
                                         <td class="border-bottom-0"><h6 class="fw-semibold mb-0">@i</h6></td>
                                         <td class="border-bottom-0">
@@ -162,10 +125,10 @@
                                             <p class="mb-0 fw-normal">@task.Name</p>
                                         </td>
                                         <td class="border-bottom-0">
-                                            <span class="@priorityString">@task.Priority</span>
+                                            <span class="badge rounded-pill" style="background-color: @task.PriorityColorCode">@task.Priority</span>
                                         </td>
                                         <td class="border-bottom-0">
-                                            <span class="@statusString">@task.Status</span>
+                                            <span class="badge rounded-pill" style="background-color: @task.StatusColorCode">@task.Status</span>
                                         </td>
                                         <td class="border-bottom-0">
                                             <h6 class="mb-0 fw-normal">@task.DueDate.GetValueOrDefault().ToString("dd/MM/yyyy")</h6>

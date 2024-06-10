@@ -63,6 +63,8 @@ namespace TaskPilot.Web.Controllers
                     AssignTo = task.AssignTo!.UserName!,
                     AssignFrom = task.AssignFrom!.UserName!,
                     AssignFromRole = userRole[0],
+                    PriorityColorCode = task.Priority!.ColorCode,
+                    StatusColorCode = task.Status!.ColorCode
                 });
             }
 

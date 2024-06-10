@@ -107,46 +107,13 @@
                 {
                     data: "priority",
                     render: function (data, type, task) {
-                        let priorityString;
-                        switch (data) {
-                            case "High":
-                                priorityString = "badge rounded-pill bg-danger";
-                                break;
-                            case "Medium":
-                                priorityString = "badge rounded-pill bg-warning text-dark";
-                                break;
-                            case "Low":
-                                priorityString = "badge rounded-pill bg-success";
-                                break;
-                            case "Lowest":
-                                priorityString = "badge bg-light text-dark";
-                                break;
-                        }
-                        return "<span class='" + priorityString + "'>" + data + "</span>"
+                        return "<span class='badge rounded-pill' style='background-color:" + task.priorityColorCode + "'>" + data + "</span>"
                     }
                 },
                 {
                     data: "status",
                     render: function (data, type, task) {
-                        let statusString;
-                        switch (data) {
-                            case "New":
-                                statusString = "badge rounded-pill bg-primary";
-                                break;
-                            case "In-Progress":
-                                statusString = "badge rounded-pill bg-warning text-dark";
-                                break;
-                            case "Resolved":
-                                statusString = "badge rounded-pill bg-success";
-                                break;
-                            case "Closed":
-                                statusString = "badge rounded-pill bg-secondary";
-                                break;
-                            case "Removed":
-                                statusString = "badge rounded-pill bg-danger";
-                                break;
-                        }
-                        return "<span class='" + statusString + "'>" + data + "</span>"
+                        return "<span class='badge rounded-pill' style='background-color:" + task.statusColorCode + "'>" + data + "</span>"
                     }
                 },
                 {
