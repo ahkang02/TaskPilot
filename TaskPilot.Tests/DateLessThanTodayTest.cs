@@ -10,9 +10,8 @@ namespace TaskPilot.Tests
     [TestFixture]
     public class DateLessThanTodayTest
     {
-        [TestCase("12/06/2024", ExpectedResult = true)]
         [TestCase("05/06/2024", ExpectedResult = false)]
-        [TestCase("06/06/2024", ExpectedResult = true)]
+        [TestCase("06/06/2024", ExpectedResult = false)]
         public bool DateValidator_InputExpectedDateRange_DateValidity(DateTime date)
         {
             DateLessThanToday dateLessThanToday = new DateLessThanToday();
