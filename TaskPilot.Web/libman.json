@@ -15,18 +15,21 @@
       "provider": "cdnjs",
       "library": "datatables@1.10.21",
       "destination": "wwwroot/lib/datatables/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "jszip@3.10.1",
+      "destination": "wwwroot/lib/jszip/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "pdfmake@0.2.10",
+      "destination": "wwwroot/lib/pdfmake/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "Chart.js@4.4.1",
+      "destination": "wwwroot/lib/Chart.js/"
     }
-  ,
-{
-  "provider": "cdnjs",
-  "library": "jszip@3.10.1",
-  "destination": "wwwroot/lib/jszip/"
-}
-,
-{
-  "provider": "cdnjs",
-  "library": "pdfmake@0.2.10",
-  "destination": "wwwroot/lib/pdfmake/"
-}
-]
+  ]
 }
