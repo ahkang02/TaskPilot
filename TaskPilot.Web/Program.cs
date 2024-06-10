@@ -71,6 +71,14 @@ namespace TaskPilot.Web
                 });
             });
 
+            builder.Services.AddWebOptimizer(pipeline => 
+            {
+                pipeline.AddCssBundle("css/bundle.css", "css/style.min.css", "css/site.css", "lib/bootstrap/bootstrap.css", "lib/bootstrap-icons/font/bootstrap-icons.css");
+                pipeline.AddJavaScriptBundle("/js/bundle.js", "lib/jquery/dist/jquery.min.js", "js/*.js", "lib/bootstrap/dist/js/bootstrap.bundle.min.js", "lib/jquery-validation/dist/jquery.validate.js", "lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js");
+                pipeline.MinifyCssFiles();
+                pipeline.MinifyJsFiles();
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -83,6 +91,8 @@ namespace TaskPilot.Web
 
             app.UseStatusCodePagesWithRedirects("/Error/{0}");
             app.UseHttpsRedirection();
+
+            app.UseWebOptimizer();
             app.UseStaticFiles();
 
             app.UseRouting();
