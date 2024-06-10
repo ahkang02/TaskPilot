@@ -20,13 +20,17 @@ namespace TaskPilot.Web
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            // Configure Database
             builder.Services.AddDbContext<TaskContext>(option =>
             option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            // Dependency Injection
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             builder.Services.AddScoped<ISmsSender, SmsSender>();
             builder.Services.AddScoped<IAuthorizationHandler, CustomAuthorizeHandler>();
 
+            // Configuring Identity Framework 
             builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<TaskContext>()
                 .AddDefaultTokenProviders();
@@ -63,6 +67,7 @@ namespace TaskPilot.Web
                 options.SlidingExpiration = true;
             });
 
+            // Configuring Custom Auth
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("CustomPolicy", policy =>
@@ -71,6 +76,7 @@ namespace TaskPilot.Web
                 });
             });
 
+            // WebOptimizer Configuration
             builder.Services.AddWebOptimizer(pipeline => 
             {
                 pipeline.AddCssBundle("css/bundle.css", "css/style.min.css", "css/site.css", "lib/bootstrap/bootstrap.css", "lib/bootstrap-icons/font/bootstrap-icons.css");
@@ -91,6 +97,7 @@ namespace TaskPilot.Web
                 app.UseHsts();
             }
 
+            // Configure Custom Error Page (Using Error Code)
             app.UseStatusCodePagesWithRedirects("/Error/{0}");
             app.UseHttpsRedirection();
 

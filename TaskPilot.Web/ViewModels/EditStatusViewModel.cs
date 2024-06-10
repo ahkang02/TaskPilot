@@ -8,5 +8,9 @@ namespace TaskPilot.Web.ViewModels
 
         [Required]
         public string? Name { get; set; }
+
+        [Required]
+        [Display(Name = "Color Code")]
+        public string? ColorCode { get; set; }
     }
 }

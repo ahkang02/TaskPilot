@@ -45,6 +45,7 @@ namespace TaskPilot.Web.Controllers
                 {
                     Statuses status = new Statuses
                     {
+                        ColorCode = viewModel.ColorCode!,
                         Description = viewModel.Name!,
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now,
@@ -76,6 +77,7 @@ namespace TaskPilot.Web.Controllers
             {
                 Id = statusInDb.Id,
                 Name = statusInDb.Description,
+                ColorCode = statusInDb.ColorCode != null ? statusInDb.ColorCode : "",
             };
 
             return View("New", viewModel);

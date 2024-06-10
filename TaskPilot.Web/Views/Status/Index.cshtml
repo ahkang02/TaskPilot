@@ -118,7 +118,7 @@
                 alert("Bulk Edit Not Supported");
             } else {
                 var url = '@Url.Action("Update", "Status", new { name = "__id__" })';
-                window.location.href = url.replace('__id__', data[0]['Description']);
+                window.location.href = url.replace('__id__', data[0]['description']);
             }
 
             console.log(data);
