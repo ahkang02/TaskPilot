@@ -4,17 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
-
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
-    <link rel="stylesheet" href="~/css/style.min.css" />
-    <link rel="stylesheet" href="~/lib/datatables/css/dataTables.bootstrap4.css" />
-    <link rel="stylesheet" href="~/lib/datatables/css/dataTables.jqueryui.css" />
-    <link rel="stylesheet" href="~/lib/datatables/css/buttons.dataTables.css" />
-    <link rel="stylesheet" href="~/lib/datatables/css/responsive.bootstrap4.css" />
-    <link rel="stylesheet" href="~/lib/datatables/css/select.bootstrap.css" />
-
+    <link rel="stylesheet" href="~/css/main_bundle.css" />
 
 </head>
 <body>
@@ -110,27 +100,7 @@
     <footer class="fixed-bottom">
         <partial name="_Footer" />
     </footer>
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/app.min.js"></script>
-    <script src="~/js/modernizr-2.8.3.js"></script>
-    <script src="~/js/sidebarmenu.js"></script>
-    <script src="~/js/site.js"></script>
-    <script src="~/lib/moment.js/moment.js"></script>
-    <script src="~/lib/datatables/js/jquery.dataTables.js"></script>
-    <script src="~/lib/datatables/js/dataTables.bootstrap.js"></script>
-    <script src="~/lib/jszip/jszip.js"></script>
-    <script src="~/lib/pdfmake/pdfmake.js"></script>
-    <script src="~/lib/pdfmake/vfs_fonts.js"></script>
-    <script src="~/lib/datatables/js/dataTables.bootstrap4.js"></script>
-    <script src="~/lib/datatables/js/dataTables.select.js"></script>
-    <script src="~/lib/datatables/js/dataTables.responsive.js"></script>
-    <script src="~/lib/datatables/js/responsive.bootstrap4.js"></script>
-    <script src="~/lib/datatables/js/dataTables.bootstrap4.js"></script>
-    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
-    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
-    <script src="~/lib/jquery-validation/dist/additional-methods.js"></script>
+    <script src="~/js/main_bundle.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
     <script>
         $(document).ready(function () {
