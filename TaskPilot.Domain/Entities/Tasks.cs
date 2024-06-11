@@ -30,6 +30,8 @@ namespace TaskPilot.Domain.Entities
 
         public DateTime Created { get; set; }
 
+        public DateTime? Updated { get; set;}
+
         public ApplicationUser? AssignTo { get; set; }
 
         public required string AssignToId { get; set; }

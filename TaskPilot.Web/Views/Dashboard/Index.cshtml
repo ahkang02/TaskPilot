@@ -17,7 +17,9 @@
                             <h5 class="card-title fw-semibold">Tasks Overview</h5>
                         </div>
                     </div>
-                    @*<div id="chart"></div>*@
+                    <div>
+                        <canvas id="myChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -147,27 +149,75 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 @section Scripts
 {
-
     <script>
-        var options = {
-            chart: {
-                type: 'line'
-            },
-            series: [{
-                name: 'sales',
-                data: [30, 40, 35, 50, 49, 60, 70, 91, 125]
-            }],
-            xaxis: {
-                categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]
-            }
+        var data;
+
+        $(document).ready(function() {
+            $.ajax({
+                type: "GET",
+                url: "/api/Chart",
+                dataType: "json",
+                success: function(result) {
+                    data = result;
+                    createChart(data);
+                }
+            })
+        })
+
+        const ctx = document.getElementById('myChart');
+
+        function createChart(data) {
+
+            const label = data.map(item => item.date);
+            const dueTasksCount = data.map(item => item.dueTasksCount);
+            const createdTasksCount = data.map(item => item.createdTasksCount);
+            const resolvedTasksCount = data.map(item => item.resolvedTasksCount);
+
+            const datas = {
+                labels: label,
+                datasets: [
+                    {
+                        label: 'Due Tasks',
+                        data: dueTasksCount,
+                    },
+                    {
+                        label: 'Created Tasks',
+                        data: createdTasksCount,
+                    },
+                    {
+                        label: 'Resolved Tasks',
+                        data: resolvedTasksCount,
+                    },
+                ]
+            };
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: datas,
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Task Overview'
+                        },
+                    },
+                    responsive: true,
+                    scales: {
+                        x: {
+                            stacked: true,
+                        },
+                        y: {
+                            stacked: true
+                        }
+                    }
+                }
+            });
         }
 
-        var chart = new ApexCharts(document.querySelector("#chart"), options);
 
-        chart.render();
     </script>
 
 }

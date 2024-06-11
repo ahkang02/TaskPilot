@@ -89,6 +89,7 @@ namespace TaskPilot.Web.Controllers
                             PriorityId = viewModel.PriorityId.GetValueOrDefault(),
                             StatusId = viewModel.StatusId.GetValueOrDefault(),
                             AssignFromId = currentUser.Id,
+                            Updated = DateTime.Now,
                         };
 
                         _unitOfWork.Tasks.Add(task);
@@ -150,6 +151,7 @@ namespace TaskPilot.Web.Controllers
                             taskToEdit.AssignToId = viewModel.AssignToId!;
                             taskToEdit.DueDate = viewModel.DueDate;
                             taskToEdit.Description = viewModel.TaskDescription!;
+                            taskToEdit.Updated = DateTime.Now;
                             _unitOfWork.Tasks.Update(taskToEdit);
 
                             if (viewModel.IsRecurring)
@@ -199,6 +201,7 @@ namespace TaskPilot.Web.Controllers
                         taskToEdit.AssignToId = viewModel.AssignToId!;
                         taskToEdit.DueDate = viewModel.DueDate;
                         taskToEdit.Description = viewModel.TaskDescription!;
+                        taskToEdit.Updated = DateTime.Now;
                         _unitOfWork.Tasks.Update(taskToEdit);
 
                         if (viewModel.IsRecurring)
@@ -325,6 +328,7 @@ namespace TaskPilot.Web.Controllers
                 });
 
                 taskToUpdate.StatusId = statusToUpdate.Id;
+                taskToUpdate.Updated = DateTime.Now;
                 _unitOfWork.Tasks.Update(taskToUpdate);
                 _unitOfWork.Save();
             }
@@ -361,6 +365,7 @@ namespace TaskPilot.Web.Controllers
                         UserId = task.AssignToId
                     });
 
+                    task.Updated = DateTime.Now;
                     _unitOfWork.Tasks.Update(task);
                 }
             }
@@ -392,6 +397,7 @@ namespace TaskPilot.Web.Controllers
             {
                 var taskToUpdate = _unitOfWork.Tasks.Get(t => t.Name == viewModel.CurrentTask);
                 taskToUpdate.DependencyId = viewModel.DependencyID;
+                taskToUpdate.Updated = DateTime.Now;
                 _unitOfWork.Tasks.Update(taskToUpdate);
                 _unitOfWork.Save();
                 TempData["SuccessMsg"] = Message.TASK_DEPENDENCY;
@@ -483,7 +489,8 @@ namespace TaskPilot.Web.Controllers
                         Description = item.Description!,
                         Created = DateTime.Now,
                         AssignToId = user.Id,
-                        AssignFromId = currentUser.Id
+                        AssignFromId = currentUser.Id,
+                        Updated = DateTime.Now,
                     };
 
                     _unitOfWork.Tasks.Add(task);
@@ -517,6 +524,7 @@ namespace TaskPilot.Web.Controllers
                             PriorityId = viewModel.PriorityId.GetValueOrDefault(),
                             StatusId = viewModel.StatusId.GetValueOrDefault(),
                             AssignFromId = currentUser.Id,
+                            Updated = DateTime.Now,
                         });
 
                     }
@@ -534,6 +542,7 @@ namespace TaskPilot.Web.Controllers
                             PriorityId = viewModel.PriorityId!.Value,
                             StatusId = viewModel.StatusId!.Value,
                             AssignFromId = currentUser.Id,
+                            Updated = DateTime.Now,
                         });
                     }
                     break;
@@ -550,6 +559,7 @@ namespace TaskPilot.Web.Controllers
                             PriorityId = viewModel.PriorityId!.Value,
                             StatusId = viewModel.StatusId!.Value,
                             AssignFromId = currentUser.Id,
+                            Updated = DateTime.Now,
                         });
 
 
@@ -568,6 +578,7 @@ namespace TaskPilot.Web.Controllers
                             PriorityId = viewModel.PriorityId!.Value,
                             StatusId = viewModel.StatusId!.Value,
                             AssignFromId = currentUser.Id,
+                            Updated = DateTime.Now,
                         });
 
                     }
