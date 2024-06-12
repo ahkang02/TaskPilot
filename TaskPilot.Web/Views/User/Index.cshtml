@@ -51,7 +51,7 @@
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>User Role</th>
-                                <th>Member Since</th>
+                                <th>Created On</th>
                                 <th>Last Updated</th>
                                 <th>Last Login</th>
                             </tr>
@@ -92,7 +92,7 @@
                 {
                     data: "created",
                     render: function (data, type, user) {
-                        return user.created != null ? moment(data).format('YYYY', 'YYYY/MM/DD') : "";
+                        return user.created != null ? moment(data).format('DD/MM/YYYY', 'YYYY/MM/DD') : "";
                     }
                 },
                 {

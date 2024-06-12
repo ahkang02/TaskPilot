@@ -82,7 +82,7 @@
                 {
                     data: "createdAt",
                     render: function (data, type, priority) {
-                        return priority.createdAt != null ? moment(data).format('YYYY', 'YYYY/MM/DD') : "";
+                        return priority.createdAt != null ? moment(data).format('DD/MM/YYYY', 'YYYY/MM/DD') : "";
                     }
                 },
                 {
