@@ -30,7 +30,7 @@ namespace TaskPilot.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> CheckSession()
         {
-            bool isExpired = !User!.Identity!.IsAuthenticated;
+            bool isExpired = false;
             bool isDuplicateLogin = false;
 
             if (User!.Identity!.IsAuthenticated)
@@ -48,7 +48,7 @@ namespace TaskPilot.Web.Controllers
                     }
                 }
             }
-
+            isExpired = !User!.Identity!.IsAuthenticated;
             return Json(new { isExpired, isDuplicateLogin });
         }
 

@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Application.Common.Utility;
@@ -427,7 +429,7 @@ namespace TaskPilot.Web.Controllers
 
             if (formFile != null)
             {
-                StreamReader csvReader = new StreamReader(formFile.OpenReadStream());
+                StreamReader csvReader = new StreamReader(formFile.OpenReadStream(), Encoding.UTF8);
                 csvReader.ReadLine();
                 while (!csvReader.EndOfStream)
                 {
@@ -445,7 +447,7 @@ namespace TaskPilot.Web.Controllers
                         Description = value[1],
                         PriorityLevel = value[2],
                         Status = value[3],
-                        DueDate = DateTime.ParseExact(value[4], "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture).Date < DateTime.Now.Date ? DateTime.Now : DateTime.ParseExact(value[4], "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture),
+                        DueDate = DateTime.ParseExact(value[4], "d", new CultureInfo("en-MY")).Date >= DateTime.Now.Date ? DateTime.ParseExact(value[4], "d", new CultureInfo("en-MY")) : DateTime.Now.Date,
                         AssignToUser = value[5],
                         AssigeeList = _unitOfWork.Users.GetAll().ToList(),
                         PriorityList = _unitOfWork.Priority.GetAll().ToList(),

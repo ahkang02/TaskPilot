@@ -67,7 +67,7 @@ namespace TaskPilot.Web
                 options.SlidingExpiration = true;
             });
 
-            builder.Services.Configure<SecurityStampValidatorOptions>(options => options.ValidationInterval = TimeSpan.FromMinutes(1));
+            builder.Services.Configure<SecurityStampValidatorOptions>(options => options.ValidationInterval = TimeSpan.FromMinutes(0));
 
             // Configuring Custom Auth
             builder.Services.AddAuthorization(options =>
