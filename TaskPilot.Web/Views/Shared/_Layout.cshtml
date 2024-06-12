@@ -103,7 +103,65 @@
     <script src="~/js/main_bundle.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
     <script>
-        $(document).ready(function () {
+        let checkSessionInterval;
+
+        function startSessionCheck() {
+            checkSessionInterval = setInterval(checkSession, 60000);
+        }
+
+        function checkSession() {
+            $.ajax({
+                url: '/Account/CheckSession',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.isExpired) {
+                        clearInterval(checkSessionInterval);
+                        showSessionExpiredDialog();
+                    } else if (data.isDuplicateLogin) {
+                        clearInterval(checkSessionInterval);
+                        showDuplicateLoginDialog();
+                    }
+                }
+            });
+        }
+
+        function showSessionExpiredDialog() {
+            Swal.fire({
+                title: "Session Expired!",
+                text: "Your session has timed out due to inactivity. Please log in again to continue.",
+                icon: "warning",
+                confirmButtonText: "Login Again",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Account/Login';
+                }
+            });
+        }
+
+
+        function showDuplicateLoginDialog() {
+            Swal.fire({
+                title: "Duplicate Login Detected!",
+                text: "Your account has been logged in from another location. Please log in again to continue.",
+                icon: "error",
+                confirmButtonText: "Login Again",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Account/Login';
+                }
+            });
+        }
+
+        startSessionCheck();
+
+        $(document).ready(function () { 
             $('.spinner').hide();
             $('a.dropdown-item, a.sidebar-link').on('click', function (e) {
                 e.preventDefault();
@@ -121,6 +179,7 @@
                 $(this).find(':submit').attr('disabled', 'disabled');
                 var spinner = $('.spinner').show();
             }
+
         });
     </script>
 

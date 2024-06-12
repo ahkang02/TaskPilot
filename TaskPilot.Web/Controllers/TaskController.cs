@@ -445,7 +445,7 @@ namespace TaskPilot.Web.Controllers
                         Description = value[1],
                         PriorityLevel = value[2],
                         Status = value[3],
-                        DueDate = DateTime.Parse(value[4]).Date < DateTime.Now.Date ? DateTime.Now : DateTime.Parse(value[4]),
+                        DueDate = DateTime.ParseExact(value[4], "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture).Date < DateTime.Now.Date ? DateTime.Now : DateTime.ParseExact(value[4], "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture),
                         AssignToUser = value[5],
                         AssigeeList = _unitOfWork.Users.GetAll().ToList(),
                         PriorityList = _unitOfWork.Priority.GetAll().ToList(),

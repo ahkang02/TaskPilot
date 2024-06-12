@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Security.Claims;
 using System.Text;
 using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Application.Common.Utility;
@@ -24,6 +25,31 @@ namespace TaskPilot.Web.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CheckSession()
+        {
+            bool isExpired = !User!.Identity!.IsAuthenticated;
+            bool isDuplicateLogin = false;
+
+            if (User!.Identity!.IsAuthenticated)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user != null)
+                {
+                    var currentSecurityStamp = User.FindFirstValue("AspNet.Identity.SecurityStamp");
+                    var actualSecurityStamp = await _userManager.GetSecurityStampAsync(user);
+
+                    if (currentSecurityStamp != actualSecurityStamp)
+                    {
+                        isDuplicateLogin = true;
+                        await _signInManager.SignOutAsync();
+                    }
+                }
+            }
+
+            return Json(new { isExpired, isDuplicateLogin });
         }
 
         public IActionResult Login(string? returnUrl = null)
@@ -56,30 +82,41 @@ namespace TaskPilot.Web.Controllers
                         ViewBag.ErrorMessage = Message.EMAIL_CONFIRMATION;
                         return View("Error");
                     }
-                    var result = await _signInManager.PasswordSignInAsync(viewModel.Username!, viewModel.Password!, viewModel.RememberMe, true);
 
-                    if (result.Succeeded)
-                    {
-                        user.LastLogin = DateTime.Now;
-                        await _userManager.UpdateAsync(user);
-
-                        if (string.IsNullOrEmpty(viewModel.returnUrl))
-                        {
-                            return RedirectToAction("Index", "Dashboard");
-                        }
-                        else
-                        {
-                            return LocalRedirect(viewModel.returnUrl);
-                        }
-                    }
-                    else if (result.IsLockedOut)
-                    {
-                        return View("Lockout");
-                    }
-                    else
+                    var validPassword = _userManager.CheckPasswordAsync(user, viewModel.Password!);
+                    if (!validPassword.Result)
                     {
                         ModelState.AddModelError("", Message.INVALID_LOGIN_ATTEMPT);
                         return View(viewModel);
+                    }
+                    else
+                    {
+                        await _userManager.UpdateSecurityStampAsync(user);
+                        var result = await _signInManager.PasswordSignInAsync(viewModel.Username!, viewModel.Password!, viewModel.RememberMe, true);
+
+                        if (result.Succeeded)
+                        {
+                            user.LastLogin = DateTime.Now;
+                            await _userManager.UpdateAsync(user);
+
+                            if (string.IsNullOrEmpty(viewModel.returnUrl))
+                            {
+                                return RedirectToAction("Index", "Dashboard");
+                            }
+                            else
+                            {
+                                return LocalRedirect(viewModel.returnUrl);
+                            }
+                        }
+                        else if (result.IsLockedOut)
+                        {
+                            return View("Lockout");
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("", Message.INVALID_LOGIN_ATTEMPT);
+                            return View(viewModel);
+                        }
                     }
                 }
                 else

@@ -60,12 +60,14 @@ namespace TaskPilot.Web
             {
                 // Cookie settings
                 options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(1);
 
                 options.LoginPath = "/Account/Login";
                 options.AccessDeniedPath = "/Error/AccessDenied";
                 options.SlidingExpiration = true;
             });
+
+            builder.Services.Configure<SecurityStampValidatorOptions>(options => options.ValidationInterval = TimeSpan.FromMinutes(1));
 
             // Configuring Custom Auth
             builder.Services.AddAuthorization(options =>
@@ -81,8 +83,8 @@ namespace TaskPilot.Web
             {
                 pipeline.AddCssBundle("css/bundle.css", "css/style.min.css", "css/site.css", "lib/bootstrap/bootstrap.css", "lib/bootstrap-icons/font/bootstrap-icons.css");
                 pipeline.AddJavaScriptBundle("/js/bundle.js", "lib/jquery/dist/jquery.min.js", "js/*.js", "lib/bootstrap/dist/js/bootstrap.bundle.min.js", "lib/jquery-validation/dist/jquery.validate.js", "lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js");
-                pipeline.AddCssBundle("css/main_bundle.css", "/lib/bootstrap/dist/css/bootstrap.css", "lib/bootstrap-icons/font/bootstrap-icons.css", "css/site.css", "css/style.min.css", "lib/datatables/css/dataTables.bootstrap4.css", "lib/datatables/css/dataTables.jqueryui.css", "lib/datatables/css/buttons.dataTables.css", "lib/datatables/css/responsive.bootstrap4.css", "lib/datatables/css/select.bootstrap.css");
-                pipeline.AddJavaScriptBundle("js/main_bundle.js", "lib/jquery/dist/jquery.min.js", "lib/bootstrap/dist/js/bootstrap.bundle.min.js", "js/*.js", "lib/datatables/js/jquery.dataTables.js", "lib/moment.js/moment.js", "lib/datatables/js/jquery.dataTables.js", "lib/datatables/js/dataTables.bootstrap.js", "lib/jszip/jszip.js", "lib/pdfmake/vfs_fonts.js", "lib/datatables/js/dataTables.bootstrap4.js", "lib/datatables/js/dataTables.select.js", "lib/datatables/js/dataTables.responsive.js", "lib/datatables/js/responsive.bootstrap4.js", "lib/datatables/js/dataTables.bootstrap4.js", "lib/jquery-validation/dist/jquery.validate.js", "lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js", "lib/jquery-validation/dist/additional-methods.js");
+                pipeline.AddCssBundle("css/main_bundle.css", "/lib/bootstrap/dist/css/bootstrap.css", "lib/bootstrap-icons/font/bootstrap-icons.css", "css/site.css", "css/style.min.css", "lib/datatables/css/dataTables.bootstrap4.css", "lib/datatables/css/dataTables.jqueryui.css", "lib/datatables/css/buttons.dataTables.css", "lib/datatables/css/responsive.bootstrap4.css", "lib/datatables/css/select.bootstrap.css", "lib/sweetalert2/sweetalert2.css");
+                pipeline.AddJavaScriptBundle("js/main_bundle.js", "lib/jquery/dist/jquery.min.js", "lib/bootstrap/dist/js/bootstrap.bundle.min.js", "js/*.js", "lib/datatables/js/jquery.dataTables.js", "lib/moment.js/moment.js", "lib/datatables/js/jquery.dataTables.js", "lib/datatables/js/dataTables.bootstrap.js", "lib/jszip/jszip.js", "lib/pdfmake/vfs_fonts.js", "lib/datatables/js/dataTables.bootstrap4.js", "lib/datatables/js/dataTables.select.js", "lib/datatables/js/dataTables.responsive.js", "lib/datatables/js/responsive.bootstrap4.js", "lib/datatables/js/dataTables.bootstrap4.js", "lib/jquery-validation/dist/jquery.validate.js", "lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js", "lib/jquery-validation/dist/additional-methods.js", "lib/sweetalert2/sweetalert2.js");
                 pipeline.MinifyCssFiles();
                 pipeline.MinifyJsFiles();
             });
