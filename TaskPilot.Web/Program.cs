@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
 using TaskPilot.Infrastructure.Data;
 using TaskPilot.Infrastructure.Repository;
+using TaskPilot.Web.Middleware;
 
 namespace TaskPilot.Web
 {
@@ -60,14 +62,12 @@ namespace TaskPilot.Web
             {
                 // Cookie settings
                 options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(1);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
 
                 options.LoginPath = "/Account/Login";
                 options.AccessDeniedPath = "/Error/AccessDenied";
                 options.SlidingExpiration = true;
             });
-
-            builder.Services.Configure<SecurityStampValidatorOptions>(options => options.ValidationInterval = TimeSpan.FromMinutes(0));
 
             // Configuring Custom Auth
             builder.Services.AddAuthorization(options =>
@@ -79,16 +79,16 @@ namespace TaskPilot.Web
             });
 
             // WebOptimizer Configuration
-            builder.Services.AddWebOptimizer(pipeline => 
+            builder.Services.AddWebOptimizer(pipeline =>
             {
-                pipeline.AddCssBundle("css/bundle.css", "css/style.min.css", "css/site.css", "lib/bootstrap/bootstrap.css", "lib/bootstrap-icons/font/bootstrap-icons.css");
-                pipeline.AddJavaScriptBundle("/js/bundle.js", "lib/jquery/dist/jquery.min.js", "js/*.js", "lib/bootstrap/dist/js/bootstrap.bundle.min.js", "lib/jquery-validation/dist/jquery.validate.js", "lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js");
+                pipeline.AddCssBundle("css/bundle.css", "css/style.min.css", "css/site.css", "lib/bootstrap/bootstrap.css", "lib/bootstrap-icons/font/bootstrap-icons.css", "lib/sweetalert2/sweetalert2.css");
+                pipeline.AddJavaScriptBundle("/js/bundle.js", "lib/jquery/dist/jquery.min.js", "js/*.js", "lib/bootstrap/dist/js/bootstrap.bundle.min.js", "lib/jquery-validation/dist/jquery.validate.js", "lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js", "lib/sweetalert2/sweetalert2.js");
                 pipeline.AddCssBundle("css/main_bundle.css", "/lib/bootstrap/dist/css/bootstrap.css", "lib/bootstrap-icons/font/bootstrap-icons.css", "css/site.css", "css/style.min.css", "lib/datatables/css/dataTables.bootstrap4.css", "lib/datatables/css/dataTables.jqueryui.css", "lib/datatables/css/buttons.dataTables.css", "lib/datatables/css/responsive.bootstrap4.css", "lib/datatables/css/select.bootstrap.css", "lib/sweetalert2/sweetalert2.css");
                 pipeline.AddJavaScriptBundle("js/main_bundle.js", "lib/jquery/dist/jquery.min.js", "lib/bootstrap/dist/js/bootstrap.bundle.min.js", "js/*.js", "lib/datatables/js/jquery.dataTables.js", "lib/moment.js/moment.js", "lib/datatables/js/jquery.dataTables.js", "lib/datatables/js/dataTables.bootstrap.js", "lib/jszip/jszip.js", "lib/pdfmake/vfs_fonts.js", "lib/datatables/js/dataTables.bootstrap4.js", "lib/datatables/js/dataTables.select.js", "lib/datatables/js/dataTables.responsive.js", "lib/datatables/js/responsive.bootstrap4.js", "lib/datatables/js/dataTables.bootstrap4.js", "lib/jquery-validation/dist/jquery.validate.js", "lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js", "lib/jquery-validation/dist/additional-methods.js", "lib/sweetalert2/sweetalert2.js");
                 pipeline.MinifyCssFiles();
                 pipeline.MinifyJsFiles();
             });
-
+ 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -98,6 +98,7 @@ namespace TaskPilot.Web
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
 
             // Configure Custom Error Page (Using Error Code)
             app.UseStatusCodePagesWithRedirects("/Error/{0}");
@@ -109,6 +110,9 @@ namespace TaskPilot.Web
             app.UseRouting();
 
             app.UseAuthentication();
+
+            app.UseMiddleware<SecurityStampValidationMiddleware>();
+
             app.UseAuthorization();
 
             app.MapControllerRoute(

@@ -28,28 +28,10 @@ namespace TaskPilot.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> CheckSession()
+        public IActionResult CheckSession()
         {
-            bool isExpired = false;
-            bool isDuplicateLogin = false;
-
-            if (User!.Identity!.IsAuthenticated)
-            {
-                var user = await _userManager.GetUserAsync(User);
-                if (user != null)
-                {
-                    var currentSecurityStamp = User.FindFirstValue("AspNet.Identity.SecurityStamp");
-                    var actualSecurityStamp = await _userManager.GetSecurityStampAsync(user);
-
-                    if (currentSecurityStamp != actualSecurityStamp)
-                    {
-                        isDuplicateLogin = true;
-                        await _signInManager.SignOutAsync();
-                    }
-                }
-            }
-            isExpired = !User!.Identity!.IsAuthenticated;
-            return Json(new { isExpired, isDuplicateLogin });
+            bool isExpired = !User!.Identity!.IsAuthenticated;  
+            return Json(new { isExpired});
         }
 
         public IActionResult Login(string? returnUrl = null)
@@ -59,7 +41,7 @@ namespace TaskPilot.Web.Controllers
                 return RedirectToAction("Index", "Dashboard");
             }
 
-            returnUrl ??= Url.Content("~/");
+            ViewBag.ReturnUrl = returnUrl ?? Url.Content("~/");
             return View();
         }
 

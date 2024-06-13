@@ -106,7 +106,7 @@
         let checkSessionInterval;
 
         function startSessionCheck() {
-            checkSessionInterval = setInterval(checkSession, 60000);
+            checkSessionInterval = setInterval(checkSession, 1800000);
         }
 
         function checkSession() {
@@ -118,9 +118,6 @@
                     if (data.isExpired) {
                         clearInterval(checkSessionInterval);
                         showSessionExpiredDialog();
-                    } else if (data.isDuplicateLogin) {
-                        clearInterval(checkSessionInterval);
-                        showDuplicateLoginDialog();
                     }
                 }
             });
@@ -131,23 +128,6 @@
                 title: "Session Expired!",
                 text: "Your session has timed out due to inactivity. Please log in again to continue.",
                 icon: "warning",
-                confirmButtonText: "Login Again",
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                allowEnterKey: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = '/Account/Login';
-                }
-            });
-        }
-
-
-        function showDuplicateLoginDialog() {
-            Swal.fire({
-                title: "Duplicate Login Detected!",
-                text: "Your account has been logged in from another location. Please log in again to continue.",
-                icon: "error",
                 confirmButtonText: "Login Again",
                 allowOutsideClick: false,
                 allowEscapeKey: false,
@@ -181,6 +161,27 @@
             }
 
         });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            if (document.cookie.includes("securityStampChanged=true")) {
+                document.cookie = "securityStampChanged=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                Swal.fire({
+                    title: "Session Terminated!",
+                    text: "Your account has been logged in from another location. Please log in again to continue.",
+                    icon: "error",
+                    confirmButtonText: "Login Again",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/Account/Login';
+                    }
+                });
+            }
+        });
+
+
     </script>
 
 </body>
