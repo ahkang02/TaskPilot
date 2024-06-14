@@ -1,0 +1,25 @@
+﻿@model TaskPilot.Web.ViewModels.ResendConfirmationViewModel
+
+@{
+    ViewBag.Title = "Resend Confirmation";
+    Layout = "LoginRegister_Layout";
+}
+
+<p class="text-center text-wrap">Please enter the email address associated with your account</p>
+<p class="text-center">We will email you a link to verify your account.</p>
+<form asp-action="ResendConfirmation" asp-controller="Account" method="post">
+    <div class="card-body">
+        <div class="row mb-3">
+            <label asp-for="Email"></label>
+            <input type="email" class="form-control" asp-for="Email" />
+            <span asp-validation-for="Email"></span>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary mb-3 form-control">Verify Email</button>
+        </div>
+        <div class="text-center">
+            <a asp-action="Login" asp-controller="Account" class="btn btn-light mb-3 form-control">Back To Login</a>
+        </div>
+        <hr />
+    </div>
+</form>

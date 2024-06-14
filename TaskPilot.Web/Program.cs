@@ -69,6 +69,10 @@ namespace TaskPilot.Web
                 options.SlidingExpiration = true;
             });
 
+            // Configure Token LifeSpan
+            builder.Services.Configure<DataProtectionTokenProviderOptions>(o =>
+                o.TokenLifespan = TimeSpan.FromMinutes(3));
+
             // Configuring Custom Auth
             builder.Services.AddAuthorization(options =>
             {

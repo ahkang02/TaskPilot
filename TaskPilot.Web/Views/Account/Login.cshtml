@@ -6,6 +6,16 @@
 }
 
 <form method="post" asp-action="Login" asp-controller="Account">
+    @if (ViewBag.EmailConfirmation != null && !ViewBag.EmailConfirmation)
+    {
+        <div class="alert alert-warning alert-dismissible d-flex align-items-center fade show text-center" role="alert">
+            <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2"></i>
+            <div class="flex-shrink-0 m-auto">
+                Please verify your email address! <br />Click <a asp-action="ResendConfirmation" asp-controller="Account" class="alert-link">here</a> to resend verification email.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    }
     <div class="card-body px-4 py-3">
         <div class="row mb-3 text-center">
             <h5>Login</h5>
@@ -20,7 +30,7 @@
             <input type="password" asp-for="Password" class="form-control" />
             <span asp-validation-for="Password"></span>
         </div>
-        <div class="justify-content-between d-flex align-items-center mb-4">
+        <div class="justify-content-between d-flex align-items-center">
             <div class="form-check">
                 <input type="checkbox" asp-for="RememberMe" class="form-check-input primary" />
                 <label asp-for="RememberMe" class="form-check-label text-dark"></label>

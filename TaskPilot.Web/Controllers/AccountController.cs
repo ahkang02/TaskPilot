@@ -30,8 +30,8 @@ namespace TaskPilot.Web.Controllers
         [HttpGet]
         public IActionResult CheckSession()
         {
-            bool isExpired = !User!.Identity!.IsAuthenticated;  
-            return Json(new { isExpired});
+            bool isExpired = !User!.Identity!.IsAuthenticated;
+            return Json(new { isExpired });
         }
 
         public IActionResult Login(string? returnUrl = null)
@@ -60,9 +60,8 @@ namespace TaskPilot.Web.Controllers
 
                     if (!await _userManager.IsEmailConfirmedAsync(user))
                     {
-                        ViewBag.Title = "Error: Email Confirmation Missing";
-                        ViewBag.ErrorMessage = Message.EMAIL_CONFIRMATION;
-                        return View("Error");
+                        ViewBag.EmailConfirmation = false;
+                        return View(viewModel);
                     }
 
                     var validPassword = _userManager.CheckPasswordAsync(user, viewModel.Password!);
@@ -164,7 +163,52 @@ namespace TaskPilot.Web.Controllers
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
             var user = await _userManager.FindByIdAsync(userId);
             var result = await _userManager.ConfirmEmailAsync(user!, code);
+
+            if (result.Succeeded)
+            {
+                return View("ConfirmEmail");
+            }
+            else if (result.Errors.Any(e => e.Code == "InvalidToken"))
+            {
+                ViewBag.ErrorMessage = "The confirmation link has expired. Please request a new confirmation email.";
+                return View("Error");
+            }
+
             return View(result.Succeeded ? "ConfirmEmail" : BadRequest());
+        }
+
+        [AllowAnonymous]
+        public IActionResult ResendConfirmation()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResendConfirmation(ResendConfirmationViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(viewModel.Email!);
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user!);
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+                var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code }, protocol: Request.Scheme);
+                string body = string.Empty;
+
+                using (StreamReader reader = new(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "template", "AccountConfirmation.html")))
+                {
+                    body = await reader.ReadToEndAsync();
+                }
+
+                body = body.Replace("{Content}", "Account Confirmation");
+                body = body.Replace("{ConfirmationLink}", callbackUrl);
+                body = body.Replace("{UserName}", user.UserName);
+                await _emailSender.SendEmailAsync(user.Email!, subject: "Confirm your account", htmlMessage: body);
+
+                return View("Login");
+            }
+            return View(viewModel);
         }
 
         [AllowAnonymous]
@@ -250,6 +294,10 @@ namespace TaskPilot.Web.Controllers
             if (result.Succeeded)
             {
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
+            }else if(result.Errors.Any(e => e.Code == "InvalidToken"))
+            {
+                ViewBag.ErrorMessage = "The reset password link has expired. Please request a new reset password email.";
+                return View("Error");
             }
 
             ModelState.AddModelError("", result.ToString());
