@@ -17,10 +17,6 @@ html {
   min-height: 100%;
 }
 
-body {
-  margin-bottom: 60px;
-}
-
 .input-validation-error {
     border-color: #dc3545 !important;
     border-radius: 0.5rem !important;

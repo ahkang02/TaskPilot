@@ -79,34 +79,47 @@ namespace TaskPilot.Web.Controllers
                 {
                     var userInDb = _unitOfWork.Users.Get(u => u.Id == viewModel.Id);
 
-                    if (userInDb.Email != viewModel.Email)
+                    if (userInDb.UserName != viewModel.Username)
                     {
-                        var code = await _userManager.GenerateChangeEmailTokenAsync(userInDb, viewModel.Email!);
-                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                        var callbackUrl = Url.Action("ChangeEmail", "Profile", new { userId = userInDb.Id, viewModel.Email, code }, protocol: Request.Scheme);
-                        string body = string.Empty;
-
-                        using (StreamReader reader = new(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "template", "AccountConfirmation.html")))
+                        bool isUserNameExist = _unitOfWork.Users.Get(u => u.UserName == viewModel.Username) != null;
+                        if (isUserNameExist)
                         {
-                            body = reader.ReadToEnd();
+                            TempData["ErrorMsg"] = Message.PROF_USERNAME_EXIST;
+                            viewModel.Username = userInDb.UserName;
+                        }
+                    }
+                    else
+                    {
+
+                        if (userInDb.Email != viewModel.Email)
+                        {
+                            var code = await _userManager.GenerateChangeEmailTokenAsync(userInDb, viewModel.Email!);
+                            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                            var callbackUrl = Url.Action("ChangeEmail", "Profile", new { userId = userInDb.Id, viewModel.Email, code }, protocol: Request.Scheme);
+                            string body = string.Empty;
+
+                            using (StreamReader reader = new(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "template", "AccountConfirmation.html")))
+                            {
+                                body = reader.ReadToEnd();
+                            }
+
+                            body = body.Replace("{Content}", "Email Change Request");
+                            body = body.Replace("{ConfirmationLink}", callbackUrl);
+                            body = body.Replace("{UserName}", userInDb.UserName);
+                            await _emailSender.SendEmailAsync(viewModel.Email!, subject: "Confirm your email change request", htmlMessage: body);
+
+                            viewModel.Email = userInDb.Email;
                         }
 
-                        body = body.Replace("{Content}", "Email Change Request");
-                        body = body.Replace("{ConfirmationLink}", callbackUrl);
-                        body = body.Replace("{UserName}", userInDb.UserName);
-                        await _emailSender.SendEmailAsync(viewModel.Email!, subject: "Confirm your email change request", htmlMessage: body);
+                        userInDb.FirstName = viewModel.FirstName!;
+                        userInDb.LastName = viewModel.LastName!;
+                        userInDb.UserName = viewModel.Username;
+                        userInDb.UpdatedAt = DateTime.Now;
+                        _unitOfWork.Users.Update(userInDb);
+                        TempData["SuccessMsg"] = Message.PROF_DETAIL_EDIT;
                     }
-
-                    userInDb.FirstName = viewModel.FirstName!;
-                    userInDb.LastName = viewModel.LastName!;
-                    userInDb.UserName = viewModel.Username;
-                    userInDb.UpdatedAt = DateTime.Now;
                     viewModel.UserRole = currentUserRole[0];
                     viewModel.LastLogin = userInDb.LastLogin;
-                    _unitOfWork.Users.Update(userInDb);
-                    TempData["SuccessMsg"] = Message.PROF_DETAIL_EDIT;
-                    RedirectToAction("Index", "Profile", viewModel);
-
                 }
                 else
                 {
