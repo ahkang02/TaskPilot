@@ -63,16 +63,16 @@
                                             <span asp-validation-for="ImportInfo[i].DueDate"></span>
                                         </td>
                                         <td>
-                                            <select class="form-control" asp-for="ImportInfo[i].PriorityId" asp-items="@(new SelectList(Model.ImportInfo[i].PriorityList, "Id", "Description"))"></select>
+                                            <select class="form-select" asp-for="ImportInfo[i].PriorityId" asp-items="@(new SelectList(Model.ImportInfo[i].PriorityList, "Id", "Description"))"></select>
                                             <span asp-validation-for="ImportInfo[i].PriorityId"></span>
                                         </td>
 
                                         <td>
-                                            <select class="form-control" asp-for="ImportInfo[i].StatusId" asp-items="@(new SelectList(Model.ImportInfo[i].StatusList, "Id", "Description"))"></select>
+                                            <select class="form-select" asp-for="ImportInfo[i].StatusId" asp-items="@(new SelectList(Model.ImportInfo[i].StatusList, "Id", "Description"))"></select>
                                             <span asp-validation-for="ImportInfo[i].StatusId"></span>
                                         </td>
                                         <td>
-                                            <select class="form-control" asp-for="ImportInfo[i].UserId" asp-items="@(new SelectList(Model.ImportInfo[i].AssigeeList, "Id", "UserName"))"></select>
+                                            <select class="form-select" asp-for="ImportInfo[i].UserId" asp-items="@(new SelectList(Model.ImportInfo[i].AssigeeList, "Id", "UserName"))"></select>
                                             <span asp-validation-for="ImportInfo[i].UserId"></span>
                                         </td>
                                     </tr>

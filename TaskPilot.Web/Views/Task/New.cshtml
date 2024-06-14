@@ -47,7 +47,7 @@
                                 <div class="row mb-3 ">
                                     <div class="col-md-6 m-0 p-0">
                                         <label asp-for="PriorityId"></label>
-                                        <select class="form-control" asp-for="PriorityId" class="form-control"
+                                        <select asp-for="PriorityId" class="form-select"
                                                 asp-items="@(new SelectList(Model.PriorityList, "Id", "Description"))">
                                             <option disabled selected>Select Priority</option>
                                         </select>
@@ -55,7 +55,7 @@
                                     </div>
                                     <div class="col-md-6 m-0 p-0">
                                         <label asp-for="StatusId"></label>
-                                        <select class="form-control" asp-for="StatusId" class="form-control"
+                                        <select asp-for="StatusId" class="form-select"
                                                 asp-items="@(new SelectList(Model.StatusList, "Id", "Description"))">
                                             <option disabled selected>Select Status</option>
                                         </select>
@@ -104,7 +104,7 @@
                                 </div>
                                 <div class="row mb-3 ">
                                     <label asp-for="AssignToId"></label>
-                                    <select class="form-control" asp-for="AssignToId" class="form-control"
+                                    <select class="form-select" asp-for="AssignToId"
                                             asp-items="@(new SelectList(Model.AssigneeList, "Id", "UserName"))">
                                         <option disabled selected>Select Assignee</option>
                                     </select>

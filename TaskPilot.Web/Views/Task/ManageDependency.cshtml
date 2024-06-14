@@ -41,9 +41,9 @@
                                 </div>
                                 <div class="row mb-3 ">
                                     <label asp-for="DependencyID"></label>
-                                    <select class="form-control" asp-for="DependencyID" class="form-control"
+                                    <select class="form-select" asp-for="DependencyID" class="form-control"
                                             asp-items="@(new SelectList(Model.ListOfTasks, "Id", "Name"))">
-                                        <option>Select </option>
+                                        <option>Select Dependent Task</option>
                                     </select>
                                 </div>
                                 <input type="hidden" asp-for="DependencyID" />

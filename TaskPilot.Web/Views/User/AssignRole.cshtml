@@ -44,7 +44,7 @@
                                 </div>
                                 <div class="row mb-3">
                                     <label asp-for="RoleId"></label>
-                                    <select asp-for="RoleId" class="form-control"
+                                    <select asp-for="RoleId" class="form-select"
                                             asp-items="@(new SelectList(Model.RoleToSelect, "Id", "Name"))">
                                             <option>Select </option>
                                     </select>
