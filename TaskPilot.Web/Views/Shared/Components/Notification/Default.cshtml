@@ -13,6 +13,12 @@
         <h5 class="mb-0 fs-5 fw-semibold">Notifications</h5>
         <span class="badge text-bg-primary rounded-4 px-3 py-1 lh-sm">@Model.Count()</span>
     </div>
+    @if (Model.Count() > 0)
+    {
+        <div class="text-end px-3">
+            <a asp-action="ReadAll" asp-controller="Notification" class="notifRead"><span class="badge text-bg-primary">Read All</span></a>
+    </div>
+    }
     <div class="message-body overflow-auto" style="max-height: 360px;">
         <div class="" style="padding: 0px;">
             @foreach (var notif in Model)

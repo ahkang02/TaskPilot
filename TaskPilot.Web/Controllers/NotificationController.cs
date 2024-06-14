@@ -31,5 +31,16 @@ namespace TaskPilot.Web.Controllers
                 return RedirectToAction("Detail", "Task", new { id = taskId });
             }
         }
+
+        public IActionResult ReadAll()
+        {
+            var username = User.Identity!.Name;
+            var currentUser = _unitOfWork.Users.Get(u => u.UserName == username);
+            var notifs = _unitOfWork.Notification.GetAll().Where(u => u.UserId == currentUser.Id);
+            _unitOfWork.Notification.RemoveRange(notifs);
+            _unitOfWork.Save();
+
+            return Redirect(Request.Headers["Referer"].ToString());
+        }
     }
 }

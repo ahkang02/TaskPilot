@@ -142,7 +142,7 @@
 
         $(document).ready(function () { 
             $('.spinner').hide();
-            $('a.dropdown-item, a.sidebar-link').on('click', function (e) {
+            $('a.dropdown-item, a.sidebar-link, a.notifRead').on('click', function (e) {
                 e.preventDefault();
 
                 var targetUrl = $(this).attr('href');
