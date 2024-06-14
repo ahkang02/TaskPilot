@@ -94,12 +94,11 @@
                 }
                 @RenderBody()
             </div>
-
+            <footer class="fixed-bottom z-0">
+                <partial name="_Footer" />
+            </footer>
         </div>
     </div>
-    <footer class="fixed-bottom">
-        <partial name="_Footer" />
-    </footer>
     <script src="~/js/main_bundle.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
     <script>
