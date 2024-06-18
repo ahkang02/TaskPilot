@@ -119,7 +119,7 @@
             } else {
                 setTimeout(function () {
                     var url = '@Url.Action("Update", "Priority", new { name = "Name" })';
-                    window.location.href = url.replace('__id__', data[0]['description']);
+                    window.location.href = url.replace('Name', data[0]['description']);
                 }, 250);
             }
 

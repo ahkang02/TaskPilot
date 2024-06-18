@@ -126,7 +126,7 @@
 
         $('#delete').on('click', function () {
             let data = dataTables.rows(function (idx, data, node) {
-                return $(node).find('input[type="checkbox"][name="chkbx"]').prop('checked');
+                return $(node).find('input[type="checkbox"][name="chkbx"]').prop('description');
             }).data().toArray();
 
             let rows = dataTables.rows(function (idx, data, node) {
