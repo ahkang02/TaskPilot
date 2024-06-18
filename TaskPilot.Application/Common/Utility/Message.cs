@@ -60,7 +60,7 @@ namespace TaskPilot.Application.Common.Utility
         public const string TASK_IMPORT_FAIL = "Error: Oops! It seems that you didn't input any files.";
         public const string TASK_READ_CSV = "Data retrieved from CSV successfully";
         public const string TASK_IMPORT = " tasks imported successfully";
-
+        public const string TASK_ALREADY_CLOSED = "Error: Oops! It seems that you're trying to close a task that has already been closed.";
 
         public const string COMMON_ERROR = "Error: Oops! Something went wrong, please go through the error message.";
     }

@@ -320,19 +320,26 @@ namespace TaskPilot.Web.Controllers
             var statusToUpdate = _unitOfWork.Status.Get(s => s.Description == "Closed");
             if (taskToUpdate != null)
             {
-                _unitOfWork.Notification.Add(new Notifications
+                if (taskToUpdate.Status!.Description != "Closed")
                 {
-                    CreatedAt = DateTime.Now,
-                    Description = taskToUpdate.Name + " task's has been closed",
-                    TasksId = taskToUpdate.Id,
-                    Status = "New",
-                    UserId = taskToUpdate.AssignToId
-                });
+                    _unitOfWork.Notification.Add(new Notifications
+                    {
+                        CreatedAt = DateTime.Now,
+                        Description = taskToUpdate.Name + " task's has been closed",
+                        TasksId = taskToUpdate.Id,
+                        Status = "New",
+                        UserId = taskToUpdate.AssignToId
+                    });
 
-                taskToUpdate.StatusId = statusToUpdate.Id;
-                taskToUpdate.Updated = DateTime.Now;
-                _unitOfWork.Tasks.Update(taskToUpdate);
-                _unitOfWork.Save();
+                    taskToUpdate.StatusId = statusToUpdate.Id;
+                    taskToUpdate.Updated = DateTime.Now;
+                    _unitOfWork.Tasks.Update(taskToUpdate);
+                    _unitOfWork.Save();
+                }else
+                {
+                    TempData["ErrorMsg"] = Message.TASK_ALREADY_CLOSED;
+                    return RedirectToAction("Detail", "Task", new { Id = Id });
+                }
             }
 
             TempData["SuccessMsg"] = Message.TASK_CLOSED;
@@ -356,19 +363,27 @@ namespace TaskPilot.Web.Controllers
 
                 foreach (var task in taskToUpdate)
                 {
-                    task.StatusId = closeStatus.Id;
-
-                    _unitOfWork.Notification.Add(new Notifications
+                    if (task.Status.Description != "Closed")
                     {
-                        CreatedAt = DateTime.Now,
-                        Description = task.Name + " task's has been closed",
-                        TasksId = task.Id,
-                        Status = "New",
-                        UserId = task.AssignToId
-                    });
 
-                    task.Updated = DateTime.Now;
-                    _unitOfWork.Tasks.Update(task);
+                        task.StatusId = closeStatus.Id;
+
+                        _unitOfWork.Notification.Add(new Notifications
+                        {
+                            CreatedAt = DateTime.Now,
+                            Description = task.Name + " task's has been closed",
+                            TasksId = task.Id,
+                            Status = "New",
+                            UserId = task.AssignToId
+                        });
+
+                        task.Updated = DateTime.Now;
+                        _unitOfWork.Tasks.Update(task);
+                    }else
+                    {
+                        TempData["ErrorMsg"] = Message.TASK_ALREADY_CLOSED;
+                        return Json(Url.Action("Index", "Task"));
+                    }
                 }
             }
             _unitOfWork.Save();
