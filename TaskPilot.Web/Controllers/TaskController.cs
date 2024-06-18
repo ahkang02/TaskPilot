@@ -358,7 +358,7 @@ namespace TaskPilot.Web.Controllers
                 for (int i = 0; i < taskId.Length; i++)
                 {
                     Guid Id = taskId[i];
-                    taskToUpdate.Add(_unitOfWork.Tasks.Get(t => t.Id == Id));
+                    taskToUpdate.Add(_unitOfWork.Tasks.GetAllInclude(t => t.Id == Id, "Status").Single());
                 }
 
                 foreach (var task in taskToUpdate)

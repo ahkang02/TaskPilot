@@ -147,8 +147,10 @@
             if (data.length > 1 || data.length < 0) {
                 alert("Bulk Edit Not Supported");
             } else {
-                var url = '@Url.Action("Update", "Task", new { Id = "__id__" })';
-                window.location.assign(url.replace('__id__', data[0]['id']));
+                setTimeout(function () {
+                    var url = '@Url.Action("Update", "Task", new { Id = "__id__" })';
+                    window.location.href = url.replace('__id__', data[0]['id']);
+                }, 250);
             }
         });
 
@@ -158,10 +160,12 @@
             }).data().toArray();
 
             if (data.length > 1 || data.length < 0) {
-                alert("Bulk Edit Not Supported");
+                alert("Bulk Manage Dependency Not Supported");
             } else {
-                var url = '@Url.Action("ManageDependency", "Task", new { Id = "__id__" })';
-                window.location.href = url.replace('__id__', data[0]['id']);
+                setTimeout(function () {
+                    var url = '@Url.Action("ManageDependency", "Task", new { Id = "__id__" })';
+                    window.location.href = url.replace('__id__', data[0]['id']);
+                }, 250);
             }
         });
 
@@ -179,8 +183,19 @@
                 Id.push(row.id);
             });
 
-            if (confirm("Are you sure you want to delete " + Id.length + " tasks?")) {
-                for (let idx = 0; idx < Id.length; idx++) {
+            Swal.fire({
+                title: "Are you sure you want to delete these selected task?",
+                text: "You won't be able to revert this action!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, proceed!',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    console.log(Id);
                     $.ajax({
                         url: '@Url.Action("Delete", "Task")',
                         type: "POST",
@@ -193,8 +208,10 @@
                             window.location.href = request.responseJSON.data;
                         }
                     });
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    window.location.reload();
                 }
-            }
+            });
         });
 
         $('#done').on('click', function () {
@@ -211,16 +228,34 @@
                 Id.push(row.id);
             });
 
-            $.ajax({
-                url: '@Url.Action("MarkAsDone", "Task")',
-                type: "POST",
-                dataType: "json",
-                data: { taskId: Id },
-                success: function (data) {
-                    window.location.href = data;
-                },
-                error: function (request, status, errorThrown) {
-                    window.location.href = request.responseJSON.data;
+            Swal.fire({
+                title: "Are you sure you want to mark these task as closed?",
+                text: "You won't be able to revert this action!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, proceed!',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    console.log(Id);
+                    $.ajax({
+                        url: '@Url.Action("MarkAsDone", "Task")',
+                        type: "POST",
+                        dataType: "json",
+                        data: { taskId: Id },
+                        success: function (data) {
+                            window.location.href = data;
+                        },
+                        error: function (request, status, errorThrown) {
+                            window.location.href = request.responseJSON.data;
+                        }
+                    });
+                } else if(result.dismiss === Swal.DismissReason.cancel) 
+                {
+                    window.location.reload();
                 }
             });
         });
