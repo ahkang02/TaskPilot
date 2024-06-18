@@ -149,7 +149,7 @@
             } else {
                 var url = '@Url.Action("Update", "Task", new { Id = "__id__" })';
                 console.log(url);
-                document.location.href = "/Task/Update/" + data[0]['id']; 
+                location.href = "/Task/Update/" + data[0]['id']; 
                 // url.replace('__id__', data[0]['id']);
             }
         });
