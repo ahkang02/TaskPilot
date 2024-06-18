@@ -119,7 +119,7 @@
             } else {
                 setTimeout(function () {
                     var url = '@Url.Action("Update", "Status", new { name = "__id__" })';
-                    window.location.href = url.replace('__id__', data[0]['id']);
+                    window.location.href = url.replace('__id__', data[0]['name']);
                 }, 250);
             }
         });

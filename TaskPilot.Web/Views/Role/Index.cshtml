@@ -130,7 +130,7 @@
             } else {
                 setTimeout(function () {
                     var url = '@Url.Action("Update", "Role", new { name = "RoleName" })';
-                    window.location.href = url.replace('__id__', data[0]['id']);
+                    window.location.href = url.replace('__id__', data[0]['roleName']);
                 }, 250);
             }
 
@@ -147,7 +147,7 @@
             } else {
                 setTimeout(function () {
                     var url = '@Url.Action("AssignPermission", "Role", new { name = "RoleName" })';
-                    window.location.href = url.replace('__id__', data[0]['id']);
+                    window.location.href = url.replace('__id__', data[0]['roleName']);
                 }, 250);
             }
         });
