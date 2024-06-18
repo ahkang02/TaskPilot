@@ -128,8 +128,10 @@
             if (data.length > 1 || data.length < 0) {
                 alert("Bulk Edit Not Supported");
             } else {
-                var url = '@Url.Action("Update", "Role", new { name = "RoleName" })';
-                window.location.href = url.replace('RoleName', data[0]['roleName']);
+                setTimeout(function () {
+                    var url = '@Url.Action("Update", "Role", new { name = "RoleName" })';
+                    window.location.href = url.replace('__id__', data[0]['id']);
+                }, 250);
             }
 
             console.log(data);
@@ -143,11 +145,11 @@
             if (data.length > 1 || data.length < 0) {
                 alert("Bulk Assigning Not Supported");
             } else {
-                var url = '@Url.Action("AssignPermission", "Role", new { name = "RoleName" })';
-                window.location.href = url.replace('RoleName', data[0]['roleName']);
+                setTimeout(function () {
+                    var url = '@Url.Action("AssignPermission", "Role", new { name = "RoleName" })';
+                    window.location.href = url.replace('__id__', data[0]['id']);
+                }, 250);
             }
-
-            console.log(data);
         });
 
         $('#delete').on('click', function () {
@@ -164,22 +166,35 @@
                 Id.push(row.roleId);
             });
 
-            if (confirm("Are you sure you want to delete " + Id.length + " roles?")) {
-
-                $.ajax({
-                    url: '@Url.Action("Delete", "Role")',
-                    type: "POST",
-                    dataType: "json",
-                    data: { roleName: Id },
-                    success: function (data) {
-                        window.location.href = data;
-                    },
-                    error: function (request, status, errorThrown) {
-                        window.location.href = request.responseJSON.data;
-                    }
-                });
-
-            }
+            Swal.fire({
+                title: "Are you sure you want to delete these selected roles?",
+                text: "You won't be able to revert this action!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, proceed!',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    console.log(Id);
+                    $.ajax({
+                        url: '@Url.Action("Delete", "Role")',
+                        type: "POST",
+                        dataType: "json",
+                        data: { roleName: Id },
+                        success: function (data) {
+                            window.location.href = data;
+                        },
+                        error: function (request, status, errorThrown) {
+                            window.location.href = request.responseJSON.data;
+                        }
+                    });
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    window.location.reload();
+                }
+            });
         });
 
         $('input[name="select-all"]').on('click', function (e) {

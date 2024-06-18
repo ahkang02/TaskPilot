@@ -117,8 +117,10 @@
             if (data.length > 1 || data.length < 0) {
                 alert("Bulk Edit Not Supported");
             } else {
-                var url = '@Url.Action("Update", "Priority", new { name = "Name" })';
-                window.location.href = url.replace('Name', data[0]['description']);
+                setTimeout(function () {
+                    var url = '@Url.Action("Update", "Priority", new { name = "Name" })';
+                    window.location.href = url.replace('__id__', data[0]['id']);
+                }, 250);
             }
 
             console.log(data);
@@ -138,22 +140,34 @@
                 Id.push(row.id);
             });
 
-            console.log(Id);
-
-            if (confirm("Are you sure you want to delete " + Id.length + " priorities?")) {
-                $.ajax({
-                    url: '@Url.Action("Delete", "Priority")',
-                    type: "POST",
-                    dataType: "json",
-                    data: { priority: Id },
-                    success: function (data) {
-                        window.location.href = data;
-                    },
-                    error: function(data) {
-                        window.location.href = data;
-                    }
-                });
-            }
+            Swal.fire({
+                title: "Are you sure you want to delete these selected priority?",
+                text: "You won't be able to revert this action!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, proceed!',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("Delete", "Priority")',
+                        type: "POST",
+                        dataType: "json",
+                        data: { priority: Id },
+                        success: function (data) {
+                            window.location.href = data;
+                        },
+                        error: function (data) {
+                            window.location.href = data;
+                        }
+                    });
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    window.location.reload();
+                }
+            });
         });
 
         $('input[name="select-all"]').on('click', function (e) {

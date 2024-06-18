@@ -117,11 +117,11 @@
             if (data.length > 1 || data.length < 0) {
                 alert("Bulk Edit Not Supported");
             } else {
-                var url = '@Url.Action("Update", "Status", new { name = "__id__" })';
-                window.location.href = url.replace('__id__', data[0]['description']);
+                setTimeout(function () {
+                    var url = '@Url.Action("Update", "Status", new { name = "__id__" })';
+                    window.location.href = url.replace('__id__', data[0]['id']);
+                }, 250);
             }
-
-            console.log(data);
         });
 
         $('#delete').on('click', function () {
@@ -138,21 +138,32 @@
                 Id.push(row.id);
             });
 
-            console.log(Id);
-
-            if (confirm("Are you sure you want to delete " + Id.length + " statuses")) {
-                for (let idx = 0; idx < Id.length; idx++) {
+            Swal.fire({
+                title: "Are you sure you want to delete these selected status?",
+                text: "You won't be able to revert this action!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, proceed!',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    console.log(Id);
                     $.ajax({
                         url: '@Url.Action("Delete", "Status")',
                         type: "POST",
                         dataType: "json",
                         data: { status: Id },
-                        success: function(data) {
+                        success: function (data) {
                             window.location.href = data;
                         }
                     });
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    window.location.reload();
                 }
-            }
+            });
         });
 
         $('input[name="select-all"]').on('click', function (e) {
