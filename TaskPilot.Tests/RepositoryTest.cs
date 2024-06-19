@@ -72,6 +72,13 @@ namespace TaskPilot.Tests
         }
 
         [Test]
+        public void GetById_ReturnsNullIfEntityNotFound()
+        {
+            var result = _repository.Get(t => t.Id == 5);
+            Assert.That(result, Is.Null);
+        }
+
+        [Test]
         public void GetById_ReturnsCorrectEntity()
         {
             var result = _repository.Get(t => t.Id == 1);
@@ -87,6 +94,13 @@ namespace TaskPilot.Tests
         }
 
         [Test]
+        public void AddNullEntity_ShouldThrowArgumentNullException()
+        {
+            TestEntity entity = null;
+            Assert.Throws<ArgumentNullException>(() => _repository.Add(entity));
+        }
+
+        [Test]
         public void AddRangeEntity_ShouldAddEntityToContext()
         {
             var entities = new List<TestEntity>
@@ -96,6 +110,13 @@ namespace TaskPilot.Tests
             };
             _repository.AddRange(entities);
             _mockDbSet.Verify(m => m.AddRange(entities), Times.Once());
+        }
+
+        [Test]
+        public void AddRangeNullEntity_ShouldThrowArgumentNullException()
+        {
+            IEnumerable<TestEntity> entities = null;
+            Assert.Throws<ArgumentNullException>(() => _repository.AddRange(entities));
         }
 
         [Test]
@@ -111,10 +132,24 @@ namespace TaskPilot.Tests
         }
 
         [Test]
+        public void UpdateNullEntity_ShouldReturnNull()
+        {
+            TestEntity entity = null;
+            Assert.Throws<ArgumentNullException>(() => _repository.Update(entity));
+        }
+
+        [Test]
         public void FindEntity_ShouldReturnListOfEntities()
         {
             var result = _repository.Find(t => t.Name == "Test");
             Assert.That(result.Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void FindEntity_ShouldReturnEmptyListIfNoEntityFound()
+        {
+            var result = _repository.Find(t => t.Name == "Test 3");
+            Assert.That(result.Count, Is.EqualTo(0));
         }
 
         [Test]
@@ -127,13 +162,27 @@ namespace TaskPilot.Tests
         }
 
         [Test]
+        public void DeleteNullEntity_ShouldThrowArgumentNullException()
+        {
+            var entityToDelete = _repository.Get(t => t.Id == 5);
+            Assert.Throws<ArgumentNullException>(() => _repository.Remove(entityToDelete));
+        }
+
+        [Test]
         public void DeleteEntityRange_ShouldRemoveEntityToContext()
         {
             var entitiesToDelete = _repository.GetAll();
             _repository.RemoveRange(entitiesToDelete);
             _mockDbSet.Verify(m => m.RemoveRange(entitiesToDelete), Times.Once());
         }
-    
+
+        [Test]
+        public void DeleteNullEntityRange_ShouldThrowArgumentNullException()
+        {
+            IEnumerable<TestEntity> entitiesToDelete = null; // Simulate no entities found
+            Assert.Throws<ArgumentNullException>(() => _repository.RemoveRange(entitiesToDelete));
+        }
+
     }
 
     public class TestEntity
