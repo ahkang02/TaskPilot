@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -31,6 +32,7 @@ namespace TaskPilot.Web
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             builder.Services.AddScoped<ISmsSender, SmsSender>();
             builder.Services.AddScoped<IAuthorizationHandler, CustomAuthorizeHandler>();
+            builder.Services.AddSingleton(x => new BlobServiceClient(builder.Configuration.GetConnectionString("StorageAccount")));
 
             // Configuring Identity Framework 
             builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = true)

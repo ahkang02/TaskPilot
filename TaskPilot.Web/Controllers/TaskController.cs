@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure.Storage.Blobs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
@@ -21,11 +22,15 @@ namespace TaskPilot.Web.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly BlobServiceClient _blobServiceClient;
+        private readonly BlobContainerClient _containerClient;
 
-        public TaskController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
+        public TaskController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, BlobServiceClient blobServiceClient)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _blobServiceClient = blobServiceClient;
+            _containerClient = _blobServiceClient.GetBlobContainerClient("file-container");
         }
 
         public IActionResult Index()
@@ -521,6 +526,25 @@ namespace TaskPilot.Web.Controllers
             }
             TempData["ErrorMsg"] = Message.COMMON_ERROR;
             return RedirectToAction("ImportTask", "Task", viewModel);
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> GetTemplate()
+        {
+            try
+            {
+                var blobClient = _containerClient.GetBlobClient("ImportTemplate.csv");
+                var memoryStream = new MemoryStream();
+                await blobClient.DownloadToAsync(memoryStream);
+                memoryStream.Position = 0;
+                var contentType = blobClient.GetProperties().Value.ContentType;
+                return File(memoryStream, contentType, "ImportTemplate.csv");
+
+            }catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return RedirectToAction("ImportTask", "Task");
+            }
         }
 
         private List<Tasks> GetRecurringTask(EditTaskViewModel viewModel, ApplicationUser currentUser)
