@@ -11,6 +11,7 @@ using TaskPilot.Application.Common.Utility;
 using TaskPilot.Domain.Entities;
 using TaskPilot.Infrastructure.Repository;
 using TaskPilot.Web.ViewModels;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static Vonage.ProactiveConnect.Lists.SyncStatus;
 
 namespace TaskPilot.Web.Controllers
@@ -525,82 +526,159 @@ namespace TaskPilot.Web.Controllers
         private List<Tasks> GetRecurringTask(EditTaskViewModel viewModel, ApplicationUser currentUser)
         {
             List<Tasks> tasks = new List<Tasks>();
-
-            switch (viewModel.RecurringType)
+            switch(viewModel.RecurringType)
             {
                 case "Daily":
-                    for (var date = viewModel.StartDate; date!.Value.Date <= viewModel.EndDate!.Value.Date; date = date.Value.AddDays(1))
+                    for (int i = 0; i <= viewModel.FrequencyCount; i++)
                     {
                         tasks.Add(new Tasks
                         {
                             Created = DateTime.Now,
                             AssignToId = viewModel.AssignToId!,
                             Description = viewModel.TaskDescription!,
-                            DueDate = date,
-                            Name = viewModel.TaskName + " " + date.Value.ToString("yyyy-MM-dd"),
+                            DueDate = viewModel.StartDate,
+                            Name = viewModel.TaskName + " " + viewModel.StartDate.Value.ToString("yyyy-MM-dd"),
                             PriorityId = viewModel.PriorityId.GetValueOrDefault(),
                             StatusId = viewModel.StatusId.GetValueOrDefault(),
                             AssignFromId = currentUser.Id,
                             Updated = DateTime.Now,
                         });
-
+                        viewModel.StartDate = viewModel.StartDate.Value.AddDays(1);
                     }
                     break;
                 case "Weekly":
-                    for (var date = viewModel.StartDate; date!.Value.Date <= viewModel.EndDate!.Value.Date; date = date.Value.AddDays(7))
+                    for (int i = 0; i <= viewModel.FrequencyCount; i++)
                     {
                         tasks.Add(new Tasks
                         {
                             Created = DateTime.Now,
                             AssignToId = viewModel.AssignToId!,
                             Description = viewModel.TaskDescription!,
-                            DueDate = date,
-                            Name = viewModel.TaskName + " " + date.Value.ToString("yyyy-MM-dd"),
-                            PriorityId = viewModel.PriorityId!.Value,
-                            StatusId = viewModel.StatusId!.Value,
+                            DueDate = viewModel.StartDate,
+                            Name = viewModel.TaskName + " " + viewModel.StartDate.Value.ToString("yyyy-MM-dd"),
+                            PriorityId = viewModel.PriorityId.GetValueOrDefault(),
+                            StatusId = viewModel.StatusId.GetValueOrDefault(),
                             AssignFromId = currentUser.Id,
                             Updated = DateTime.Now,
                         });
+                        viewModel.StartDate = viewModel.StartDate.Value.AddDays(7);
                     }
                     break;
                 case "Monthly":
-                    for (var month = viewModel.StartDate; month!.Value.Month <= viewModel.EndDate!.Value.Month; month = month.Value.AddMonths(1))
+                    for (int i = 0; i <= viewModel.FrequencyCount; i++)
                     {
                         tasks.Add(new Tasks
                         {
                             Created = DateTime.Now,
                             AssignToId = viewModel.AssignToId!,
                             Description = viewModel.TaskDescription!,
-                            DueDate = month,
-                            Name = viewModel.TaskName + " " + month.Value.ToString("MMM"),
-                            PriorityId = viewModel.PriorityId!.Value,
-                            StatusId = viewModel.StatusId!.Value,
+                            DueDate = viewModel.StartDate,
+                            Name = viewModel.TaskName + " " + viewModel.StartDate.Value.ToString("yyyy-MM-dd"),
+                            PriorityId = viewModel.PriorityId.GetValueOrDefault(),
+                            StatusId = viewModel.StatusId.GetValueOrDefault(),
                             AssignFromId = currentUser.Id,
                             Updated = DateTime.Now,
                         });
-
-
+                        viewModel.StartDate = viewModel.StartDate.Value.AddMonths(1);
                     }
                     break;
                 case "Yearly":
-                    for (var year = viewModel.StartDate; year!.Value.Year <= viewModel.EndDate!.Value.Year; year = year.Value.AddYears(1))
+                    for (int i = 0; i <= viewModel.FrequencyCount; i++)
                     {
                         tasks.Add(new Tasks
                         {
                             Created = DateTime.Now,
                             AssignToId = viewModel.AssignToId!,
                             Description = viewModel.TaskDescription!,
-                            DueDate = year,
-                            Name = viewModel.TaskName + " " + year.Value.ToString("yyyy"),
-                            PriorityId = viewModel.PriorityId!.Value,
-                            StatusId = viewModel.StatusId!.Value,
+                            DueDate = viewModel.StartDate,
+                            Name = viewModel.TaskName + " " + viewModel.StartDate.Value.ToString("yyyy-MM-dd"),
+                            PriorityId = viewModel.PriorityId.GetValueOrDefault(),
+                            StatusId = viewModel.StatusId.GetValueOrDefault(),
                             AssignFromId = currentUser.Id,
                             Updated = DateTime.Now,
                         });
-
+                        viewModel.StartDate = viewModel.StartDate.Value.AddYears(1);
                     }
                     break;
+
             }
+
+            // To Be Removed
+            //switch (viewModel.RecurringType)
+            //{
+            //    case "Daily":
+            //        for (var date = viewModel.StartDate; date!.Value.Date <= viewModel.EndDate!.Value.Date; date = date.Value.AddDays(1))
+            //        {
+            //            tasks.Add(new Tasks
+            //            {
+            //                Created = DateTime.Now,
+            //                AssignToId = viewModel.AssignToId!,
+            //                Description = viewModel.TaskDescription!,
+            //                DueDate = date,
+            //                Name = viewModel.TaskName + " " + date.Value.ToString("yyyy-MM-dd"),
+            //                PriorityId = viewModel.PriorityId.GetValueOrDefault(),
+            //                StatusId = viewModel.StatusId.GetValueOrDefault(),
+            //                AssignFromId = currentUser.Id,
+            //                Updated = DateTime.Now,
+            //            });
+
+            //        }
+            //        break;
+            //    case "Weekly":
+            //        for (var date = viewModel.StartDate; date!.Value.Date <= viewModel.EndDate!.Value.Date; date = date.Value.AddDays(7))
+            //        {
+            //            tasks.Add(new Tasks
+            //            {
+            //                Created = DateTime.Now,
+            //                AssignToId = viewModel.AssignToId!,
+            //                Description = viewModel.TaskDescription!,
+            //                DueDate = date,
+            //                Name = viewModel.TaskName + " " + date.Value.ToString("yyyy-MM-dd"),
+            //                PriorityId = viewModel.PriorityId!.Value,
+            //                StatusId = viewModel.StatusId!.Value,
+            //                AssignFromId = currentUser.Id,
+            //                Updated = DateTime.Now,
+            //            });
+            //        }
+            //        break;
+            //    case "Monthly":
+            //        for (var month = viewModel.StartDate; month!.Value.Month <= viewModel.EndDate!.Value.Month; month = month.Value.AddMonths(1))
+            //        {
+            //            tasks.Add(new Tasks
+            //            {
+            //                Created = DateTime.Now,
+            //                AssignToId = viewModel.AssignToId!,
+            //                Description = viewModel.TaskDescription!,
+            //                DueDate = month,
+            //                Name = viewModel.TaskName + " " + month.Value.ToString("MMM"),
+            //                PriorityId = viewModel.PriorityId!.Value,
+            //                StatusId = viewModel.StatusId!.Value,
+            //                AssignFromId = currentUser.Id,
+            //                Updated = DateTime.Now,
+            //            });
+
+
+            //        }
+            //        break;
+            //    case "Yearly":
+            //        for (var year = viewModel.StartDate; year!.Value.Year <= viewModel.EndDate!.Value.Year; year = year.Value.AddYears(1))
+            //        {
+            //            tasks.Add(new Tasks
+            //            {
+            //                Created = DateTime.Now,
+            //                AssignToId = viewModel.AssignToId!,
+            //                Description = viewModel.TaskDescription!,
+            //                DueDate = year,
+            //                Name = viewModel.TaskName + " " + year.Value.ToString("yyyy"),
+            //                PriorityId = viewModel.PriorityId!.Value,
+            //                StatusId = viewModel.StatusId!.Value,
+            //                AssignFromId = currentUser.Id,
+            //                Updated = DateTime.Now,
+            //            });
+
+            //        }
+            //        break;
+            //}
             return tasks;
         }
     }

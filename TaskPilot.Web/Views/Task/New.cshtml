@@ -73,16 +73,26 @@
                                 </div>
                                 <div class="radio-group mb-3" id="RecurringControl">
                                     <div class="row mb-3">
+                                        @*
                                         <div class="col-md-6 p-0">
-                                            <label asp-for="StartDate"></label>
-                                            <input type="date" asp-for="StartDate" class="form-control startDate" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
-                                            <span asp-validation-for="StartDate"></span>
+                                        *@
+                                        
+                                        <label asp-for="StartDate"></label>
+                                        <input type="date" asp-for="StartDate" class="form-control startDate" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                        <span asp-validation-for="StartDate"></span>
+                                        
+                                        @*
                                         </div>
+                                        *@
+
+                                        @*
                                         <div class="col-md-6 p-0">
-                                            <label asp-for="EndDate"></label>
-                                            <input type="date" asp-for="EndDate" class="form-control endDate" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
-                                            <span asp-validation-for="EndDate"></span>
+                                        <label asp-for="EndDate"></label>
+                                        <input type="date" asp-for="EndDate" class="form-control endDate" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                        <span asp-validation-for="EndDate"></span>
                                         </div>
+                                        *@
+
                                     </div>
                                     <div class="form-check form-check-inline ps-3">
                                         <input type="radio" asp-for="RecurringType" value="Daily" class="form-check-input" />
@@ -101,6 +111,11 @@
                                         <label class="form-check-label">Yearly</label>
                                     </div>
                                     <span asp-validation-for="RecurringType"></span>
+                                    <div class="row mb-3">
+                                        <label asp-for="FrequencyCount"></label>
+                                        <input type="number" asp-for="FrequencyCount" min="0" class="form-control" />
+                                        <span asp-validation-for="FrequencyCount"></span>
+                                    </div>
                                 </div>
                                 <div class="row mb-3 ">
                                     <label asp-for="AssignToId"></label>
@@ -138,49 +153,46 @@
                     date: true
                 });
 
-                $(".endDate").rules("add", {
-                    required: true,
-                    date: true,
-                    recurringDateValidation: true
-                });
-                
                 $("input[name='RecurringType']").rules("add", {
                     required: true
                 });
 
-
-                $(".form").validate({
-                    rules: {
-                        startDate: {
-                            required: {
-                                depends: function (element) {
-                                    return $("#IsRecurring").is(":checked");
-                                }
-                            },
-                            date: true
-                        },
-                        endDate: {
-                            required: {
-                                depends: function (element) {
-                                    return $("#IsRecurring").is(":checked");
-                                }
-                            },
-                            date: true
-                        },
-                        RecurringType: {
-                            required: {
-                                depends: function (element) {
-                                    return $("#IsRecurring").is(":checked");
-                                }
-                            }
-                        },
-                        messages: {
-                            RecurringType: {
-                                required: "Please select a recurring type"
-                            }
-                        }
-                    }
+                $("input[name='FrequencyCount']").rules("add", {
+                    required: true
                 });
+
+                // $(".form").validate({
+                //     rules: {
+                //         startDate: {
+                //             required: {
+                //                 depends: function (element) {
+                //                     return $("#IsRecurring").is(":checked");
+                //                 }
+                //             },
+                //             date: true
+                //         },
+                //         endDate: {
+                //             required: {
+                //                 depends: function (element) {
+                //                     return $("#IsRecurring").is(":checked");
+                //                 }
+                //             },
+                //             date: true
+                //         },
+                //         RecurringType: {
+                //             required: {
+                //                 depends: function (element) {
+                //                     return $("#IsRecurring").is(":checked");
+                //                 }
+                //             }
+                //         },
+                //         messages: {
+                //             RecurringType: {
+                //                 required: "Please select a recurring type"
+                //             }
+                //         }
+                //     }
+                // });
 
 
             } else {
@@ -193,34 +205,34 @@
             }
         })
 
-        $.validator.addMethod("recurringDateValidation", function (value, element) {
-            console.log("Test");
-            if (!$("#IsRecurring").is(":checked")) {
-                return true;
-            }
+        // $.validator.addMethod("recurringDateValidation", function (value, element) {
+        //     console.log("Test");
+        //     if (!$("#IsRecurring").is(":checked")) {
+        //         return true;
+        //     }
 
-            var recurringType = $("input[name='RecurringType']:checked").val();
-            var startDate = new Date($(".startDate").val());
-            var endDate = new Date($(".endDate").val());
-            var differenceInDays = (endDate - startDate) / (1000 * 3600 * 24);
+        //     var recurringType = $("input[name='RecurringType']:checked").val();
+        //     var startDate = new Date($(".startDate").val());
+        //     var endDate = new Date($(".endDate").val());
+        //     var differenceInDays = (endDate - startDate) / (1000 * 3600 * 24);
 
-            if(isNaN(differenceInDays)) {
-                return false;
-            }
+        //     if (isNaN(differenceInDays)) {
+        //         return false;
+        //     }
 
-            switch (recurringType) {
-                case "Daily":
-                return differenceInDays >= 1;
-                case "Weekly":
-                    return differenceInDays >= 7;
-                case "Monthly":
-                    return differenceInDays >= 30;
-                case "Yearly":
-                    return differenceInDays >= 365;
-                default:
-                    return false;
-            }
-        }, "End date must be appropriately greater than the start date based on the recurring type");
+        //     switch (recurringType) {
+        //         case "Daily":
+        //             return differenceInDays >= 1;
+        //         case "Weekly":
+        //             return differenceInDays >= 7;
+        //         case "Monthly":
+        //             return differenceInDays >= 30;
+        //         case "Yearly":
+        //             return differenceInDays >= 365;
+        //         default:
+        //             return false;
+        //     }
+        // }, "End date must be appropriately greater than the start date based on the recurring type");
 
     </script>
 }

@@ -45,6 +45,9 @@ namespace TaskPilot.Web.ViewModels
         [Display(Name = "Recurring Task")]
         public bool IsRecurring { get; set; }
 
+        [Display(Name = "Frequency")]
+        public int? FrequencyCount { get; set; }
+
         public string? RecurringType { get; set; }
 
         [Display(Name = "Recurring Start")]
