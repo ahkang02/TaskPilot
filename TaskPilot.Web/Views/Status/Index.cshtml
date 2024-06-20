@@ -126,7 +126,7 @@
 
         $('#delete').on('click', function () {
             let data = dataTables.rows(function (idx, data, node) {
-                return $(node).find('input[type="checkbox"][name="chkbx"]').prop('description');
+                return $(node).find('input[type="checkbox"][name="chkbx"]').prop('checked');
             }).data().toArray();
 
             let rows = dataTables.rows(function (idx, data, node) {
@@ -150,7 +150,6 @@
                 allowEscapeKey: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    console.log(Id);
                     $.ajax({
                         url: '@Url.Action("Delete", "Status")',
                         type: "POST",

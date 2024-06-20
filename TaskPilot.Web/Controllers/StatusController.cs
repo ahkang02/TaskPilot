@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Abstractions;
 using System.Security.Claims;
 using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Application.Common.Utility;
+using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
 using TaskPilot.Web.ViewModels;
 
@@ -13,20 +14,23 @@ namespace TaskPilot.Web.Controllers
     [Authorize(Policy = "CustomPolicy")]
     public class StatusController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserPermissionService _userPermissionService;
+        private readonly IStatusService _statusService;
 
-        public StatusController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
+        public StatusController(IStatusService statusService, IUserPermissionService userPermissionService)
         {
-            _unitOfWork = unitOfWork;
-            _userManager = userManager;
+            _statusService = statusService;
+            _userPermissionService = userPermissionService;
         }
 
         public IActionResult Index()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity!;
-            return View(Helper.GetUserPermission(_unitOfWork, claimsIdentity));
-
+            UserPermissionViewModel viewModel = new UserPermissionViewModel
+            {
+                UserPermissions = _userPermissionService.GetUserPermission(claimsIdentity).ToList()
+            };
+            return View(viewModel);
         }
 
         public IActionResult New()
@@ -50,21 +54,19 @@ namespace TaskPilot.Web.Controllers
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now,
                     };
-
-                    _unitOfWork.Status.Add(status);
+                    _statusService.CreateStatus(status);
                     TempData["SuccessMsg"] = Message.STAT_CREATION;
                 }
                 else
                 {
-                    Statuses statusToEdit = _unitOfWork.Status.Get(s => s.Id == viewModel.Id);
+                    Statuses statusToEdit = _statusService.GetStatusById(viewModel.Id.Value);
                     statusToEdit.Description = viewModel.Name!;
                     statusToEdit.UpdatedAt = DateTime.Now;
                     statusToEdit.ColorCode = viewModel.ColorCode!;
 
-                    _unitOfWork.Status.Update(statusToEdit);
+                    _statusService.UpdateStatus(statusToEdit);
                     TempData["SuccessMsg"] = statusToEdit.Description + Message.STAT_UPDATE;
                 }
-                _unitOfWork.Save();
                 return RedirectToAction("Index", "Status");
             }
             TempData["ErrorMsg"] = Message.COMMON_ERROR;
@@ -73,7 +75,7 @@ namespace TaskPilot.Web.Controllers
 
         public IActionResult Update(string name)
         {
-            var statusInDb = _unitOfWork.Status.Get(s => s.Description == name);
+            var statusInDb = _statusService.GetStatusByName(name);
             EditStatusViewModel viewModel = new EditStatusViewModel
             {
                 Id = statusInDb.Id,
@@ -92,27 +94,26 @@ namespace TaskPilot.Web.Controllers
                 for (int i = 0; i < status.Length; i++)
                 {
                     var statusId = status[i];
-                    statusToDelete.Add(_unitOfWork.Status.Get(s => s.Id == statusId));
+                    statusToDelete.Add(_statusService.GetStatusById(statusId));
                 }
 
                 if (statusToDelete != null)
                 {
                     foreach (var statuses in statusToDelete)
                     {
-                        if (_unitOfWork.Tasks.GetAll().Any(s => s.StatusId == statuses.Id))
+                        if (_statusService.CheckIfStatusIsInUse(statuses))
                         {
                             TempData["ErrorMsg"] = Message.STAT_DELETION_FAIL;
                             return Json(Url.Action("Index", "Status"));
                         }
                         else
                         {
-                            _unitOfWork.Status.Remove(statuses);
+                            _statusService.DeleteStatus(statuses);
                         }
                     }
                 }
 
             }
-            _unitOfWork.Save();
             TempData["SuccessMsg"] = status.Length + Message.STAT_DELETION;
             return Json(Url.Action("Index", "Status"));
         }

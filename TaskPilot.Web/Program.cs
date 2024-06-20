@@ -31,6 +31,8 @@ namespace TaskPilot.Web
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             builder.Services.AddScoped<ISmsSender, SmsSender>();
+            builder.Services.AddScoped<IUserPermissionService, UserPermissionService>();
+            builder.Services.AddScoped<IStatusService, StatusService>();
             builder.Services.AddScoped<IAuthorizationHandler, CustomAuthorizeHandler>();
             builder.Services.AddSingleton(x => new BlobServiceClient(builder.Configuration.GetConnectionString("StorageAccount")));
 
