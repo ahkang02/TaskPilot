@@ -11,8 +11,8 @@ namespace TaskPilot.Web.Controllers
 {
     public class DashboardController : Controller
     {
-        private IUnitOfWork _unitOfWork;
-        private UserManager<ApplicationUser> _userManager;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public DashboardController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
         {
@@ -50,7 +50,7 @@ namespace TaskPilot.Web.Controllers
             foreach (var task in userTaskList)
             {
                 var userRole = await _userManager.GetRolesAsync(task.AssignFrom!);
-
+              
                 taskDetail.Add(new TaskDetailViewModel
                 {
                     Id = task.Id,

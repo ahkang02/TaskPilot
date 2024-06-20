@@ -14,14 +14,12 @@ namespace TaskPilot.Web.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailSender _emailSender;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public AccountController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender)
         {
-            _unitOfWork = unitOfWork;
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
@@ -119,7 +117,7 @@ namespace TaskPilot.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                bool isUserExisted = _unitOfWork.Users.Get(u => u.UserName == viewModel.Username || u.Email == viewModel.Email) != null;
+                bool isUserExisted = _userManager.Users.FirstOrDefault(u => u.UserName == viewModel.Username || u.Email == viewModel.Email) != null;
 
                 if (!isUserExisted)
                 {
