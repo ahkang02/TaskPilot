@@ -33,6 +33,8 @@ namespace TaskPilot.Web
             builder.Services.AddScoped<ISmsSender, SmsSender>();
             builder.Services.AddScoped<IUserPermissionService, UserPermissionService>();
             builder.Services.AddScoped<IStatusService, StatusService>();
+            builder.Services.AddScoped<IPriorityService, PriorityService>();
+
             builder.Services.AddScoped<IAuthorizationHandler, CustomAuthorizeHandler>();
             builder.Services.AddSingleton(x => new BlobServiceClient(builder.Configuration.GetConnectionString("StorageAccount")));
 

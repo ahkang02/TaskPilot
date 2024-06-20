@@ -97,7 +97,7 @@ namespace TaskPilot.Web.Controllers
                     statusToDelete.Add(_statusService.GetStatusById(statusId));
                 }
 
-                if (statusToDelete != null)
+                if (statusToDelete.Any())
                 {
                     foreach (var statuses in statusToDelete)
                     {
@@ -112,7 +112,6 @@ namespace TaskPilot.Web.Controllers
                         }
                     }
                 }
-
             }
             TempData["SuccessMsg"] = status.Length + Message.STAT_DELETION;
             return Json(Url.Action("Index", "Status"));

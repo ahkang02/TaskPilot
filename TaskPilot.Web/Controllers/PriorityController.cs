@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Application.Common.Utility;
+using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
 using TaskPilot.Web.ViewModels;
 
@@ -12,21 +13,24 @@ namespace TaskPilot.Web.Controllers
     [Authorize(Policy = "CustomPolicy")]
     public class PriorityController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserPermissionService _userPermissionService;
+        private readonly IPriorityService _priorityService;
 
-        public PriorityController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
+        public PriorityController(IPriorityService priorityService, IUserPermissionService userPermissionService)
         {
-            _unitOfWork = unitOfWork;
-            _userManager = userManager;
+            _priorityService = priorityService;
+            _userPermissionService = userPermissionService;
         }
 
         public IActionResult Index()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity!;
-            return View(Helper.GetUserPermission(_unitOfWork, claimsIdentity));
+            UserPermissionViewModel viewModel = new UserPermissionViewModel
+            {
+                UserPermissions = _userPermissionService.GetUserPermission(claimsIdentity).ToList()
+            };
+            return View(viewModel);
         }
-
 
         public IActionResult New()
         {
@@ -50,20 +54,19 @@ namespace TaskPilot.Web.Controllers
                         UpdatedAt = DateTime.Now,
                     };
 
-                    _unitOfWork.Priority.Add(priority);
+                    _priorityService.CreatePriority(priority);
                     TempData["SuccessMsg"] = Message.PRIOR_CREATION;
                 }
                 else
                 {
-                    Priorities priorityToEdit = _unitOfWork.Priority.Get(p => p.Id == viewModel.Id);
+                    Priorities priorityToEdit = _priorityService.GetPrioritiesById(viewModel.Id.Value);
                     priorityToEdit.Description = viewModel.Name!;
                     priorityToEdit.UpdatedAt = DateTime.Now;
                     priorityToEdit.ColorCode = viewModel.ColorCode!;
 
-                    _unitOfWork.Priority.Update(priorityToEdit);
+                    _priorityService.UpdatePriority(priorityToEdit);
                     TempData["SuccessMsg"] = priorityToEdit.Description + Message.PRIOR_UPDATE;
                 }
-                _unitOfWork.Save();
                 return RedirectToAction("Index", "Priority");
             }
             TempData["ErrorMsg"] = Message.COMMON_ERROR;
@@ -72,7 +75,7 @@ namespace TaskPilot.Web.Controllers
 
         public IActionResult Update(string name)
         {
-            var priorityInDb = _unitOfWork.Priority.Get(p => p.Description == name);
+            var priorityInDb = _priorityService.GetPrioritiesByName(name);
             EditPriorityViewModel viewModel = new EditPriorityViewModel
             {
                 Id = priorityInDb.Id,
@@ -91,27 +94,25 @@ namespace TaskPilot.Web.Controllers
                 for (int i = 0; i < priority.Length; i++)
                 {
                     var priorityId = priority[i];
-                    priorityToDelete.Add(_unitOfWork.Priority.Get(p => p.Id == priorityId));
+                    priorityToDelete.Add(_priorityService.GetPrioritiesById(priorityId));
                 }
             }
 
-            if (priorityToDelete != null)
+            if (priorityToDelete.Any())
             {
                 foreach (var priorities in priorityToDelete)
                 {
-                    if (_unitOfWork.Tasks.GetAll().Any(s => s.PriorityId == priorities.Id))
+                    if (_priorityService.CheckIfPriorityIsInUse(priorities))
                     {
                         TempData["ErrorMsg"] = Message.PRIOR_DELETION_FAIL;
                         return Json(Url.Action("Index", "Priority"));
                     }
                     else
                     {
-                        _unitOfWork.Priority.Remove(priorities);
+                        _priorityService.DeletePriority(priorities);
                     }
                 }
             }
-
-            _unitOfWork.Save();
             TempData["SuccessMsg"] = priority.Length + Message.PRIOR_DELETION;
             return Json(Url.Action("Index", "Priority"));
         }
