@@ -15,10 +15,10 @@ namespace TaskPilot.Web.Controllers
     [Authorize(Policy = "CustomPolicy")]
     public class ProfileController : Controller
     {
-        private IUnitOfWork _unitOfWork;
-        private UserManager<ApplicationUser> _userManager;
-        private ISmsSender _smsSender;
-        private IEmailSender _emailSender;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ISmsSender _smsSender;
+        private readonly IEmailSender _emailSender;
 
         public ProfileController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, ISmsSender smsSender, IEmailSender emailSender)
         {

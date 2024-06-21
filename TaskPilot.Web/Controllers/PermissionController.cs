@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Security;
 using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Application.Common.Utility;
+using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
 using TaskPilot.Web.ViewModels;
 
@@ -8,11 +10,13 @@ namespace TaskPilot.Web.Controllers
 {
     public class PermissionController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IPermissionService _permissionService;
+        private readonly IFeatureService _featureService;
 
-        public PermissionController(IUnitOfWork unitOfWork)
+        public PermissionController(IPermissionService permissionService, IFeatureService featureService)
         {
-            _unitOfWork = unitOfWork;
+            _permissionService = permissionService;
+            _featureService = featureService;
         }
 
         public IActionResult Index()
@@ -24,7 +28,7 @@ namespace TaskPilot.Web.Controllers
         {
             EditPermissionViewModel viewModel = new EditPermissionViewModel
             {
-                Features = _unitOfWork.Features.GetAll().ToList()
+                Features = _featureService.GetAllFeatures().ToList()
             };
 
             return View(viewModel);
@@ -44,22 +48,21 @@ namespace TaskPilot.Web.Controllers
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
                         FeaturesId = viewModel.FeatureId,
-                        Features = _unitOfWork.Features.Get(f => f.Id == viewModel.FeatureId)
+                        Features = _featureService.GetFeaturesById(viewModel.FeatureId)
                     };
+                    _permissionService.CreatePermission(permission);
                     TempData["SuccessMsg"] = Message.PERMIT_CREATION;
-                    _unitOfWork.Permissions.Add(permission);
                 }
                 else
                 {
-                    Permission permissionToEdit = _unitOfWork.Permissions.Get(p => p.Name == viewModel.Name);
+                    Permission permissionToEdit = _permissionService.GetPermissionById(viewModel.Id.Value);
                     permissionToEdit.Name = viewModel.Name!;
                     permissionToEdit.UpdatedAt = DateTime.Now;
 
-                    _unitOfWork.Permissions.Update(permissionToEdit);
+                    _permissionService.UpdatePermission(permissionToEdit);
                     TempData["SuccessMsg"] = permissionToEdit.Name + Message.PERMIT_UPDATE;
 
                 }
-                _unitOfWork.Save();
                 return RedirectToAction("Index", "Permission");
             }
             TempData["ErrorMsg"] = Message.COMMON_ERROR;
