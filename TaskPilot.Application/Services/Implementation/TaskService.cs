@@ -59,7 +59,7 @@ namespace TaskPilot.Application.Services.Implementation
 
         public void DeleteRangeTasks(IEnumerable<Tasks> tasks)
         {
-            _unitOfWork.Features.RemoveRange(tasks);
+            _unitOfWork.Tasks.RemoveRange(tasks);
             _unitOfWork.Save();
         }
 

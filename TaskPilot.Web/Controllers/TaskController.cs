@@ -4,9 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Text;
-using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Application.Common.Utility;
-using TaskPilot.Application.Services.Implementation;
 using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
 using TaskPilot.Web.ViewModels;
@@ -394,7 +392,7 @@ namespace TaskPilot.Web.Controllers
                     }
                 }
             }
-            TempData["SuccessMsg"] = taskId.Length + Message.TASK_CLOSED;          
+            TempData["SuccessMsg"] = taskId.Length + Message.TASK_CLOSED;
             return Json(Url.Action("Index", "Task"));
         }
 
@@ -475,7 +473,7 @@ namespace TaskPilot.Web.Controllers
                         StatusList = _statusService.GetAllStatuses().ToList(),
                         PriorityId = priority != null ? priority.Id : null,
                         StatusId = status != null ? status.Id : null,
-                        UserId = assignee != null ? assignee.Id: null,
+                        UserId = assignee != null ? assignee.Id : null,
                     });
 
                 }
