@@ -8,5 +8,6 @@ namespace TaskPilot.Application.Services.Interface
 
         IEnumerable<Tasks> GetNotClosedTaskSortByCreatedDateInDescFilterByUserId(string userId);
 
+        bool IsUserHoldingTask(string userId);
     }
 }

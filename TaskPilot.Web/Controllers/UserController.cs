@@ -16,24 +16,31 @@ namespace TaskPilot.Web.Controllers
     [Authorize(Policy = "CustomPolicy")]
     public class UserController : Controller
     {
-        private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailSender _emailSender;
-
+        private readonly IUserPermissionService _userPermissionService;
+        private readonly ITaskService _taskService;
+        private readonly INotificationService _notificationService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
 
-        public UserController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IWebHostEnvironment webHostEnvironment, IEmailSender emailSender)
+        public UserController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IEmailSender emailSender, RoleManager<ApplicationRole> roleManager, IUserPermissionService userPermissionService, ITaskService taskService, INotificationService notificationService)
         {
-            _unitOfWork = unitOfWork;
             _userManager = userManager;
-            _webHostEnvironment = webHostEnvironment;
             _emailSender = emailSender;
+            _roleManager = roleManager;
+            _userPermissionService = userPermissionService;
+            _taskService = taskService;
+            _notificationService = notificationService;
         }
 
         public IActionResult Index()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity!;
-            return View(Helper.GetUserPermission(_unitOfWork, claimsIdentity));
+            UserPermissionViewModel viewModel = new UserPermissionViewModel
+            {
+                UserPermissions = _userPermissionService.GetUserPermission(claimsIdentity).ToList()
+            };
+            return View(viewModel);
         }
 
         public IActionResult New()
@@ -48,7 +55,7 @@ namespace TaskPilot.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                bool userExistInDB = _unitOfWork.Users.Get(u => u.Email == viewModel.Email) != null;
+                bool userExistInDB = await _userManager.FindByEmailAsync(viewModel.Email!) != null;
 
                 if (!userExistInDB)
                 {
@@ -85,7 +92,7 @@ namespace TaskPilot.Web.Controllers
 
                         using (StreamReader reader = new(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "template", "AccountCreation.html")))
                         {
-                            body = reader.ReadToEnd();
+                            body = await reader.ReadToEndAsync();
                         }
 
                         body = body.Replace("{Content}", "Account Creation");
@@ -103,12 +110,12 @@ namespace TaskPilot.Web.Controllers
             return View(viewModel);
         }
 
-        public IActionResult Update(string username)
+        public async Task<IActionResult> Update(string username)
         {
-            var user = _unitOfWork.Users.Get(u => u.UserName == username);
+            var user = await _userManager.FindByNameAsync(username);
             EditUserViewModel viewModel = new EditUserViewModel
             {
-                UserId = user.Id,
+                UserId = user!.Id,
                 UserName = username,
                 Email = user.Email,
                 FirstName = user.FirstName,
@@ -118,49 +125,48 @@ namespace TaskPilot.Web.Controllers
             return View("New", viewModel);
         }
 
-        public IActionResult Delete(string[] userName)
+        public async Task<IActionResult> Delete(string[] userName)
         {
             var userToDelete = new List<ApplicationUser>();
-            if (userName.Count() > 0)
+            if (userName.Length > 0)
             {
                 for (int i = 0; i < userName.Length; i++)
                 {
                     var uName = userName[i];
-                    userToDelete.Add(_unitOfWork.Users.Get(u => u.UserName == uName));
+                    userToDelete.Add(await _userManager.FindByNameAsync(uName!));
                 }
 
                 foreach (var user in userToDelete)
                 {
-                    if (_unitOfWork.Tasks.GetAll().Any(u => u.AssignToId == user.Id))
+                    if (_taskService.IsUserHoldingTask(user.Id))
                     {
                         TempData["ErrorMsg"] = Message.USER_DELETION_FAIL;
                         return BadRequest(new { data = Url.Action("Index", "User") });
                     }
                     else
                     {
-                        var notifInUser = _unitOfWork.Notification.GetAll().Where(u => u.UserId == user.Id).ToList();
-                        if (notifInUser.Count() > 0)
+                        var notifInUser = _notificationService.GetNotificationByUserId(user.Id);
+                        if (notifInUser.Any())
                         {
-                            _unitOfWork.Notification.RemoveRange(notifInUser);
+                            _notificationService.DeleteAllNotification(notifInUser);
                         }
-                        _unitOfWork.Users.Remove(user);
+                        await _userManager.DeleteAsync(user);
                     }
                 }
             }
-            _unitOfWork.Save();
             TempData["SuccessMsg"] = userName.Length + Message.USER_DELETION;
             return Json(Url.Action("Index", "User"));
         }
 
         public async Task<ActionResult> AssignRole(string username)
         {
-            var user = _unitOfWork.Users.GetAllInclude(u => u.UserName == username, "UserRoles").First();
-            var userCurrentRole = await _userManager.GetRolesAsync(user);
+            var user = await _userManager.FindByNameAsync(username);
+            var userCurrentRole = await _userManager.GetRolesAsync(user!);
 
             AssignRoleViewModel viewModel = new AssignRoleViewModel
             {
-                RoleToSelect = _unitOfWork.Roles.GetAll().ToList(),
-                Username = user.UserName,
+                RoleToSelect = _roleManager.Roles.ToList(),
+                Username = user!.UserName,
                 CurrentUserRole = userCurrentRole[0]
             };
 
@@ -176,18 +182,19 @@ namespace TaskPilot.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignRole(AssignRoleViewModel viewModel)
         {
-            var user = _unitOfWork.Users.Get(u => u.UserName == viewModel.Username);
-            var role = _unitOfWork.Roles.Get(r => r.Id == viewModel.RoleId);
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByNameAsync(viewModel.Username!);
+                var role = await _roleManager.FindByIdAsync(viewModel.RoleId!);
 
-            await _userManager.RemoveFromRoleAsync(user, viewModel.CurrentUserRole!);
-            await _userManager.AddToRoleAsync(user, role.Name!);
+                await _userManager.RemoveFromRoleAsync(user!, viewModel.CurrentUserRole!);
+                await _userManager.AddToRoleAsync(user!, role!.Name!);
 
-            user.UpdatedAt = DateTime.Now;
-            _unitOfWork.Users.Update(user);
+                user!.UpdatedAt = DateTime.Now;
+                await _userManager.UpdateAsync(user);
 
-            _unitOfWork.Save();
-
-            TempData["SuccessMsg"] = user.UserName + "'s Role Updated From " + viewModel.CurrentUserRole + " To " + role.Name;
+                TempData["SuccessMsg"] = user.UserName + "'s Role Updated From " + viewModel.CurrentUserRole + " To " + role.Name;
+            }
             return RedirectToAction("Index", "User");
         }
 

@@ -1,6 +1,7 @@
 ﻿using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
+using Vonage.Users;
 
 namespace TaskPilot.Application.Services.Implementation
 {
@@ -23,6 +24,9 @@ namespace TaskPilot.Application.Services.Implementation
             return _unitOfWork.Tasks.GetAllInclude(null, "Status,Priority,AssignFrom,AssignTo");
         }
 
-
+        public bool IsUserHoldingTask(string userId)
+        {
+            return _unitOfWork.Tasks.GetAll().Any(u => u.AssignToId == userId);
+        }
     }
 }
