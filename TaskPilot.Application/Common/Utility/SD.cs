@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TaskPilot.Application.Common.Utility
+﻿namespace TaskPilot.Application.Common.Utility
 {
     public static class SD
     {

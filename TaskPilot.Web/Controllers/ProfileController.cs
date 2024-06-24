@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Text;
 using TaskPilot.Application.Common.Interfaces;
@@ -17,25 +18,25 @@ namespace TaskPilot.Web.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly ISmsSender _smsSender;
         private readonly IEmailSender _emailSender;
 
-        public ProfileController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, ISmsSender smsSender, IEmailSender emailSender)
+        public ProfileController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, ISmsSender smsSender, IEmailSender emailSender, RoleManager<ApplicationRole> roleManager)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _smsSender = smsSender;
             _emailSender = emailSender;
+            _roleManager = roleManager;
         }
 
         public async Task<IActionResult> Index()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity!;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-
-            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
-            var currentUserRole = await _userManager.GetRolesAsync(currentUser);
-            var roles = _unitOfWork.Roles.GetAllInclude(r => r.Name == currentUserRole[0], "Permissions").Single();
+            var username = User.Identity!.Name;
+            var currentUser = await _userManager.FindByNameAsync(username!);
+            var currentUserRole = await _userManager.GetRolesAsync(currentUser!);
+            var roles = await _roleManager.Roles.Include("Permissions").FirstOrDefaultAsync(r => r.Name == currentUserRole[0]);
             var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
 
             EditProfileViewModel viewModel = new EditProfileViewModel

@@ -1,19 +1,13 @@
 ﻿using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
-using System.Globalization;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Application.Common.Utility;
 using TaskPilot.Domain.Entities;
-using TaskPilot.Infrastructure.Repository;
 using TaskPilot.Web.ViewModels;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static Vonage.ProactiveConnect.Lists.SyncStatus;
 
 namespace TaskPilot.Web.Controllers
 {
@@ -341,7 +335,8 @@ namespace TaskPilot.Web.Controllers
                     taskToUpdate.Updated = DateTime.Now;
                     _unitOfWork.Tasks.Update(taskToUpdate);
                     _unitOfWork.Save();
-                }else
+                }
+                else
                 {
                     TempData["ErrorMsg"] = Message.TASK_ALREADY_CLOSED;
                     return RedirectToAction("Detail", "Task", new { Id = Id });
@@ -385,7 +380,8 @@ namespace TaskPilot.Web.Controllers
 
                         task.Updated = DateTime.Now;
                         _unitOfWork.Tasks.Update(task);
-                    }else
+                    }
+                    else
                     {
                         TempData["ErrorMsg"] = Message.TASK_ALREADY_CLOSED;
                         return Json(Url.Action("Index", "Task"));
@@ -457,8 +453,8 @@ namespace TaskPilot.Web.Controllers
                     var line = csvReader.ReadLine();
                     var value = line!.Split(',');
 
-                    var status = _unitOfWork.Status.Get(r => r.Description == value[3])  != null ? _unitOfWork.Status.Get(r => r.Description == value[3]) : null;
-                    var priority = _unitOfWork.Priority.Get(r => r.Description == value[2])  != null ? _unitOfWork.Priority.Get(r => r.Description == value[2]) : null;
+                    var status = _unitOfWork.Status.Get(r => r.Description == value[3]) != null ? _unitOfWork.Status.Get(r => r.Description == value[3]) : null;
+                    var priority = _unitOfWork.Priority.Get(r => r.Description == value[2]) != null ? _unitOfWork.Priority.Get(r => r.Description == value[2]) : null;
                     var assignee = _unitOfWork.Users.Get(u => u.UserName == value[5]) != null ? _unitOfWork.Users.Get(u => u.UserName == value[5]) : null;
 
 
@@ -473,14 +469,15 @@ namespace TaskPilot.Web.Controllers
                         AssigeeList = _unitOfWork.Users.GetAll().ToList(),
                         PriorityList = _unitOfWork.Priority.GetAll().ToList(),
                         StatusList = _unitOfWork.Status.GetAll().ToList(),
-                        PriorityId = priority != null ? priority.Id : null,  
-                        StatusId = status != null ? status.Id : null,  
-                        UserId = assignee != null ? assignee.Id : null,  
+                        PriorityId = priority != null ? priority.Id : null,
+                        StatusId = status != null ? status.Id : null,
+                        UserId = assignee != null ? assignee.Id : null,
                     });
 
                 }
                 TempData["SuccessMsg"] = Message.TASK_READ_CSV;
-            }else
+            }
+            else
             {
                 TempData["ErrorMsg"] = Message.TASK_IMPORT_FAIL;
             }
@@ -540,7 +537,8 @@ namespace TaskPilot.Web.Controllers
                 var contentType = blobClient.GetProperties().Value.ContentType;
                 return File(memoryStream, contentType, "ImportTemplate.csv");
 
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return RedirectToAction("ImportTask", "Task");
@@ -550,7 +548,7 @@ namespace TaskPilot.Web.Controllers
         private List<Tasks> GetRecurringTask(EditTaskViewModel viewModel, ApplicationUser currentUser)
         {
             List<Tasks> tasks = new List<Tasks>();
-            switch(viewModel.RecurringType)
+            switch (viewModel.RecurringType)
             {
                 case "Daily":
                     for (int i = 0; i <= viewModel.FrequencyCount; i++)

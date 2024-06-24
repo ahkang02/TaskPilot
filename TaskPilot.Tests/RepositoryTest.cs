@@ -1,15 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Infrastructure.Data;
 using TaskPilot.Infrastructure.Repository;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TaskPilot.Tests
 {
@@ -44,7 +37,7 @@ namespace TaskPilot.Tests
             _mockDbSet.Setup(m => m.Add(It.IsAny<TestEntity>())).Verifiable();
             _mockDbSet.Setup(m => m.Update(It.IsAny<TestEntity>())).Verifiable();
             _mockDbSet.Setup(m => m.Remove(It.IsAny<TestEntity>())).Verifiable();
-            
+
             _mockContext.Setup(c => c.Set<TestEntity>()).Returns(_mockDbSet.Object);
             _repository = new Repository<TestEntity>(_mockContext.Object);
             _unitOfWork = new UnitOfWork(_mockContext.Object);
@@ -156,7 +149,7 @@ namespace TaskPilot.Tests
         public void DeleteEntity_ShouldRemoveEntityToContext()
         {
 
-           var entityToDelete = _repository.Get(t => t.Id == 1);
+            var entityToDelete = _repository.Get(t => t.Id == 1);
             _repository.Remove(entityToDelete);
             _mockDbSet.Verify(m => m.Remove(entityToDelete), Times.Once());
         }

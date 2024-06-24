@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Net.Mail;
@@ -11,10 +9,8 @@ using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Application.Common.Utility;
 using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
-using TaskPilot.Infrastructure.Repository;
 using TaskPilot.Web.ViewModels;
-using Vonage.Users;
-                                                                                                                                                                                                                                                                                                                        
+
 namespace TaskPilot.Web.Controllers
 {
     [Authorize(Policy = "CustomPolicy")]

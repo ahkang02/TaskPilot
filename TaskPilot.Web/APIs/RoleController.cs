@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TaskPilot.Application.Common.Interfaces;
-using TaskPilot.Infrastructure.Repository;
 using TaskPilot.Web.DTOs;
 
 namespace TaskPilot.Web.APIs

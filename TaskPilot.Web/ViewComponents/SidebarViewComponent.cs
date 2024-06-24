@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Domain.Entities;
-using TaskPilot.Web.ViewModels;
 
 namespace TaskPilot.Web.ViewComponents
 {

@@ -1,10 +1,8 @@
 using Azure.Storage.Blobs;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TaskPilot.Application.Common.Interfaces;
-using TaskPilot.Application.Common.Utility;
 using TaskPilot.Application.Services.Implementation;
 using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
@@ -37,6 +35,7 @@ namespace TaskPilot.Web
             builder.Services.AddScoped<INotificationService, NotificationService>();
             builder.Services.AddScoped<IPermissionService, PermissionService>();
             builder.Services.AddScoped<IFeatureService, FeatureService>();
+            builder.Services.AddScoped<ITaskService, TaskService>();
 
             builder.Services.AddScoped<IAuthorizationHandler, CustomAuthorizeHandler>();
             builder.Services.AddSingleton(x => new BlobServiceClient(builder.Configuration.GetConnectionString("StorageAccount")));
@@ -101,7 +100,7 @@ namespace TaskPilot.Web
                 pipeline.MinifyCssFiles();
                 pipeline.MinifyJsFiles();
             });
- 
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

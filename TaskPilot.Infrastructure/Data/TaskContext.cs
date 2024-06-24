@@ -1,13 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 using TaskPilot.Domain.Entities;
 
 namespace TaskPilot.Infrastructure.Data
@@ -21,7 +13,7 @@ namespace TaskPilot.Infrastructure.Data
 
         public TaskContext()
         {
-            
+
         }
         public DbSet<Tasks> Tasks { get; set; }
 

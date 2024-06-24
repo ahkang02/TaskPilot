@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Web.DTOs;
 
@@ -14,7 +12,7 @@ namespace TaskPilot.Web.APIs
 
         public PermissionController(IUnitOfWork unitOfWork)
         {
-            _unitOfWork = unitOfWork;    
+            _unitOfWork = unitOfWork;
         }
 
         public IEnumerable<PermissionDTO> GetPermissions()

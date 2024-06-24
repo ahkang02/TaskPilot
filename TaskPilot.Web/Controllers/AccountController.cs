@@ -2,9 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using System.Security.Claims;
 using System.Text;
-using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Application.Common.Utility;
 using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
@@ -292,7 +290,8 @@ namespace TaskPilot.Web.Controllers
             if (result.Succeeded)
             {
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
-            }else if(result.Errors.Any(e => e.Code == "InvalidToken"))
+            }
+            else if (result.Errors.Any(e => e.Code == "InvalidToken"))
             {
                 ViewBag.ErrorMessage = "The reset password link has expired. Please request a new reset password email.";
                 return View("Error");

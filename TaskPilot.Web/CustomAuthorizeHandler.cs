@@ -16,7 +16,8 @@ namespace TaskPilot.Web
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, CustomRequirement requirement)
         {
-            if(!context.User.Identity!.IsAuthenticated) { 
+            if (!context.User.Identity!.IsAuthenticated)
+            {
                 context.Fail();
                 return;
             }
@@ -36,22 +37,22 @@ namespace TaskPilot.Web
             {
                 foreach (var permissionRole in permission.Roles)
                 {
-                    if (permissionRole.Id ==  userRoles.Id)
+                    if (permissionRole.Id == userRoles.Id)
                     {
                         permissionInRole.Add(permission);
                     }
                 }
             }
 
-            foreach(var userPermission in permissionInRole)
+            foreach (var userPermission in permissionInRole)
             {
-                if(userPermission.Features.Name == controller)
+                if (userPermission.Features.Name == controller)
                 {
-                    if(userPermission.Name == action)
+                    if (userPermission.Name == action)
                     {
                         context.Succeed(requirement);
                     }
-                } 
+                }
             }
 
         }

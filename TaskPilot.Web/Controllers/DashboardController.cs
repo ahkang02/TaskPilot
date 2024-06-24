@@ -1,31 +1,29 @@
-﻿ using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using TaskPilot.Application.Common.Interfaces;
+using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
 using TaskPilot.Web.ViewModels;
-using TaskPilot.Application.Common;
 
 namespace TaskPilot.Web.Controllers
 {
     public class DashboardController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ITaskService _taskService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public DashboardController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
+        public DashboardController(UserManager<ApplicationUser> userManager, ITaskService taskService)
         {
-            _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _taskService = taskService;
         }
 
         [Authorize(Policy = "CustomPolicy")]
         public async Task<IActionResult> Index()
         {
             var username = User.Identity!.Name;
-            var currentUser = _unitOfWork.Users.Get(u => u.UserName == username);
-            var userTaskList = _unitOfWork.Tasks.GetAllInclude(u => u.AssignToId == currentUser.Id && u.Status!.Description != "Closed", "Status,Priority,AssignFrom,AssignTo").OrderByDescending(u => u.Created).ToList();
+            var currentUser = await _userManager.FindByNameAsync(username!);
+            var userTaskList = _taskService.GetNotClosedTaskSortByCreatedDateInDescFilterByUserId(currentUser!.Id).ToList();
 
             Tasks? overDueTask = null;
             List<TaskDetailViewModel> taskDetail = new List<TaskDetailViewModel>();
@@ -50,7 +48,7 @@ namespace TaskPilot.Web.Controllers
             foreach (var task in userTaskList)
             {
                 var userRole = await _userManager.GetRolesAsync(task.AssignFrom!);
-              
+
                 taskDetail.Add(new TaskDetailViewModel
                 {
                     Id = task.Id,

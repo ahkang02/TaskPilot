@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
 using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Web.DTOs;
 
@@ -19,7 +17,7 @@ namespace TaskPilot.Web.APIs
 
         public IEnumerable<TaskDTO> GetTasks()
         {
-            var task = _unitOfWork.Tasks.GetAllInclude(null, includeProperties:"Status,Priority,AssignTo");
+            var task = _unitOfWork.Tasks.GetAllInclude(null, includeProperties: "Status,Priority,AssignTo");
             List<TaskDTO> tasks = new List<TaskDTO>();
             foreach (var t in task)
             {

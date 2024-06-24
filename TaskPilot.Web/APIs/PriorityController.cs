@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Web.DTOs;
 
@@ -18,7 +17,7 @@ namespace TaskPilot.Web.APIs
 
         public IEnumerable<PriorityDTO> GetPriorities()
         {
-            var priorities = _unitOfWork.Priority.GetAll() ;
+            var priorities = _unitOfWork.Priority.GetAll();
             List<PriorityDTO> priorityDTOs = new List<PriorityDTO>();
             foreach (var prior in priorities)
             {

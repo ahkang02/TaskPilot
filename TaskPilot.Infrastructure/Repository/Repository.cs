@@ -1,10 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Infrastructure.Data;
 
@@ -139,7 +134,8 @@ namespace TaskPilot.Infrastructure.Repository
             try
             {
                 dbSet.Remove(entity);
-            }catch (DbUpdateException ex)
+            }
+            catch (DbUpdateException ex)
             {
                 Console.WriteLine($"Error in Remove method: {ex.Message}");
                 throw;
@@ -156,7 +152,8 @@ namespace TaskPilot.Infrastructure.Repository
             try
             {
                 dbSet.RemoveRange(entities);
-            }catch (DbUpdateException ex)
+            }
+            catch (DbUpdateException ex)
             {
                 Console.WriteLine($"Error in RemoveRange method: {ex.Message}");
                 throw;

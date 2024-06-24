@@ -11,6 +11,6 @@ namespace TaskPilot.Web.ViewModels
 
         [Required]
         [Display(Name = "Color Code")]
-        public string? ColorCode {  get; set; }
+        public string? ColorCode { get; set; }
     }
 }

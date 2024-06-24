@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
 
@@ -30,7 +29,8 @@ namespace TaskPilot.Web.Controllers
             if (taskId == null)
             {
                 return Redirect(Request.Headers["Referer"].ToString());
-            }else
+            }
+            else
             {
                 return RedirectToAction("Detail", "Task", new { id = taskId });
             }

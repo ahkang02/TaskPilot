@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -86,7 +85,7 @@ namespace TaskPilot.Web.Controllers
 
         public IActionResult Update(string name)
         {
-            
+
             var roleInDB = _roleManager.FindByNameAsync(name).GetAwaiter().GetResult()!;
             EditRoleViewModel viewModel = new EditRoleViewModel
             {
@@ -117,8 +116,9 @@ namespace TaskPilot.Web.Controllers
                         if (flag)
                         {
                             TempData["ErrorMsg"] = Message.ROLE_DELETION_FAIL;
-                            return BadRequest(new {data = Url.Action("Index", "Role")});
-                        }else
+                            return BadRequest(new { data = Url.Action("Index", "Role") });
+                        }
+                        else
                         {
                             await _roleManager.DeleteAsync(role);
                         }

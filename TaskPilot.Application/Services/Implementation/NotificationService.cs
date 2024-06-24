@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TaskPilot.Application.Common.Interfaces;
+﻿using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
 

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TaskPilot.Application.Common.Utility
+﻿namespace TaskPilot.Application.Common.Utility
 {
     public static class Message
     {
@@ -53,7 +47,7 @@ namespace TaskPilot.Application.Common.Utility
         public const string TASK_NOTIF_CREATION = "A new task has been created for you";
         public const string TASK_CREATION_RECURR = " Recurring Task's has been created successfully";
         public const string TASK_UPDATE = " has been updated";
-        public const string TASK_UPDATE_FAIL = "Error: Oops! It seems that you're trying to edit a task that has dependent task that yet to complete"; 
+        public const string TASK_UPDATE_FAIL = "Error: Oops! It seems that you're trying to edit a task that has dependent task that yet to complete";
         public const string TASK_DELETION = " tasks has been deleted successfully";
         public const string TASK_CLOSED = "Tasks has been closed";
         public const string TASK_DEPENDENCY = "Dependency assigned successfully";

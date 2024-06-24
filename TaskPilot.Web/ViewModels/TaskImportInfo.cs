@@ -21,9 +21,9 @@ namespace TaskPilot.Web.ViewModels
 
         public Guid? PriorityId { get; set; }
 
-        public List<Priorities>? PriorityList {  get; set; }
+        public List<Priorities>? PriorityList { get; set; }
 
-       
+
         public string? Status { get; set; }
 
         public Guid? StatusId { get; set; }
@@ -35,6 +35,6 @@ namespace TaskPilot.Web.ViewModels
 
         public string? UserId { get; set; }
 
-        public List<ApplicationUser>? AssigeeList {  get; set; }
+        public List<ApplicationUser>? AssigeeList { get; set; }
     }
 }
