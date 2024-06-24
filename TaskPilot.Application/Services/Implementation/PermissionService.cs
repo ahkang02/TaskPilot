@@ -50,9 +50,17 @@ namespace TaskPilot.Application.Services.Implementation
             return _unitOfWork.Permissions.Get(p => p.Id == Id);
         }
 
+        // ...
+
         public IEnumerable<Permission> GetPermissionInRole(ApplicationRole role)
         {
-            return _unitOfWork.Permissions.GetAllInclude(null, "Roles").Where(r => r.Roles == role);
+            var permissions = _unitOfWork.Permissions.GetAllInclude(null, "Roles,Features");
+            return permissions.AsEnumerable().Where(p => p.Roles.Contains(role));
+        }
+
+        public IEnumerable<Permission> GetAllFeaturePermission()
+        {
+            return _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
         }
     }
 }

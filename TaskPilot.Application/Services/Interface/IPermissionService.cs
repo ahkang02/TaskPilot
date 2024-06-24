@@ -8,6 +8,8 @@ namespace TaskPilot.Application.Services.Interface
 
         IEnumerable<Permission> GetAllInclude(string includeProperties);
 
+        IEnumerable<Permission> GetAllFeaturePermission();
+
         Permission GetPermissionByName(string name);
 
         Permission GetPermissionById(Guid Id);

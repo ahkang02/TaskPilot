@@ -16,48 +16,46 @@ namespace TaskPilot.Web.Controllers
     [Authorize(Policy = "CustomPolicy")]
     public class ProfileController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IPermissionService _permissionService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly ISmsSender _smsSender;
         private readonly IEmailSender _emailSender;
 
-        public ProfileController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, ISmsSender smsSender, IEmailSender emailSender, RoleManager<ApplicationRole> roleManager)
+        public ProfileController(UserManager<ApplicationUser> userManager, ISmsSender smsSender, IEmailSender emailSender, RoleManager<ApplicationRole> roleManager, IPermissionService permissionService)
         {
-            _unitOfWork = unitOfWork;
             _userManager = userManager;
             _smsSender = smsSender;
             _emailSender = emailSender;
             _roleManager = roleManager;
+            _permissionService = permissionService;
+        }
+
+        private async Task<ApplicationUser?> GetCurrentUser()
+        {
+           var username = User.Identity!.Name;
+           return await _userManager.FindByNameAsync(username!) ?? null;
         }
 
         public async Task<IActionResult> Index()
         {
-            var username = User.Identity!.Name;
-            var currentUser = await _userManager.FindByNameAsync(username!);
+            var currentUser = await GetCurrentUser();
             var currentUserRole = await _userManager.GetRolesAsync(currentUser!);
             var roles = await _roleManager.Roles.Include("Permissions").FirstOrDefaultAsync(r => r.Name == currentUserRole[0]);
-            var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
+            var permissions = _permissionService.GetPermissionInRole(roles!);
 
             EditProfileViewModel viewModel = new EditProfileViewModel
             {
-                Email = currentUser.Email!,
+                Email = currentUser!.Email!,
                 FirstName = currentUser.FirstName,
                 Id = currentUser.Id,
                 LastLogin = currentUser.LastLogin,
                 LastName = currentUser.LastName,
                 Username = currentUser.UserName!,
                 UserRole = currentUserRole[0],
-                UserPermissions = new List<Permission>()
+                UserPermissions = permissions.ToList()
             };
 
-            foreach (var permission in permissions)
-            {
-                if (permission.Roles.Any(r => r.Id == roles.Id))
-                {
-                    viewModel.UserPermissions.Add(permission);
-                }
-            }
             return View(viewModel);
         }
 
@@ -65,77 +63,64 @@ namespace TaskPilot.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditDetail(EditProfileViewModel viewModel)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity!;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-
-            if (claim != null)
+            if (ModelState.IsValid)
             {
+                var userInDb = await _userManager.FindByIdAsync(viewModel.Id);
 
-                var currentUser = _unitOfWork.Users.Get(u => u.Id == claim.Value);
-                var currentUserRole = await _userManager.GetRolesAsync(currentUser);
-                var roles = _unitOfWork.Roles.GetAllInclude(r => r.Name == currentUserRole[0], "Permissions").Single();
-                var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
-
-                if (ModelState.IsValid)
+                if (userInDb!.UserName != viewModel.Username)
                 {
-                    var userInDb = _unitOfWork.Users.Get(u => u.Id == viewModel.Id);
-
-                    if (userInDb.UserName != viewModel.Username)
+                    bool isUserNameExist = await _userManager.FindByNameAsync(viewModel.Username!) != null;
+                    if (isUserNameExist)
                     {
-                        bool isUserNameExist = _unitOfWork.Users.Get(u => u.UserName == viewModel.Username) != null;
-                        if (isUserNameExist)
-                        {
-                            TempData["ErrorMsg"] = Message.PROF_USERNAME_EXIST;
-                            viewModel.Username = userInDb.UserName;
-                        }
+                        TempData["ErrorMsg"] = Message.PROF_USERNAME_EXIST;
+                        viewModel.Username = userInDb.UserName;
                     }
-                    else
-                    {
-
-                        if (userInDb.Email != viewModel.Email)
-                        {
-                            var code = await _userManager.GenerateChangeEmailTokenAsync(userInDb, viewModel.Email!);
-                            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                            var callbackUrl = Url.Action("ChangeEmail", "Profile", new { userId = userInDb.Id, viewModel.Email, code }, protocol: Request.Scheme);
-                            string body = string.Empty;
-
-                            using (StreamReader reader = new(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "template", "AccountConfirmation.html")))
-                            {
-                                body = reader.ReadToEnd();
-                            }
-
-                            body = body.Replace("{Content}", "Email Change Request");
-                            body = body.Replace("{ConfirmationLink}", callbackUrl);
-                            body = body.Replace("{UserName}", userInDb.UserName);
-                            await _emailSender.SendEmailAsync(viewModel.Email!, subject: "Confirm your email change request", htmlMessage: body);
-
-                            viewModel.Email = userInDb.Email;
-                        }
-
-                        userInDb.FirstName = viewModel.FirstName!;
-                        userInDb.LastName = viewModel.LastName!;
-                        userInDb.UserName = viewModel.Username;
-                        userInDb.UpdatedAt = DateTime.Now;
-                        _unitOfWork.Users.Update(userInDb);
-                        TempData["SuccessMsg"] = Message.PROF_DETAIL_EDIT;
-                    }
-                    viewModel.UserRole = currentUserRole[0];
-                    viewModel.LastLogin = userInDb.LastLogin;
                 }
                 else
                 {
-                    TempData["ErrorMsg"] = Message.COMMON_ERROR;
+                    if (userInDb.Email != viewModel.Email)
+                    {
+                        var code = await _userManager.GenerateChangeEmailTokenAsync(userInDb, viewModel.Email!);
+                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                        var callbackUrl = Url.Action("ChangeEmail", "Profile", new { userId = userInDb.Id, viewModel.Email, code }, protocol: Request.Scheme);
+                        string body = string.Empty;
+
+                        using (StreamReader reader = new(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "template", "AccountConfirmation.html")))
+                        {
+                            body = await reader.ReadToEndAsync();
+                        }
+
+                        body = body.Replace("{Content}", "Email Change Request");
+                        body = body.Replace("{ConfirmationLink}", callbackUrl);
+                        body = body.Replace("{UserName}", userInDb.UserName);
+                        await _emailSender.SendEmailAsync(viewModel.Email!, subject: "Confirm your email change request", htmlMessage: body);
+
+                        viewModel.Email = userInDb.Email;
+                    }
+
+                    userInDb.FirstName = viewModel.FirstName!;
+                    userInDb.LastName = viewModel.LastName!;
+                    userInDb.UserName = viewModel.Username;
+                    userInDb.UpdatedAt = DateTime.Now;
+                    await _userManager.UpdateAsync(userInDb);
+                    TempData["SuccessMsg"] = Message.PROF_DETAIL_EDIT;
                 }
 
-                viewModel.UserPermissions = new List<Permission>();
-                foreach (var permission in permissions)
-                {
-                    if (permission.Roles.Any(r => r.Id == roles.Id))
-                    {
-                        viewModel.UserPermissions.Add(permission);
-                    }
-                }
             }
+            else
+            {
+                TempData["ErrorMsg"] = Message.COMMON_ERROR;
+            }
+
+            var currentUser = await GetCurrentUser();
+            var currentUserRole = await _userManager.GetRolesAsync(currentUser!);
+            var roles = await _roleManager.Roles.Include("Permissions").FirstOrDefaultAsync(r => r.Name == currentUserRole[0]);
+
+
+            viewModel.UserPermissions = _permissionService.GetPermissionInRole(roles!).ToList();
+            viewModel.UserRole = currentUserRole[0];
+            viewModel.LastLogin = currentUser!.LastLogin;
+
             return View("Index", viewModel);
         }
 
@@ -168,28 +153,16 @@ namespace TaskPilot.Web.Controllers
 
         public async Task<IActionResult> EditPassword()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity!;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-
-            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
-            var currentUserRole = await _userManager.GetRolesAsync(currentUser);
-            var roles = _unitOfWork.Roles.GetAllInclude(r => r.Name == currentUserRole[0], "Permissions").Single();
-            var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
+            var currentUser = await GetCurrentUser();
+            var currentUserRole = await _userManager.GetRolesAsync(currentUser!);
+            var roles = await _roleManager.Roles.Include("Permissions").FirstOrDefaultAsync(r => r.Name == currentUserRole[0]);
+            var permissions = _permissionService.GetPermissionInRole(roles!) ;
 
             EditProfilePasswordViewModel viewModel = new EditProfilePasswordViewModel
             {
-                Id = currentUser.Id,
-                UserPermissions = new List<Permission>()
+                Id = currentUser!.Id,
+                UserPermissions = permissions.ToList()
             };
-
-            foreach (var permission in permissions)
-            {
-                if (permission.Roles.Any(r => r.Id == roles.Id))
-                {
-                    viewModel.UserPermissions.Add(permission);
-                }
-            }
-
 
             return View(viewModel);
         }
@@ -198,19 +171,15 @@ namespace TaskPilot.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditPassword(EditProfilePasswordViewModel viewModel)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity!;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-
             if (ModelState.IsValid)
             {
-                var userInDB = _unitOfWork.Users.Get(u => u.Id == viewModel.Id);
+                var userInDB = await _userManager.FindByIdAsync(viewModel.Id);
                 var result = await _userManager.ChangePasswordAsync(userInDB, viewModel.CurrentPassword!, viewModel.NewPassword!);
-                userInDB.UpdatedAt = DateTime.Now;
 
                 if (result.Succeeded)
                 {
-                    _unitOfWork.Users.Update(userInDB);
-                    _unitOfWork.Save();
+                    userInDB.UpdatedAt = DateTime.Now;
+                    await _userManager.UpdateAsync(userInDB);
                     TempData["SuccessMsg"] = Message.PROF_PASS_EDIT;
                     return RedirectToAction("Index", "Profile");
                 }
@@ -219,44 +188,27 @@ namespace TaskPilot.Web.Controllers
                     TempData["ErrorMsg"] = Message.PROF_PASS_EDIT_FAIL;
                 }
             }
-            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
-            var currentUserRole = await _userManager.GetRolesAsync(currentUser);
-            var roles = _unitOfWork.Roles.GetAllInclude(r => r.Name == currentUserRole[0], "Permissions").Single();
-            var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
-            viewModel.UserPermissions = new List<Permission>();
 
-            foreach (var permission in permissions)
-            {
-                if (permission.Roles.Any(r => r.Id == roles.Id))
-                {
-                    viewModel.UserPermissions.Add(permission);
-                }
-            }
+            var currentUser = await GetCurrentUser();
+            var currentUserRole = await _userManager.GetRolesAsync(currentUser!);
+            var roles = await _roleManager.Roles.Include("Permissions").FirstOrDefaultAsync(r => r.Name == currentUserRole[0]);
+            viewModel.UserPermissions =  _permissionService.GetPermissionInRole(roles!).ToList();
+
             return View("EditPassword", viewModel);
         }
 
         public async Task<IActionResult> EditContact()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity!;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
-            var currentUserRole = await _userManager.GetRolesAsync(currentUser);
-            var roles = _unitOfWork.Roles.GetAllInclude(r => r.Name == currentUserRole[0], "Permissions").Single();
-            var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
+            var currentUser = await GetCurrentUser();
+            var currentUserRole = await _userManager.GetRolesAsync(currentUser!);
+            var roles = await _roleManager.Roles.Include("Permissions").FirstOrDefaultAsync(r => r.Name == currentUserRole[0]);
+            var permissions = _permissionService.GetPermissionInRole(roles!);
 
             EditContactViewModel viewModel = new EditContactViewModel
             {
-                PhoneNumber = currentUser.PhoneNumber == null ? string.Empty : currentUser.PhoneNumber,
-                UserPermissions = new List<Permission>()
+                PhoneNumber = currentUser!.PhoneNumber == null ? string.Empty : currentUser.PhoneNumber,
+                UserPermissions = permissions!.ToList()
             };
-
-            foreach (var permission in permissions)
-            {
-                if (permission.Roles.Any(r => r.Id == roles.Id))
-                {
-                    viewModel.UserPermissions.Add(permission);
-                }
-            }
 
             return View(viewModel);
         }
@@ -265,16 +217,9 @@ namespace TaskPilot.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditContact(EditContactViewModel viewModel)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity!;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
-            var currentUserRole = await _userManager.GetRolesAsync(currentUser);
-            var roles = _unitOfWork.Roles.GetAllInclude(r => r.Name == currentUserRole[0], "Permissions").Single();
-            var permissions = _unitOfWork.Permissions.GetAllInclude(filter: null, includeProperties: "Features,Roles");
-
             if (ModelState.IsValid)
             {
-                var code = await _userManager.GenerateChangePhoneNumberTokenAsync(currentUser, viewModel.PhoneNumber);
+                var code = await _userManager.GenerateChangePhoneNumberTokenAsync(await GetCurrentUser(), viewModel.PhoneNumber);
 
                 if (_smsSender != null)
                 {
@@ -284,23 +229,17 @@ namespace TaskPilot.Web.Controllers
             }
 
             TempData["ErrorMsg"] = Message.COMMON_ERROR;
-            viewModel.UserPermissions = new List<Permission>();
-            foreach (var permission in permissions)
-            {
-                if (permission.Roles.Any(r => r.Id == roles.Id))
-                {
-                    viewModel.UserPermissions.Add(permission);
-                }
-            }
+
+            var currentUser = await GetCurrentUser();
+            var currentUserRole = await _userManager.GetRolesAsync(currentUser!);
+            var roles = await _roleManager.Roles.Include("Permissions").FirstOrDefaultAsync(r => r.Name == currentUserRole[0]);
+            viewModel.UserPermissions = _permissionService.GetPermissionInRole(roles!).ToList();
+
             return View(viewModel);
         }
 
-        public async Task<IActionResult> VerifyPhoneNumber(string phoneNumber)
+        public IActionResult VerifyPhoneNumber(string phoneNumber)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity!;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(currentUser, phoneNumber);
             return phoneNumber == null ? View("Error") : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
         }
 
@@ -310,11 +249,7 @@ namespace TaskPilot.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var claimsIdentity = (ClaimsIdentity)User.Identity!;
-                var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-                var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
-
-                var result = await _userManager.ChangePhoneNumberAsync(currentUser, viewModel.PhoneNumber!, viewModel.Code!);
+                var result = await _userManager.ChangePhoneNumberAsync(await GetCurrentUser(), viewModel.PhoneNumber!, viewModel.Code!);
                 if (result.Succeeded)
                 {
                     TempData["SuccessMsg"] = Message.PROF_CONTACT_EDIT;
