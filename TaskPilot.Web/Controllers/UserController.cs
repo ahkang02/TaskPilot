@@ -23,7 +23,7 @@ namespace TaskPilot.Web.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
 
-        public UserController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IEmailSender emailSender, RoleManager<ApplicationRole> roleManager, IUserPermissionService userPermissionService, ITaskService taskService, INotificationService notificationService)
+        public UserController(UserManager<ApplicationUser> userManager, IEmailSender emailSender, RoleManager<ApplicationRole> roleManager, IUserPermissionService userPermissionService, ITaskService taskService, INotificationService notificationService)
         {
             _userManager = userManager;
             _emailSender = emailSender;

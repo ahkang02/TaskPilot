@@ -6,6 +6,8 @@ using System.Security.Claims;
 using System.Text;
 using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Application.Common.Utility;
+using TaskPilot.Application.Services.Implementation;
+using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
 using TaskPilot.Web.ViewModels;
 
@@ -14,28 +16,46 @@ namespace TaskPilot.Web.Controllers
     [Authorize(Policy = "CustomPolicy")]
     public class TaskController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ITaskService _taskService;
+        private readonly IUserPermissionService _userPermissionService;
+        private readonly INotificationService _notificationService;
+        private readonly IStatusService _statusService;
+        private readonly IPriorityService _priorityService;
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly BlobServiceClient _blobServiceClient;
         private readonly BlobContainerClient _containerClient;
 
-        public TaskController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, BlobServiceClient blobServiceClient)
+        public TaskController(UserManager<ApplicationUser> userManager, BlobServiceClient blobServiceClient, IUserPermissionService userPermissionService, ITaskService taskService, INotificationService notificationService, IStatusService statusService, IPriorityService priorityService)
         {
-            _unitOfWork = unitOfWork;
             _userManager = userManager;
             _blobServiceClient = blobServiceClient;
             _containerClient = _blobServiceClient.GetBlobContainerClient("file-container");
+            _userPermissionService = userPermissionService;
+            _taskService = taskService;
+            _notificationService = notificationService;
+            _statusService = statusService;
+            _priorityService = priorityService;
+        }
+        private async Task<ApplicationUser?> GetCurrentUser()
+        {
+            var username = User.Identity!.Name;
+            return await _userManager.FindByNameAsync(username!) ?? null;
         }
 
         public IActionResult Index()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity!;
-            return View(Helper.GetUserPermission(_unitOfWork, claimsIdentity));
+            UserPermissionViewModel viewModel = new UserPermissionViewModel
+            {
+                UserPermissions = _userPermissionService.GetUserPermission(claimsIdentity).ToList()
+            };
+            return View(viewModel);
         }
 
         public IActionResult Detail(Guid Id)
         {
-            var task = _unitOfWork.Tasks.GetAllInclude(t => t.Id == Id, "Status,Priority,AssignTo,AssignFrom").First();
+            var task = _taskService.GetTasksWithId(Id);
             TaskDetailViewModel viewModel = new TaskDetailViewModel
             {
                 Id = task.Id,
@@ -58,9 +78,9 @@ namespace TaskPilot.Web.Controllers
         {
             EditTaskViewModel viewModel = new EditTaskViewModel
             {
-                PriorityList = _unitOfWork.Priority.GetAll().ToList(),
-                StatusList = _unitOfWork.Status.GetAll().ToList(),
-                AssigneeList = _unitOfWork.Users.GetAll().ToList(),
+                PriorityList = _priorityService.GetAllPriority().ToList(),
+                StatusList = _statusService.GetAllStatuses().ToList(),
+                AssigneeList = _userManager.Users.ToList(),
             };
 
             return View(viewModel);
@@ -68,11 +88,9 @@ namespace TaskPilot.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult New(EditTaskViewModel viewModel)
+        public async Task<IActionResult> New(EditTaskViewModel viewModel)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity!;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
+            var currentUser = await GetCurrentUser();
 
             if (ModelState.IsValid)
             {
@@ -90,12 +108,11 @@ namespace TaskPilot.Web.Controllers
                             Name = viewModel.TaskName!,
                             PriorityId = viewModel.PriorityId.GetValueOrDefault(),
                             StatusId = viewModel.StatusId.GetValueOrDefault(),
-                            AssignFromId = currentUser.Id,
+                            AssignFromId = currentUser!.Id,
                             Updated = DateTime.Now,
                         };
 
-                        _unitOfWork.Tasks.Add(task);
-                        _unitOfWork.Save();
+                        _taskService.CreateTask(task);
 
                         Notifications notif = new Notifications
                         {
@@ -106,18 +123,17 @@ namespace TaskPilot.Web.Controllers
                             TasksId = task.Id
                         };
 
-                        _unitOfWork.Notification.Add(notif);
+                        _notificationService.CreateNotification(notif);
                         TempData["SuccessMsg"] = Message.TASK_CREATION;
                     }
                     else
                     {
-                        List<Tasks> tasks = GetRecurringTask(viewModel, currentUser);
-                        _unitOfWork.Tasks.AddRange(tasks);
-                        _unitOfWork.Save();
+                        List<Tasks> tasks = GetRecurringTask(viewModel, currentUser!);
+                        _taskService.AddRangeTasks(tasks);
 
                         foreach (var task in tasks)
                         {
-                            _unitOfWork.Notification.Add(new Notifications
+                            _notificationService.CreateNotification(new Notifications
                             {
                                 CreatedAt = DateTime.Now,
                                 Status = SD.NEW_NOTIF_STATUS,
@@ -126,7 +142,6 @@ namespace TaskPilot.Web.Controllers
                                 TasksId = task.Id
                             });
                         }
-
                         TempData["SuccessMsg"] = tasks.Count + Message.TASK_CREATION_RECURR;
                     }
                 }
@@ -134,19 +149,21 @@ namespace TaskPilot.Web.Controllers
                 {
                     if (viewModel.DependencyId != null)
                     {
-                        var dependentTask = _unitOfWork.Tasks.GetAllInclude(t => t.Id == viewModel.DependencyId, includeProperties: "Status").First();
+                        var dependentTask = _taskService.GetTasksWithId(viewModel.DependencyId.Value);
 
                         if (dependentTask.Status!.Description != "Closed")
                         {
-                            viewModel.PriorityList = _unitOfWork.Priority.GetAll().ToList();
-                            viewModel.StatusList = _unitOfWork.Status.GetAll().ToList();
-                            viewModel.AssigneeList = _unitOfWork.Users.GetAll().ToList();
+
+                            viewModel.PriorityList = _priorityService.GetAllPriority().ToList();
+                            viewModel.StatusList = _statusService.GetAllStatuses().ToList();
+                            viewModel.AssigneeList = _userManager.Users.ToList();
+
                             TempData["ErrorMsg"] = Message.TASK_UPDATE_FAIL;
                             return View(viewModel);
                         }
                         else
                         {
-                            var taskToEdit = _unitOfWork.Tasks.Get(t => t.Id == viewModel.Id);
+                            var taskToEdit = _taskService.GetTasksWithId(viewModel.Id.Value);
                             taskToEdit.PriorityId = viewModel.PriorityId.GetValueOrDefault();
                             taskToEdit.Name = viewModel.TaskName!;
                             taskToEdit.StatusId = viewModel.StatusId.GetValueOrDefault();
@@ -154,17 +171,16 @@ namespace TaskPilot.Web.Controllers
                             taskToEdit.DueDate = viewModel.DueDate;
                             taskToEdit.Description = viewModel.TaskDescription!;
                             taskToEdit.Updated = DateTime.Now;
-                            _unitOfWork.Tasks.Update(taskToEdit);
+                            _taskService.UpdateTask(taskToEdit);
 
                             if (viewModel.IsRecurring)
                             {
-                                List<Tasks> tasks = GetRecurringTask(viewModel, currentUser);
-                                _unitOfWork.Tasks.AddRange(tasks);
-                                _unitOfWork.Save();
+                                List<Tasks> tasks = GetRecurringTask(viewModel, currentUser!);
+                                _taskService.AddRangeTasks(tasks);
 
                                 foreach (var task in tasks)
                                 {
-                                    _unitOfWork.Notification.Add(new Notifications
+                                    _notificationService.CreateNotification(new Notifications
                                     {
                                         CreatedAt = DateTime.Now,
                                         Status = SD.NEW_NOTIF_STATUS,
@@ -187,16 +203,14 @@ namespace TaskPilot.Web.Controllers
                                     UserId = taskToEdit.AssignToId!
                                 };
 
-                                _unitOfWork.Notification.Add(notif);
+                                _notificationService.CreateNotification(notif);
                                 TempData["SuccessMsg"] = "Task #" + taskToEdit.Name + Message.TASK_UPDATE;
-
-                                _unitOfWork.Save();
                             }
                         }
                     }
                     else
                     {
-                        var taskToEdit = _unitOfWork.Tasks.Get(t => t.Id == viewModel.Id);
+                        var taskToEdit = _taskService.GetTasksWithId(viewModel.Id.Value);
                         taskToEdit.PriorityId = viewModel.PriorityId.GetValueOrDefault();
                         taskToEdit.Name = viewModel.TaskName!;
                         taskToEdit.StatusId = viewModel.StatusId.GetValueOrDefault();
@@ -204,17 +218,16 @@ namespace TaskPilot.Web.Controllers
                         taskToEdit.DueDate = viewModel.DueDate;
                         taskToEdit.Description = viewModel.TaskDescription!;
                         taskToEdit.Updated = DateTime.Now;
-                        _unitOfWork.Tasks.Update(taskToEdit);
+                        _taskService.UpdateTask(taskToEdit);
 
                         if (viewModel.IsRecurring)
                         {
-                            List<Tasks> tasks = GetRecurringTask(viewModel, currentUser);
-                            _unitOfWork.Tasks.AddRange(tasks);
-                            _unitOfWork.Save();
+                            List<Tasks> tasks = GetRecurringTask(viewModel, currentUser!);
+                            _taskService.AddRangeTasks(tasks);
 
                             foreach (var task in tasks)
                             {
-                                _unitOfWork.Notification.Add(new Notifications
+                                _notificationService.CreateNotification(new Notifications
                                 {
                                     CreatedAt = DateTime.Now,
                                     Status = SD.NEW_NOTIF_STATUS,
@@ -237,32 +250,30 @@ namespace TaskPilot.Web.Controllers
                                 UserId = taskToEdit.AssignToId
                             };
 
-                            _unitOfWork.Notification.Add(notif);
+                            _notificationService.CreateNotification(notif);
                             TempData["SuccessMsg"] = "Task #" + taskToEdit.Name + Message.TASK_UPDATE;
-                            _unitOfWork.Save();
                         }
                     }
                 }
             }
-            _unitOfWork.Save();
             return RedirectToAction("Index", "Task");
         }
 
         public IActionResult Update(Guid Id)
         {
-            var task = _unitOfWork.Tasks.Get(t => t.Id == Id);
+            var task = _taskService.GetTasksWithId(Id);
             EditTaskViewModel viewModel = new EditTaskViewModel
             {
                 Id = task.Id,
                 TaskName = task.Name,
                 TaskDescription = task.Description,
-                StatusList = _unitOfWork.Status.GetAll().ToList(),
+                StatusList = _statusService.GetAllStatuses().ToList(),
                 StatusId = task.StatusId,
-                PriorityList = _unitOfWork.Priority.GetAll().ToList(),
+                PriorityList = _priorityService.GetAllPriority().ToList(),
                 PriorityId = task.PriorityId,
                 DueDate = task.DueDate,
                 AssignToId = task.AssignToId,
-                AssigneeList = _unitOfWork.Users.GetAll().ToList(),
+                AssigneeList = _userManager.Users.ToList(),
                 EndDate = null,
                 StartDate = null,
                 DependencyId = task.DependencyId,
@@ -272,57 +283,53 @@ namespace TaskPilot.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(Guid[] taskId)
+        public async Task<IActionResult> Delete(Guid[] taskId)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity!;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
+            var currentUser = await GetCurrentUser();
             var taskToDelete = new List<Tasks>();
-
 
             if (taskId.Length > 0)
             {
                 for (int i = 0; i < taskId.Length; i++)
                 {
                     Guid Id = taskId[i];
-                    taskToDelete.Add(_unitOfWork.Tasks.Get(t => t.Id == Id));
+                    taskToDelete.Add(_taskService.GetTasksWithId(Id));
                 }
 
                 foreach (var task in taskToDelete)
                 {
-                    var notifInTask = _unitOfWork.Notification.GetAll().Where(t => t.TasksId == task.Id) != null ? _unitOfWork.Notification.GetAll().Where(t => t.TasksId == task.Id) : null;
+                    var notifInTask = _notificationService.GetNotificationsByTaskId(task.Id!.Value) != null ? _notificationService.GetNotificationsByTaskId(task.Id!.Value) : null;
 
                     if (notifInTask != null)
                     {
-                        _unitOfWork.Notification.RemoveRange(notifInTask);
+                        _notificationService.DeleteAllNotification(notifInTask);
                     }
 
-                    _unitOfWork.Notification.Add(new Notifications
+                    _notificationService.CreateNotification(new Notifications
                     {
                         CreatedAt = DateTime.Now,
-                        Description = task.Name + " task's has been deleted by " + currentUser.UserName,
+                        Description = task.Name + " task's has been deleted by " + currentUser!.UserName,
                         Status = "New",
                         TasksId = null,
                         UserId = task.AssignToId
                     });
 
-                    _unitOfWork.Tasks.Remove(task);
+                    _taskService.DeleteTask(task);
                 }
             }
-            _unitOfWork.Save();
             TempData["SuccessMsg"] = taskId.Length + Message.TASK_DELETION;
             return Json(Url.Action("Index", "Task"));
         }
 
         public IActionResult MarkAsDone(Guid Id)
         {
-            var taskToUpdate = _unitOfWork.Tasks.Get(t => t.Id == Id);
-            var statusToUpdate = _unitOfWork.Status.Get(s => s.Description == "Closed");
+            var taskToUpdate = _taskService.GetTasksWithId(Id);
+            var statusToUpdate = _statusService.GetStatusByName("Closed");
             if (taskToUpdate != null)
             {
                 if (taskToUpdate.Status!.Description != "Closed")
                 {
-                    _unitOfWork.Notification.Add(new Notifications
+                    _notificationService.CreateNotification(new Notifications
                     {
                         CreatedAt = DateTime.Now,
                         Description = taskToUpdate.Name + " task's has been closed",
@@ -333,8 +340,7 @@ namespace TaskPilot.Web.Controllers
 
                     taskToUpdate.StatusId = statusToUpdate.Id;
                     taskToUpdate.Updated = DateTime.Now;
-                    _unitOfWork.Tasks.Update(taskToUpdate);
-                    _unitOfWork.Save();
+                    _taskService.UpdateTask(taskToUpdate);
                 }
                 else
                 {
@@ -352,24 +358,24 @@ namespace TaskPilot.Web.Controllers
         public IActionResult MarkAsDone(Guid[] taskId)
         {
             var taskToUpdate = new List<Tasks>();
-            var closeStatus = _unitOfWork.Status.Get(s => s.Description == "Closed");
+            var closeStatus = _statusService.GetStatusByName("Closed");
 
             if (taskId.Length > 0)
             {
                 for (int i = 0; i < taskId.Length; i++)
                 {
                     Guid Id = taskId[i];
-                    taskToUpdate.Add(_unitOfWork.Tasks.GetAllInclude(t => t.Id == Id, "Status").Single());
+                    _taskService.GetTasksWithId(Id!);
                 }
 
                 foreach (var task in taskToUpdate)
                 {
-                    if (task.Status.Description != "Closed")
+                    if (task.Status!.Description != "Closed")
                     {
 
                         task.StatusId = closeStatus.Id;
 
-                        _unitOfWork.Notification.Add(new Notifications
+                        _notificationService.CreateNotification(new Notifications
                         {
                             CreatedAt = DateTime.Now,
                             Description = task.Name + " task's has been closed",
@@ -379,7 +385,7 @@ namespace TaskPilot.Web.Controllers
                         });
 
                         task.Updated = DateTime.Now;
-                        _unitOfWork.Tasks.Update(task);
+                        _taskService.UpdateTask(task);
                     }
                     else
                     {
@@ -388,15 +394,14 @@ namespace TaskPilot.Web.Controllers
                     }
                 }
             }
-            _unitOfWork.Save();
-            TempData["SuccessMsg"] = taskId.Length + Message.TASK_CLOSED;
+            TempData["SuccessMsg"] = taskId.Length + Message.TASK_CLOSED;          
             return Json(Url.Action("Index", "Task"));
         }
 
         public IActionResult ManageDependency(Guid Id)
         {
-            var taskToAssign = _unitOfWork.Tasks.Get(t => t.Id == Id);
-            var listOfTask = _unitOfWork.Tasks.Find(t => t.Id != Id);
+            var taskToAssign = _taskService.GetTasksWithId(Id);
+            var listOfTask = _taskService.GetTasksFilterById(Id); ;
 
             ManageTaskDependencyViewModel viewModel = new ManageTaskDependencyViewModel
             {
@@ -414,11 +419,10 @@ namespace TaskPilot.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var taskToUpdate = _unitOfWork.Tasks.Get(t => t.Name == viewModel.CurrentTask);
+                var taskToUpdate = _taskService.GetTasksByTaskName(viewModel.CurrentTask!);
                 taskToUpdate.DependencyId = viewModel.DependencyID;
                 taskToUpdate.Updated = DateTime.Now;
-                _unitOfWork.Tasks.Update(taskToUpdate);
-                _unitOfWork.Save();
+                _taskService.UpdateTask(taskToUpdate);
                 TempData["SuccessMsg"] = Message.TASK_DEPENDENCY;
                 return RedirectToAction("Index", "Task");
             }
@@ -437,7 +441,7 @@ namespace TaskPilot.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult ImportTask(IFormFile formFile)
+        public async Task<IActionResult> ImportTask(IFormFile formFile)
         {
             ImportTaskViewModel viewModel = new ImportTaskViewModel
             {
@@ -453,9 +457,9 @@ namespace TaskPilot.Web.Controllers
                     var line = csvReader.ReadLine();
                     var value = line!.Split(',');
 
-                    var status = _unitOfWork.Status.Get(r => r.Description == value[3]) != null ? _unitOfWork.Status.Get(r => r.Description == value[3]) : null;
-                    var priority = _unitOfWork.Priority.Get(r => r.Description == value[2]) != null ? _unitOfWork.Priority.Get(r => r.Description == value[2]) : null;
-                    var assignee = _unitOfWork.Users.Get(u => u.UserName == value[5]) != null ? _unitOfWork.Users.Get(u => u.UserName == value[5]) : null;
+                    var status = _statusService.GetStatusByName(value[3]) != null ? _statusService.GetStatusByName(value[3]) : null;
+                    var priority = _priorityService.GetPrioritiesByName(value[2]) != null ? _priorityService.GetPrioritiesByName(value[2]) : null;
+                    var assignee = await _userManager.FindByNameAsync(value[5]) != null ? await _userManager.FindByNameAsync(value[5]) : null;
 
 
                     viewModel.ImportInfo.Add(new TaskImportInfo
@@ -466,12 +470,12 @@ namespace TaskPilot.Web.Controllers
                         Status = value[3],
                         DueDate = DateTime.Parse(value[4]).Date >= DateTime.Now.Date ? DateTime.Parse(value[4]) : DateTime.Now.Date,
                         AssignToUser = value[5],
-                        AssigeeList = _unitOfWork.Users.GetAll().ToList(),
-                        PriorityList = _unitOfWork.Priority.GetAll().ToList(),
-                        StatusList = _unitOfWork.Status.GetAll().ToList(),
+                        AssigeeList = _userManager.Users.ToList(),
+                        PriorityList = _priorityService.GetAllPriority().ToList(),
+                        StatusList = _statusService.GetAllStatuses().ToList(),
                         PriorityId = priority != null ? priority.Id : null,
                         StatusId = status != null ? status.Id : null,
-                        UserId = assignee != null ? assignee.Id : null,
+                        UserId = assignee != null ? assignee.Id: null,
                     });
 
                 }
@@ -486,19 +490,17 @@ namespace TaskPilot.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult SyncToDB(ImportTaskViewModel viewModel)
+        public async Task<IActionResult> SyncToDB(ImportTaskViewModel viewModel)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity!;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            var currentUser = _unitOfWork.Users.Get(u => u.Id == claim!.Value);
+            var currentUser = await GetCurrentUser();
             if (ModelState.IsValid)
             {
                 int i = 1;
                 foreach (var item in viewModel.ImportInfo!)
                 {
-                    var status = _unitOfWork.Status.Get(s => s.Description == item.Status);
-                    var priority = _unitOfWork.Priority.Get(p => p.Description == item.PriorityLevel);
-                    var user = _unitOfWork.Users.Get(u => u.UserName == item.AssignToUser);
+                    var status = _statusService.GetStatusByName(item.Status!);
+                    var priority = _priorityService.GetPrioritiesByName(item.PriorityLevel!);
+                    var user = await _userManager.FindByNameAsync(item.AssignToUser!);
 
                     var task = new Tasks
                     {
@@ -509,15 +511,13 @@ namespace TaskPilot.Web.Controllers
                         Description = item.Description!,
                         Created = DateTime.Now,
                         AssignToId = user.Id,
-                        AssignFromId = currentUser.Id,
+                        AssignFromId = currentUser!.Id,
                         Updated = DateTime.Now,
                     };
 
-                    _unitOfWork.Tasks.Add(task);
+                    _taskService.CreateTask(task);
                     i++;
                 }
-
-                _unitOfWork.Save();
                 TempData["SuccessMsg"] = viewModel.ImportInfo.Count + Message.TASK_IMPORT;
                 return RedirectToAction("Index", "Task");
             }

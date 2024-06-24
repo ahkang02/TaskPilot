@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using System.Text;
-using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Application.Common.Utility;
 using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
@@ -33,8 +31,8 @@ namespace TaskPilot.Web.Controllers
 
         private async Task<ApplicationUser?> GetCurrentUser()
         {
-           var username = User.Identity!.Name;
-           return await _userManager.FindByNameAsync(username!) ?? null;
+            var username = User.Identity!.Name;
+            return await _userManager.FindByNameAsync(username!) ?? null;
         }
 
         public async Task<IActionResult> Index()
@@ -156,7 +154,7 @@ namespace TaskPilot.Web.Controllers
             var currentUser = await GetCurrentUser();
             var currentUserRole = await _userManager.GetRolesAsync(currentUser!);
             var roles = await _roleManager.Roles.Include("Permissions").FirstOrDefaultAsync(r => r.Name == currentUserRole[0]);
-            var permissions = _permissionService.GetPermissionInRole(roles!) ;
+            var permissions = _permissionService.GetPermissionInRole(roles!);
 
             EditProfilePasswordViewModel viewModel = new EditProfilePasswordViewModel
             {
@@ -192,7 +190,7 @@ namespace TaskPilot.Web.Controllers
             var currentUser = await GetCurrentUser();
             var currentUserRole = await _userManager.GetRolesAsync(currentUser!);
             var roles = await _roleManager.Roles.Include("Permissions").FirstOrDefaultAsync(r => r.Name == currentUserRole[0]);
-            viewModel.UserPermissions =  _permissionService.GetPermissionInRole(roles!).ToList();
+            viewModel.UserPermissions = _permissionService.GetPermissionInRole(roles!).ToList();
 
             return View("EditPassword", viewModel);
         }

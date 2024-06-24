@@ -6,6 +6,8 @@ namespace TaskPilot.Application.Services.Interface
     {
         IEnumerable<Notifications> GetAllNotifications();
 
+        IEnumerable<Notifications> GetNotificationsByTaskId(Guid Id);
+
         Notifications GetNotificationById(Guid Id);
 
         IEnumerable<Notifications> GetNotificationByUserId(string userId);

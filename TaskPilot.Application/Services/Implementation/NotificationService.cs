@@ -45,5 +45,10 @@ namespace TaskPilot.Application.Services.Implementation
         {
             return _unitOfWork.Notification.Find(n => n.UserId == userId);
         }
+
+        public IEnumerable<Notifications> GetNotificationsByTaskId(Guid Id)
+        {
+           return _unitOfWork.Notification.Find(n => n.TasksId == Id);
+        }
     }
 }
