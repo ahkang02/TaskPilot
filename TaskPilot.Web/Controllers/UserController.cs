@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using System.Net.Mail;
 using System.Security.Claims;
 using System.Text;
@@ -160,12 +161,12 @@ namespace TaskPilot.Web.Controllers
 
         public async Task<ActionResult> AssignRole(string username)
         {
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await _userManager.Users.Include("UserRoles").FirstOrDefaultAsync(u => u.UserName == username);
             var userCurrentRole = await _userManager.GetRolesAsync(user!);
 
             AssignRoleViewModel viewModel = new AssignRoleViewModel
             {
-                RoleToSelect = _roleManager.Roles.ToList(),
+                RoleToSelect = await _roleManager.Roles.ToListAsync(),
                 Username = user!.UserName,
                 CurrentUserRole = userCurrentRole[0]
             };

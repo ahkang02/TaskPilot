@@ -20,19 +20,20 @@
                         <h5 class="card-title fw-semibold mb-4">Assign Permission</h5>
                         @using (Html.BeginForm("AssignPermission", "Role", FormMethod.Post))
                         {
+                            @Html.AntiForgeryToken()
                             <div class="card-body px-4 py-3">
-                                <div class="row mb-3 ">
+                                <div class="row mb-3">
                                     @Html.LabelFor(m => m.RoleName)
                                     @Html.TextBoxFor(m => m.RoleName, new { @class = "form-control", @disabled = "true" })
                                 </div>
                                 <div class="row mb-3">
                                     <div class="table-wrapper table-responsive">
-                                        <table class="table text-center">
+                                        <table class="table">
                                             <thead>
                                                 <tr>
-                                                    <th>Permission</th>
+                                                    <th>Feature</th>
                                                     <th>Read</th>
-                                                    <th>Create</th>
+                                                    <th>New</th>
                                                     <th>Update</th>
                                                     <th>Delete</th>
                                                 </tr>
@@ -40,80 +41,65 @@
                                             <tbody>
                                                 @for (int i = 0; i < Model.FeaturePermissions.Count; i++)
                                                 {
-                                                    <tr>
-                                                        <th>@Model.FeaturePermissions[i].FeatureName</th>
-                                                        @for (int j = 0; j < Model.FeaturePermissions[i].Permissions.Count; j++)
+                                                    var feature = Model.FeaturePermissions[i];
+                                                    <tr data-feature-index="@i">
+                                                        <td>
+                                                            @if (feature.Permissions.Any(p => !new[] { "Index", "New", "Update", "Delete" }.Contains(p.Name)))
+                                                            {
+                                                                <a class="expand-btn" data-feature-index="@i">
+                                                                    <i class="bi bi-chevron-right" style="cursor:pointer"></i>
+                                                                </a>
+                                                            }
+                                                            @feature.FeatureName
+                                                            @Html.HiddenFor(m => Model.FeaturePermissions[i].FeatureName)
+                                                        </td>
+                                                        @for (int j = 0; j < 4; j++)
                                                         {
-                                                            if (Model.FeaturePermissions[i].Permissions[j].Name.Contains("Index"))
-                                                            {
-                                                                <td>
-                                                                    @Html.CheckBoxFor(m => Model.FeaturePermissions[i].Permissions[j].IsSelected, new { @css = "form-check-input" })
+                                                            var permissionName = new[] { "Index", "New", "Update", "Delete" }[j];
+                                                            var permission = feature.Permissions.FirstOrDefault(p => p.Name.Contains(permissionName));
+                                                            <td>
+                                                                @if (permission != null)
+                                                                {
+                                                                    @Html.CheckBoxFor(m => Model.FeaturePermissions[i].Permissions[j].IsSelected, new { @class = "form-check-input" })
                                                                     @Html.HiddenFor(m => Model.FeaturePermissions[i].Permissions[j].PermissionId)
-                                                                </td>
-                                                            }
-                                                            if (Model.FeaturePermissions[i].Permissions[j].Name.Contains("New"))
-                                                            {
-                                                                <td>
-                                                                    @Html.CheckBoxFor(m => Model.FeaturePermissions[i].Permissions[j].IsSelected, new { @css = "form-check-input" })
-                                                                    @Html.HiddenFor(m => Model.FeaturePermissions[i].Permissions[j].PermissionId)
-                                                                </td>
-                                                            }
-                                                            if (Model.FeaturePermissions[i].Permissions[j].Name.Contains("Update"))
-                                                            {
-                                                                <td>
-                                                                    @Html.CheckBoxFor(m => Model.FeaturePermissions[i].Permissions[j].IsSelected, new { @css = "form-check-input" })
-                                                                    @Html.HiddenFor(m => Model.FeaturePermissions[i].Permissions[j].PermissionId)
-                                                                </td>
-                                                            }
-                                                            if (Model.FeaturePermissions[i].Permissions[j].Name.Contains("Delete"))
-                                                            {
-                                                                <td>
-                                                                    @Html.CheckBoxFor(m => Model.FeaturePermissions[i].Permissions[j].IsSelected, new { @css = "form-check-input" })
-                                                                    @Html.HiddenFor(m => Model.FeaturePermissions[i].Permissions[j].PermissionId)
-                                                                </td>
-                                                            }
+                                                                }
+                                                            </td>
                                                         }
                                                     </tr>
-                                                }
-                                            </tbody>
-                                            <tbody>
-                                                @for (int i = 0; i < Model.FeaturePermissions.Count; i++)
-                                                {
-                                                    if (Model.FeaturePermissions[i].FeatureName == "Profile" || Model.FeaturePermissions[i].FeatureName == "Task" || Model.FeaturePermissions[i].FeatureName == "User" || Model.FeaturePermissions[i].FeatureName == "Role")
-                                                    {
-
-                                                        <tr>
-                                                            <th></th>
-                                                            @for (int j = 0; j < Model.FeaturePermissions[i].Permissions.Count; j++)
-                                                            {
-                                                                if (!Model.FeaturePermissions[i].Permissions[j].Name.Contains("Index") && !Model.FeaturePermissions[i].Permissions[j].Name.Contains("New") && !Model.FeaturePermissions[i].Permissions[j].Name.Contains("Update") && !Model.FeaturePermissions[i].Permissions[j].Name.Contains("Delete"))
-                                                                {
-                                                                    <th>@Model.FeaturePermissions[i].Permissions[j].Name</th>
-                                                                }
-                                                            }
-
-                                                        </tr>
-                                                        <tr>
-                                                            <th>@Model.FeaturePermissions[i].FeatureName</th>
-                                                            @for (int j = 0; j < Model.FeaturePermissions[i].Permissions.Count; j++)
-                                                            {
-                                                                if (!Model.FeaturePermissions[i].Permissions[j].Name.Contains("Index") && !Model.FeaturePermissions[i].Permissions[j].Name.Contains("New") && !Model.FeaturePermissions[i].Permissions[j].Name.Contains("Update") && !Model.FeaturePermissions[i].Permissions[j].Name.Contains("Delete"))
-                                                                {
-                                                                    <td>
-                                                                        @Html.CheckBoxFor(m => Model.FeaturePermissions[i].Permissions[j].IsSelected, new { @css = "form-check-input" })
-                                                                        @Html.HiddenFor(m => Model.FeaturePermissions[i].Permissions[j].PermissionId)
-                                                                    </td>
-                                                                }
-                                                            }
-                                                        </tr>
-                                                    }
+                                                    <tr class="nested-permissions" data-feature-index="@i" style="display:none;">
+                                                        <td colspan="6">
+                                                            <table class="table table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Advance Permission</th>
+                                                                        <th>Accessibility</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @for (int k = 0; k < feature.Permissions.Count; k++)
+                                                                    {
+                                                                        var permission = feature.Permissions[k];
+                                                                        if (!new[] { "Index", "New", "Update", "Delete" }.Contains(permission.Name))
+                                                                        {
+                                                                            <tr>
+                                                                                <td>@permission.Name</td>
+                                                                                <td>
+                                                                                    @Html.CheckBoxFor(m => Model.FeaturePermissions[i].Permissions[k].IsSelected, new { @class = "form-check-input" })
+                                                                                    @Html.HiddenFor(m => Model.FeaturePermissions[i].Permissions[k].PermissionId)
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
                                                 }
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                                 @Html.HiddenFor(m => m.RoleId)
-                                @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-primary float-end mb-3">Assign Permission</button>
                             </div>
                         }
@@ -124,3 +110,21 @@
     </div>
 </div>
 
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.expand-btn').click(function () {
+                var featureIndex = $(this).data('feature-index');
+                var icon = $(this).find('i');
+
+                if (icon.hasClass('bi-chevron-right')) {
+                    icon.removeClass('bi-chevron-right').addClass('bi-chevron-down');
+                } else {
+                    icon.removeClass('bi-chevron-down').addClass('bi-chevron-right');
+                }
+
+                $('tr.nested-permissions[data-feature-index="' + featureIndex + '"]').toggle();
+            });
+        });
+    </script>
+}
