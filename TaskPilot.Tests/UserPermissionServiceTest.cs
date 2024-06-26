@@ -33,7 +33,9 @@ namespace TaskPilot.Tests
             _mockRole = new List<ApplicationRole>
             {
                 new ApplicationRole { Id = "feb7cab8-4774-4618-b40f-d987d6294827", Name = "MockRole1"},
-                                new ApplicationRole { Id = "feb7cab8-4774-4618-b40f-d987d6294826", Name = "Mock"}
+                                new ApplicationRole { Id = "feb7cab8-4774-4618-b40f-d987d6294826", Name = "Mock"},
+                                new ApplicationRole { Id = "feb7cab8-4774-4618-b40f-d987d6294826", Name = "Mock3"},
+                                new ApplicationRole { Id = "feb7cab8-4774-4618-b40f-d987d6294826", Name = "Mock4", Permissions = new List<Permission>()},
             };
 
             _mockFeatures = new List<Features>
@@ -45,20 +47,22 @@ namespace TaskPilot.Tests
             _mockPermissions = new List<Permission>
             {
                new Permission { Id = new Guid("9a12a12f-7bb5-42de-b6ac-8d8c6375f926"), Name = "Permission1", Roles = new List<ApplicationRole> { _mockRole.Single(r => r.Name == "MockRole1") }, Features = _mockFeatures.Single(f => f.Name == "Feature 1"), FeaturesId = _mockFeatures.Single(f => f.Name == "Feature 1").Id },
-               new Permission { Id = new Guid("9a12a12f-7bb5-42de-b6ac-8d8c6375f927"), Name = "Permission2", Roles = new List<ApplicationRole> { _mockRole.Single(r => r.Name == "MockRole1") }, Features = _mockFeatures.Single(f => f.Name == "Feature 1"), FeaturesId = _mockFeatures.Single(f => f.Name == "Feature 1").Id },
-               new Permission { Id = new Guid("9a12a12f-7bb5-42de-b6ac-8d8c6375f928"), Name = "Permission3", Roles = new List<ApplicationRole> { _mockRole.Single(r => r.Name == "MockRole1") }, Features = _mockFeatures.Single(f => f.Name == "Feature 1"), FeaturesId = _mockFeatures.Single(f => f.Name == "Feature 1").Id },
+               new Permission { Id = new Guid("9a12a12f-7bb5-42de-b6ac-8d8c6375f927"), Name = "Permission2", Roles = new List<ApplicationRole> { _mockRole.Single(r => r.Name == "Mock") }, Features = _mockFeatures.Single(f => f.Name == "Feature 1"), FeaturesId = _mockFeatures.Single(f => f.Name == "Feature 1").Id },
+               new Permission { Id = new Guid("9a12a12f-7bb5-42de-b6ac-8d8c6375f928"), Name = "Permission3", Roles = new List<ApplicationRole> { _mockRole.Single(r => r.Name == "Mock3") }, Features = _mockFeatures.Single(f => f.Name == "Feature 1"), FeaturesId = _mockFeatures.Single(f => f.Name == "Feature 1").Id },
             };
 
-            unitOfWorkMock.Setup(uow => uow.Roles.GetAllInclude(r => r.RoleClaims == mockUserClaims, "Permissions,UserRoles,RoleClaims"))
+            unitOfWorkMock.Setup(uow => uow.Permissions.GetAllInclude(null, "Features,Roles"))
+    .Returns(_mockPermissions);
+
+            unitOfWorkMock.Setup(uow => uow.Roles.GetAllInclude(r => r.Name == "MockRole1", "Permissions"))
     .Returns(_mockRole);
 
-            unitOfWorkMock.Setup(uow => uow.Permissions.GetAllInclude(null, "Features,Roles"))
-                .Returns(_mockPermissions);
+
 
             _userPermissionService = new UserPermissionService(unitOfWorkMock.Object);
         }
 
-        //[Test]
+        [Test]
         public void GetUserPermission_ReturnsUserPermissions()
         {
             // Act
@@ -78,8 +82,10 @@ namespace TaskPilot.Tests
             // Assert
             Assert.That(ex.Message, Is.EqualTo("Value cannot be null. (Parameter 'userClaims')"));
         }
+        
 
-        //[Test]
+        //  TODO: Need To Think Of A Way To Do This Unit Test
+        //    [Test]
         //public void GetUserPermissionWithUserClaims_ReturnEmptyList()
         //{
         //    // Arrange
