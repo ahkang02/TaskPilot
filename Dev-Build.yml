@@ -17,7 +17,9 @@ stages:
   - job: 'Building'
     displayName: 'Building Web Application'
     steps:
-
+      - checkout: self
+        fetchDepth: 0
+   
       - task: SonarQubePrepare@6
         name: 'SonarQubePrep'
         inputs:
