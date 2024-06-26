@@ -30,7 +30,7 @@ namespace TaskPilot.Application.Services.Implementation
 
         public Tasks GetTasksWithId(Guid Id)
         {
-            return _unitOfWork.Tasks.GetAllInclude(t => t.Id == Id, "Status,Priority,AssignFrom,AssignTo").Single();
+            return _unitOfWork.Tasks.GetAllInclude(t => t.Id == Id, "Status,Priority,AssignFrom,AssignTo").SingleOrDefault();
         }
 
         public void CreateTask(Tasks task)
