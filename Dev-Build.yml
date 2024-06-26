@@ -45,6 +45,16 @@ stages:
           command: 'build'
           projects: 'TaskPilot.Web/*.csproj'
           arguments: '--configuration Release'
+          
+      - task: SonarQubePrepare@6
+        inputs:
+            SonarQube: 'TaskPilot_SonarQube'
+            scannerMode: 'MSBuild'
+            projectKey: 'TaskPilot_TaskPilot_a22dca1d-0cc9-4168-867a-f5b6c3ef1d0e'
+            
+      - task: SonarQubePublish@6
+        inputs:
+          pollingTimeoutSec: '300'
 
 - stage: 'Testing'
   displayName: 'Running Unit Test'
