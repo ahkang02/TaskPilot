@@ -54,39 +54,41 @@ stages:
           command: 'build'
           projects: 'TaskPilot.Web/*.csproj'
           arguments: '--configuration Release'
-          
-- stage: 'Testing'
-  displayName: 'Running Unit Test'
-  dependsOn: 'Building'
-  condition: succeeded()
-  jobs:
-  - job: 'Testing'
-    displayName: 'Running Unit Test'
-    steps:
+
       - task: DotNetCoreCLI@2
         inputs:
           command: 'test'
           projects: 'TaskPilot.Tests/*.csproj'
-          arguments: '--configuration Release --collect "Code Coverage"'
+          arguments: '--configuration Release --collect "Code Coverage"'          
 
-- stage: 'Analyzing'
-  displayName: 'Running Code Analysis On SonarQube'
-  dependsOn: 'Testing'
-  condition:  succeeded()
-  jobs:
-   - job: 'Analyzing'
-     displayName: 'Running SonarQube Analyze'
-     steps: 
-        - task: SonarQubeAnalyze@6
-          displayName: "SonarQube Analyzing"
+      - task: SonarQubeAnalyze@6
 
-        - task: SonarQubePublish@6
-          inputs:
+      - task: SonarQubePublish@6
+        inputs:
             pollingTimeoutSec: '300'
+
+# - stage: 'Testing'
+#   displayName: 'Running Unit Test'
+#   dependsOn: 'Building'
+#   condition: succeeded()
+#   jobs:
+#   - job: 'Testing'
+#     displayName: 'Running Unit Test'
+#     steps:
+
+
+# - stage: 'Analyzing'
+#   displayName: 'Running Code Analysis On SonarQube'
+#   dependsOn: 'Testing'
+#   condition:  succeeded()
+#   jobs:
+#    - job: 'Analyzing'
+#      displayName: 'Running SonarQube Analyze'
+
 
 - stage: 'Preparing_Artifact'
   displayName: 'Building Artifact'
-  dependsOn: 'Analyzing'
+  dependsOn: 'Building'
   condition: succeeded()
   jobs:
   - job: 'Compiling'
