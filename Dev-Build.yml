@@ -55,44 +55,11 @@ stages:
           projects: 'TaskPilot.Web/*.csproj'
           arguments: '--configuration Release'
 
-- stage: 'Testing'
-  displayName: 'Running Unit Test'
-  dependsOn: 'Building'
-  condition: succeeded()
-  jobs:
-  - job: 'Testing'
-    displayName: 'Running Unit Test'
-    steps:
-          - checkout: self
-            fetchDepth: 0
-
-          - task: SonarQubePrepare@6
-            name: 'SonarQubePrep'
-            inputs:
-              SonarQube: 'TaskPilot_SonarQube'
-              scannerMode: 'MSBuild'
-              projectKey: 'TaskPilot_TaskPilot_a22dca1d-0cc9-4168-867a-f5b6c3ef1d0e'
-              
-          - task: DotNetCoreCLI@2
-            inputs:
-              command: 'test'
-              projects: 'TaskPilot.Tests/*.csproj'
-              arguments: '--configuration Release --collect "Code Coverage"'  
-
-- stage: 'Analyzing'
-  displayName: 'Running Code Analysis On SonarQube'
-  dependsOn: 'Testing'
-  condition:  succeeded()
-  jobs:
-   - job: 'Analyzing'
-     displayName: 'Running SonarQube Analyze'
-     steps:
-      - task: SonarQubePrepare@6
-        name: 'SonarQubePrep'
+      - task: DotNetCoreCLI@2
         inputs:
-          SonarQube: 'TaskPilot_SonarQube'
-          scannerMode: 'MSBuild'
-          projectKey: 'TaskPilot_TaskPilot_a22dca1d-0cc9-4168-867a-f5b6c3ef1d0e'     
+          command: 'test'
+          projects: 'TaskPilot.Tests/*.csproj'
+          arguments: '--configuration Release --collect "Code Coverage"'  
 
       - task: SonarQubeAnalyze@6
 
@@ -100,10 +67,24 @@ stages:
         inputs:
             pollingTimeoutSec: '300'
 
+# Commented out due to SonarQube cannot separate testing into another stage
+# - stage: 'Testing'
+#   displayName: 'Running Unit Test'
+#   dependsOn: 'Building'
+#   condition: succeeded()
+#   jobs:
+#   - job: 'Testing'
+#     displayName: 'Running Unit Test'
+#     steps:
+#       - task: DotNetCoreCLI@2
+#         inputs:
+#           command: 'test'
+#           projects: 'TaskPilot.Tests/*.csproj'
+#           arguments: '--configuration Release --collect "Code Coverage"'  
 
 - stage: 'Preparing_Artifact'
   displayName: 'Building Artifact'
-  dependsOn: 'Analyzing'
+  dependsOn: 'Building'
   condition: succeeded()
   jobs:
   - job: 'Compiling'
