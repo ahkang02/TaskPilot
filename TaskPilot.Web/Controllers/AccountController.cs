@@ -47,66 +47,46 @@ namespace TaskPilot.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel viewModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(viewModel);
-            }
-            else
+            if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByNameAsync(viewModel.Username!);
-                if (user != null)
-                {
 
-                    if (!await _userManager.IsEmailConfirmedAsync(user))
-                    {
-                        ViewBag.EmailConfirmation = false;
-                        return View(viewModel);
-                    }
-
-                    var validPassword = _userManager.CheckPasswordAsync(user, viewModel.Password!);
-                    if (!validPassword.Result)
-                    {
-                        ModelState.AddModelError("", Message.INVALID_LOGIN_ATTEMPT);
-                        return View(viewModel);
-                    }
-                    else
-                    {
-                        await _userManager.UpdateSecurityStampAsync(user);
-                        var result = await _signInManager.PasswordSignInAsync(viewModel.Username!, viewModel.Password!, viewModel.RememberMe, true);
-
-                        if (result.Succeeded)
-                        {
-                            user.LastLogin = DateTime.Now;
-                            await _userManager.UpdateAsync(user);
-
-                            if (string.IsNullOrEmpty(viewModel.returnUrl))
-                            {
-                                return RedirectToAction("Index", "Dashboard");
-                            }
-                            else
-                            {
-                                return LocalRedirect(viewModel.returnUrl);
-                            }
-                        }
-                        else if (result.IsLockedOut)
-                        {
-                            ViewBag.Message = "You've entered too many times of invalid credentials, please try again after 5 minutes.";
-                            return View("Error");
-                        }
-                        else
-                        {
-                            ModelState.AddModelError("", Message.INVALID_LOGIN_ATTEMPT);
-                            return View(viewModel);
-                        }
-                    }
-                }
-                else
+                if (user == null)
                 {
                     ModelState.AddModelError("", Message.NO_USER_FOUND);
                     return View(viewModel);
                 }
 
+                if (!await _userManager.IsEmailConfirmedAsync(user))
+                {
+                    ViewBag.EmailConfirmation = false;
+                }
+
+                var validPassword = await _userManager.CheckPasswordAsync(user, viewModel.Password!);
+
+                if (validPassword)
+                {
+                    await _userManager.UpdateSecurityStampAsync(user);
+                    await _signInManager.PasswordSignInAsync(viewModel.Username!, viewModel.Password!, viewModel.RememberMe, true);
+
+                    user.LastLogin = DateTime.Now;
+                    await _userManager.UpdateAsync(user);
+
+                    return string.IsNullOrEmpty(viewModel.returnUrl) ? RedirectToAction("Index", "Dashboard") : LocalRedirect(viewModel.returnUrl);
+                }
+                else
+                {
+                    if (await _userManager.IsLockedOutAsync(user))
+                    {
+                        ViewBag.Message = "You've entered too many times of invalid credentials, please try again after 5 minutes.";
+                        return View("Error");
+                    }
+
+                    await _userManager.AccessFailedAsync(user);
+                    ModelState.AddModelError("", Message.INVALID_LOGIN_ATTEMPT);
+                }
             }
+            return View(viewModel);
         }
 
         public IActionResult Register()
@@ -218,7 +198,7 @@ namespace TaskPilot.Web.Controllers
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user!);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-                var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code }, protocol: Request.Scheme);
+                var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user!.Id, code }, protocol: Request.Scheme);
                 string body = string.Empty;
 
                 using (StreamReader reader = new(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "template", "AccountConfirmation.html")))
@@ -300,7 +280,7 @@ namespace TaskPilot.Web.Controllers
                     return Unauthorized();
                 }
 
-                var isValidToken = await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.PasswordResetTokenProvider, "ResetPassword", Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code)));
+                var isValidToken = await _userManager.VerifyUserTokenAsync(user!, _userManager.Options.Tokens.PasswordResetTokenProvider, "ResetPassword", Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code)));
                 if (!isValidToken)
                 {
                     ViewBag.ErrorMessage = "The reset password link has expired. Please request a new reset password email.";
