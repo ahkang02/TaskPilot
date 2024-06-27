@@ -32,12 +32,15 @@ namespace TaskPilot.Web.Controllers
 
         public IActionResult Login(string? returnUrl = null)
         {
-            if (User!.Identity!.IsAuthenticated)
+            if (ModelState.IsValid)
             {
-                return RedirectToAction("Index", "Dashboard");
-            }
+                if (User!.Identity!.IsAuthenticated)
+                {
+                    return RedirectToAction("Index", "Dashboard");
+                }
 
-            ViewBag.ReturnUrl = returnUrl ?? Url.Content("~/");
+                ViewBag.ReturnUrl = returnUrl ?? Url.Content("~/");
+            }
             return View();
         }
 
@@ -87,7 +90,8 @@ namespace TaskPilot.Web.Controllers
                         }
                         else if (result.IsLockedOut)
                         {
-                            return View("Lockout");
+                            ViewBag.Message = "You've entered too many times of invalid credentials, please try again after 5 minutes.";
+                            return View("Error");
                         }
                         else
                         {
@@ -132,7 +136,7 @@ namespace TaskPilot.Web.Controllers
 
                         using (StreamReader reader = new(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "template", "AccountConfirmation.html")))
                         {
-                            body = reader.ReadToEnd();
+                            body = await reader.ReadToEndAsync();
                         }
 
                         body = body.Replace("{Content}", "Account Confirmation");
@@ -148,42 +152,48 @@ namespace TaskPilot.Web.Controllers
             return View(viewModel);
         }
 
+        [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
-            if (userId == null || code == null)
+            if (ModelState.IsValid)
             {
-                return Unauthorized();
+
+                if (userId == null || code == null)
+                {
+                    return Unauthorized();
+                }
+
+                code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+                var user = await _userManager.FindByIdAsync(userId);
+
+                if (user == null)
+                {
+                    return NotFound("User not found");
+                }
+
+                if (user.EmailConfirmed)
+                {
+                    ViewBag.Message = "Your email is already confirmed.";
+                    return View("AlreadyConfirmed");
+                }
+
+                var result = await _userManager.ConfirmEmailAsync(user!, code);
+
+                if (result.Succeeded)
+                {
+                    await _userManager.UpdateSecurityStampAsync(user);
+                    return View("ConfirmEmail");
+                }
+                else if (result.Errors.Any(e => e.Code == "InvalidToken"))
+                {
+                    ViewBag.ErrorMessage = "The confirmation link has expired. Please request a new confirmation email.";
+                    return View("Error");
+                }
+
+                return View(result.Succeeded ? "ConfirmEmail" : BadRequest());
             }
-
-            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if(user == null)
-            {
-                return NotFound("User not found");
-            }
-
-            if(user.EmailConfirmed)
-            {
-                ViewBag.Message = "Your email is already confirmed.";
-                return View("AlreadyConfirmed");
-            }
-
-            var result = await _userManager.ConfirmEmailAsync(user!, code);
-
-            if (result.Succeeded)
-            {
-                await _userManager.UpdateSecurityStampAsync(user);
-                return View("ConfirmEmail");
-            }
-            else if (result.Errors.Any(e => e.Code == "InvalidToken"))
-            {
-                ViewBag.ErrorMessage = "The confirmation link has expired. Please request a new confirmation email.";
-                return View("Error");
-            }
-
-            return View(result.Succeeded ? "ConfirmEmail" : BadRequest());
+            return View(BadRequest());
         }
 
         [AllowAnonymous]
@@ -250,7 +260,7 @@ namespace TaskPilot.Web.Controllers
 
                     using (StreamReader reader = new(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "template", "AccountConfirmation.html")))
                     {
-                        body = reader.ReadToEnd();
+                        body = await reader.ReadToEndAsync();
                     }
 
                     body = body.Replace("{Content}", "Reset Password");
@@ -281,20 +291,22 @@ namespace TaskPilot.Web.Controllers
 
         public async Task<IActionResult> ResetPassword(string userId, string code)
         {
-            var  user = await _userManager.FindByIdAsync(userId);
-
-            if (code == null)
+            if (ModelState.IsValid)
             {
-                return Unauthorized();
-            }
+                var user = await _userManager.FindByIdAsync(userId);
 
-            var isValidToken = await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.PasswordResetTokenProvider, "ResetPassword", Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code)));
-            if (!isValidToken)
-            {
-                ViewBag.ErrorMessage = "The reset password link has expired. Please request a new reset password email.";
-                return View("Error");
-            }
+                if (code == null)
+                {
+                    return Unauthorized();
+                }
 
+                var isValidToken = await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.PasswordResetTokenProvider, "ResetPassword", Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code)));
+                if (!isValidToken)
+                {
+                    ViewBag.ErrorMessage = "The reset password link has expired. Please request a new reset password email.";
+                    return View("Error");
+                }
+            }
             return View();
         }
 
