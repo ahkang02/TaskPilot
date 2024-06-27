@@ -86,7 +86,7 @@ stages:
 
 - stage: 'Preparing_Artifact'
   displayName: 'Building Artifact'
-  dependsOn: 'Testing'
+  dependsOn: 'Analyzing'
   condition: succeeded()
   jobs:
   - job: 'Compiling'
