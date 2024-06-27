@@ -158,10 +158,23 @@ namespace TaskPilot.Web.Controllers
 
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
             var user = await _userManager.FindByIdAsync(userId);
+
+            if(user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            if(user.EmailConfirmed)
+            {
+                ViewBag.Message = "Your email is already confirmed.";
+                return View("AlreadyConfirmed");
+            }
+
             var result = await _userManager.ConfirmEmailAsync(user!, code);
 
             if (result.Succeeded)
             {
+                await _userManager.UpdateSecurityStampAsync(user);
                 return View("ConfirmEmail");
             }
             else if (result.Errors.Any(e => e.Code == "InvalidToken"))
@@ -171,6 +184,12 @@ namespace TaskPilot.Web.Controllers
             }
 
             return View(result.Succeeded ? "ConfirmEmail" : BadRequest());
+        }
+
+        [AllowAnonymous]
+        public IActionResult AlreadyConfirmed()
+        {
+            return View();
         }
 
         [AllowAnonymous]
@@ -260,12 +279,22 @@ namespace TaskPilot.Web.Controllers
 
         [AllowAnonymous]
 
-        public IActionResult ResetPassword(string code)
+        public async Task<IActionResult> ResetPassword(string userId, string code)
         {
+            var  user = await _userManager.FindByIdAsync(userId);
+
             if (code == null)
             {
                 return Unauthorized();
             }
+
+            var isValidToken = await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.PasswordResetTokenProvider, "ResetPassword", Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code)));
+            if (!isValidToken)
+            {
+                ViewBag.ErrorMessage = "The reset password link has expired. Please request a new reset password email.";
+                return View("Error");
+            }
+
             return View();
         }
 
@@ -289,6 +318,7 @@ namespace TaskPilot.Web.Controllers
             var result = await _userManager.ResetPasswordAsync(user, viewModel.Code, viewModel.Password!);
             if (result.Succeeded)
             {
+                await _userManager.UpdateSecurityStampAsync(user);
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
             }
             else if (result.Errors.Any(e => e.Code == "InvalidToken"))

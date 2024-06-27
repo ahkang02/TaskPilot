@@ -136,6 +136,12 @@ namespace TaskPilot.Web.Controllers
                 return RedirectToAction("Index", "Profile");
             }
 
+            if (user.EmailConfirmed)
+            {
+                ViewBag.Message = "Your email is already confirmed.";
+                return View("AlreadyConfirmed");
+            }
+
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
             var result = await _userManager.ChangeEmailAsync(user, email, code);
 
