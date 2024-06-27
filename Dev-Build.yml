@@ -66,6 +66,13 @@ stages:
           - checkout: self
             fetchDepth: 0
 
+          - task: SonarQubePrepare@6
+            name: 'SonarQubePrep'
+            inputs:
+              SonarQube: 'TaskPilot_SonarQube'
+              scannerMode: 'MSBuild'
+              projectKey: 'TaskPilot_TaskPilot_a22dca1d-0cc9-4168-867a-f5b6c3ef1d0e'
+              
           - task: DotNetCoreCLI@2
             inputs:
               command: 'test'
