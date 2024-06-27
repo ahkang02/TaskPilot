@@ -55,13 +55,6 @@ stages:
           projects: 'TaskPilot.Web/*.csproj'
           arguments: '--configuration Release'
           
-      - task: SonarQubeAnalyze@6
-        displayName: "SonarQube Analyzing"
-
-      - task: SonarQubePublish@6
-        inputs:
-          pollingTimeoutSec: '300'
-          
 - stage: 'Testing'
   displayName: 'Running Unit Test'
   dependsOn: 'Building'
@@ -74,9 +67,24 @@ stages:
         inputs:
           command: 'test'
           projects: 'TaskPilot.Tests/*.csproj'
-          arguments: '--configuration Release'
+          arguments: '--configuration Release --collect "Code Coverage"'
 
-- stage: 'Compiling'
+- stage: 'Analyzing'
+  displayName: 'Running Code Analysis On SonarQube'
+  dependsOn: 'Testing'
+  condition:  succeeded()
+  jobs:
+   - job: 'Analyzing'
+     displayName: 'Running SonarQube Analyze'
+     steps: 
+        - task: SonarQubeAnalyze@6
+          displayName: "SonarQube Analyzing"
+
+        - task: SonarQubePublish@6
+          inputs:
+            pollingTimeoutSec: '300'
+
+- stage: 'Preparing_Artifact'
   displayName: 'Building Artifact'
   dependsOn: 'Testing'
   condition: succeeded()
