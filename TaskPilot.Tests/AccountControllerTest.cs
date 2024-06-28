@@ -160,7 +160,7 @@ namespace TaskPilot.Tests
                 Password = "password"
             };
 
-            _userManagerMock.Setup(u => u.FindByNameAsync(viewModel.Username)).ReturnsAsync((ApplicationUser)null);
+            _userManagerMock.Setup(u => u.FindByNameAsync(viewModel.Username)).ReturnsAsync(null as ApplicationUser);
 
             // Act
             var result = await _accountController.Login(viewModel) as ViewResult;
@@ -168,7 +168,7 @@ namespace TaskPilot.Tests
             // Assert
             Assert.IsNotNull(result);
             Assert.IsTrue(result.ViewData.ModelState.ContainsKey(""));
-            Assert.That(result.ViewData.ModelState[""].Errors[0].ErrorMessage, Is.EqualTo(Message.NO_USER_FOUND));
+            Assert.That(result.ViewData.ModelState[""]!.Errors[0].ErrorMessage, Is.EqualTo(Message.NO_USER_FOUND));
         }
 
         [Test]
@@ -192,7 +192,7 @@ namespace TaskPilot.Tests
             // Assert
             Assert.IsNotNull(result);
             Assert.IsTrue(result.ViewData.ModelState.ContainsKey(""));
-            Assert.That(result.ViewData.ModelState[""].Errors[0].ErrorMessage, Is.EqualTo(Message.INVALID_LOGIN_ATTEMPT));
+            Assert.That(result.ViewData.ModelState[""]!.Errors[0].ErrorMessage, Is.EqualTo(Message.INVALID_LOGIN_ATTEMPT));
         }
 
         [Test]
@@ -257,7 +257,7 @@ namespace TaskPilot.Tests
             // Assert
             Assert.IsNotNull(result);
             Assert.IsTrue(result.ViewData.ModelState.ContainsKey(""));
-            Assert.That(result.ViewData.ModelState[""].Errors[0].ErrorMessage, Is.EqualTo(Message.USER_EXIST));
+            Assert.That(result.ViewData.ModelState[""]!.Errors[0].ErrorMessage, Is.EqualTo(Message.USER_EXIST));
         }
 
         [Test]
@@ -278,8 +278,8 @@ namespace TaskPilot.Tests
             string bodyTemplate = "Account Confirmation: {UserName}, {ConfirmationLink}";
 
             _userManagerMock.Setup(u => u.Users).Returns(Enumerable.Empty<ApplicationUser>().AsQueryable());
-            _userManagerMock.Setup(u => u.FindByNameAsync(viewModel.Username)).ReturnsAsync((ApplicationUser)null);
-            _userManagerMock.Setup(u => u.FindByEmailAsync(viewModel.Email)).ReturnsAsync((ApplicationUser)null);
+            _userManagerMock.Setup(u => u.FindByNameAsync(viewModel.Username)).ReturnsAsync(null as ApplicationUser);
+            _userManagerMock.Setup(u => u.FindByEmailAsync(viewModel.Email)).ReturnsAsync(null as ApplicationUser);
             _userManagerMock.Setup(u => u.CreateAsync(It.IsAny<ApplicationUser>(), viewModel.Password)).ReturnsAsync(IdentityResult.Success);
             _userManagerMock.Setup(u => u.AddToRoleAsync(It.IsAny<ApplicationUser>(), SD.DEFAULT_ROLE)).ReturnsAsync(IdentityResult.Success);
             _userManagerMock.Setup(u => u.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).ReturnsAsync("dummyToken");
@@ -325,7 +325,7 @@ namespace TaskPilot.Tests
         {
 
             // Arrange
-            _userManagerMock.Setup(u => u.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((ApplicationUser)null);
+            _userManagerMock.Setup(u => u.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(null as ApplicationUser);
 
             // Act
             var result = await _accountController.ConfirmEmail("dummyUserId", "dummyToken") as NotFoundResult;
@@ -414,7 +414,6 @@ namespace TaskPilot.Tests
             };
 
             var user = new ApplicationUser { UserName = "testuser1234", FirstName = "Test User", LastName = "2", Email = viewModel.Email, EmailConfirmed = false };
-            var code = "dummyToken";
             var callbackUrl = "http://localhost/Account/ConfirmEmail";
             string bodyTemplate = "Account Confirmation: {UserName}, {ConfirmationLink}";
 
@@ -469,7 +468,7 @@ namespace TaskPilot.Tests
         public async Task ResetPasswordWithEmptyCode_ReturnUnauthorized()
         {
             // Arrange
-            _userManagerMock.Setup(u => u.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((ApplicationUser) null);
+            _userManagerMock.Setup(u => u.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(null as ApplicationUser);
 
             // Act
             var result = await _accountController.ResetPassword(null, null) as UnauthorizedResult;
@@ -483,7 +482,7 @@ namespace TaskPilot.Tests
         public async Task ResetPasswordWithInvalidToken_ReturnError()
         {
             // Arrange
-            _userManagerMock.Setup(u => u.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((ApplicationUser)null);
+            _userManagerMock.Setup(u => u.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(null as ApplicationUser);
             _userManagerMock.Setup(u => u.VerifyUserTokenAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(false);
 
             // Act
@@ -499,7 +498,7 @@ namespace TaskPilot.Tests
         public async Task ResetPasswordValidToken_ReturnView()
         {
             // Arrange
-            _userManagerMock.Setup(u => u.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((ApplicationUser)null);
+            _userManagerMock.Setup(u => u.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(null as ApplicationUser);
             _userManagerMock.Setup(u => u.VerifyUserTokenAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
 
             // Act
@@ -521,7 +520,7 @@ namespace TaskPilot.Tests
                 Password = "Abcd1234!!"
             };
 
-            _userManagerMock.Setup(u => u.FindByEmailAsync(viewModel.Email)).ReturnsAsync((ApplicationUser)null);
+            _userManagerMock.Setup(u => u.FindByEmailAsync(viewModel.Email)).ReturnsAsync(null as ApplicationUser);
 
             // Act
             var result = await _accountController.ResetPassword(viewModel) as RedirectToActionResult;
