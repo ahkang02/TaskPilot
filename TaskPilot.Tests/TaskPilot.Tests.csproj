@@ -26,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TaskPilot.Application\TaskPilot.Application.csproj" />
     <ProjectReference Include="..\TaskPilot.Infrastructure\TaskPilot.Infrastructure.csproj" />
+    <ProjectReference Include="..\TaskPilot.Web\TaskPilot.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>

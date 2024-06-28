@@ -15,6 +15,7 @@ namespace TaskPilot.Web.Controllers
         private readonly IEmailSender _emailSender;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        public Func<string, StreamReader> StreamReaderFactory { get; set; }
 
         public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender)
         {
@@ -114,7 +115,7 @@ namespace TaskPilot.Web.Controllers
                         var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = newUser.Id, code }, protocol: Request.Scheme);
                         string body = string.Empty;
 
-                        using (StreamReader reader = new(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "template", "AccountConfirmation.html")))
+                        using (StreamReader reader = StreamReaderFactory(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "template", "AccountConfirmation.html")))
                         {
                             body = await reader.ReadToEndAsync();
                         }
@@ -149,7 +150,7 @@ namespace TaskPilot.Web.Controllers
 
                 if (user == null)
                 {
-                    return NotFound("User not found");
+                    return NotFound();
                 }
 
                 if (user.EmailConfirmed)
@@ -201,7 +202,7 @@ namespace TaskPilot.Web.Controllers
                 var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user!.Id, code }, protocol: Request.Scheme);
                 string body = string.Empty;
 
-                using (StreamReader reader = new(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "template", "AccountConfirmation.html")))
+                using (StreamReader reader = StreamReaderFactory(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "template", "AccountConfirmation.html")))
                 {
                     body = await reader.ReadToEndAsync();
                 }
@@ -308,15 +309,11 @@ namespace TaskPilot.Web.Controllers
 
             viewModel.Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(viewModel.Code!));
             var result = await _userManager.ResetPasswordAsync(user, viewModel.Code, viewModel.Password!);
+
             if (result.Succeeded)
             {
                 await _userManager.UpdateSecurityStampAsync(user);
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
-            }
-            else if (result.Errors.Any(e => e.Code == "InvalidToken"))
-            {
-                ViewBag.ErrorMessage = "The reset password link has expired. Please request a new reset password email.";
-                return View("Error");
             }
 
             ModelState.AddModelError("", result.ToString());
