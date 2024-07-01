@@ -19,6 +19,8 @@ namespace TaskPilot.Web.Controllers
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly ISmsSender _smsSender;
         private readonly IEmailSender _emailSender;
+        public Func<string, StreamReader> StreamReaderFactory { get; set; }
+
 
         public ProfileController(UserManager<ApplicationUser> userManager, ISmsSender smsSender, IEmailSender emailSender, RoleManager<ApplicationRole> roleManager, IPermissionService permissionService)
         {
@@ -83,7 +85,7 @@ namespace TaskPilot.Web.Controllers
                         var callbackUrl = Url.Action("ChangeEmail", "Profile", new { userId = userInDb.Id, viewModel.Email, code }, protocol: Request.Scheme);
                         string body = string.Empty;
 
-                        using (StreamReader reader = new(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "template", "AccountConfirmation.html")))
+                        using (StreamReader reader = StreamReaderFactory(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "template", "AccountConfirmation.html")))
                         {
                             body = await reader.ReadToEndAsync();
                         }
