@@ -363,7 +363,7 @@ namespace TaskPilot.Web.Controllers
                 for (int i = 0; i < taskId.Length; i++)
                 {
                     Guid Id = taskId[i];
-                    _taskService.GetTasksWithId(Id!);
+                    taskToUpdate.Add(_taskService.GetTasksWithId(Id!));
                 }
 
                 foreach (var task in taskToUpdate)
