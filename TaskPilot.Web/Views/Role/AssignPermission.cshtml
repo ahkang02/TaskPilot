@@ -33,7 +33,7 @@
                                                 <tr>
                                                     <th>Feature</th>
                                                     <th>Read</th>
-                                                    <th>New</th>
+                                                    <th>Create</th>
                                                     <th>Update</th>
                                                     <th>Delete</th>
                                                 </tr>
@@ -56,12 +56,16 @@
                                                         @for (int j = 0; j < 4; j++)
                                                         {
                                                             var permissionName = new[] { "Index", "New", "Update", "Delete" }[j];
-                                                            var permission = feature.Permissions.FirstOrDefault(p => p.Name.Contains(permissionName));
+                                                            var permission = feature.Permissions.FirstOrDefault(p => p.Name == permissionName);
                                                             <td>
                                                                 @if (permission != null)
                                                                 {
                                                                     @Html.CheckBoxFor(m => Model.FeaturePermissions[i].Permissions[j].IsSelected, new { @class = "form-check-input" })
                                                                     @Html.HiddenFor(m => Model.FeaturePermissions[i].Permissions[j].PermissionId)
+                                                                }
+                                                                else
+                                                                {
+                                                                    <input type="checkbox" class="form-check-input" disabled />
                                                                 }
                                                             </td>
                                                         }
