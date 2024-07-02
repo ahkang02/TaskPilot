@@ -3,20 +3,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.EntityFrameworkCore;
 using MockQueryable.Moq;
 using Moq;
-using NUglify.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 using TaskPilot.Application.Common.Utility;
 using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
-using TaskPilot.Web.APIs;
 using TaskPilot.Web.Controllers;
 using TaskPilot.Web.ViewModels;
 
@@ -96,7 +88,6 @@ namespace TaskPilot.Tests
             var roles = new List<ApplicationRole> { _mockRole }.AsQueryable().BuildMock();
             _mockRoleManager.Setup(rm => rm.Roles).Returns(roles);
             _mockPermissionService.Setup(ps => ps.GetPermissionInRole(_mockRole)).Returns(_mockPermission);
-
         }
 
         [TearDown]
@@ -453,7 +444,7 @@ namespace TaskPilot.Tests
 
             // Act
             var result = await _controller.VerifyPhoneNumber(viewModel) as ViewResult;
-            
+
             // Assert
             Assert.IsNotNull(result);
             Assert.That(result.Model, Is.EqualTo(viewModel));

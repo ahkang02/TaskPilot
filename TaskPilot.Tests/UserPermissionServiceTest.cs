@@ -1,11 +1,5 @@
 ﻿using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Application.Services.Implementation;
 using TaskPilot.Application.Services.Interface;
@@ -82,7 +76,7 @@ namespace TaskPilot.Tests
             // Assert
             Assert.That(ex.Message, Is.EqualTo("Value cannot be null. (Parameter 'userClaims')"));
         }
-        
+
 
         //  TODO: Need To Think Of A Way To Do This Unit Test
         //    [Test]

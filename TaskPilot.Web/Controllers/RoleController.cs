@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Application.Common.Utility;
 using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
@@ -21,7 +20,7 @@ namespace TaskPilot.Web.Controllers
         private readonly RoleManager<ApplicationRole> _roleManager;
 
 
-        public RoleController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IUserPermissionService userPermissionService, IPermissionService permissionService, IFeatureService featureService)
+        public RoleController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IUserPermissionService userPermissionService, IPermissionService permissionService, IFeatureService featureService)
         {
             _userManager = userManager;
             _roleManager = roleManager;

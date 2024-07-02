@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Net.Mail;
 using System.Security.Claims;
 using System.Text;
-using TaskPilot.Application.Common.Interfaces;
 using TaskPilot.Application.Common.Utility;
 using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;

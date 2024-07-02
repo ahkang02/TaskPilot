@@ -2,23 +2,14 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using TaskPilot.Application.Common.Utility;
 using TaskPilot.Application.Services.Interface;
 using TaskPilot.Domain.Entities;
 using TaskPilot.Web.Controllers;
 using TaskPilot.Web.ViewModels;
-using Vonage.Users;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TaskPilot.Tests
 {
